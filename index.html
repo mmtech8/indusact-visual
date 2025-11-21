@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Visuel – Industrie mixte et performante</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Cropper.js CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.css"
+  />
+
+  <style>
+    :root {
+      --bg-main: #030b2a;
+      --bg-card: rgba(3, 11, 42, 0.95);
+      --accent: #ffb347;
+      --text-main: #ffffff;
+      --text-muted: #cfd4ff;
+      --border-soft: rgba(255, 255, 255, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #1b2c7a 0%, #030b2a 50%, #020516 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 24px;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 24px 55px rgba(0, 0, 0, 0.55);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      border: 1px solid var(--border-soft);
+      border-radius: 16px;
+      padding: 16px;
+      background: rgba(5, 16, 70, 0.9);
+    }
+
+    .card h2 {
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+
+    .field {
+      margin-bottom: 12px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.88rem;
+      margin-bottom: 4px;
+    }
+
+    .field small {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    select {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: rgba(3, 9, 38, 0.95);
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    input[type="file"] {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .radio-group,
+    .inline-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.88rem;
+    }
+
+    .inline-group label,
+    .radio-group label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .upload-block {
+      border: 1px dashed rgba(255, 255, 255, 0.25);
+      border-radius: 16px;
+      padding: 12px;
+      text-align: center;
+      margin-top: 6px;
+    }
+
+    .upload-label-btn {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      cursor: pointer;
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+    }
+
+    .upload-hint {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .cropper-wrapper {
+      margin-top: 12px;
+      max-height: 360px;
+      overflow: hidden;
+      border-radius: 12px;
+      background: #000;
+    }
+
+    .cropper-wrapper img {
+      max-width: 100%;
+      display: block;
+    }
+
+    .preview-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .preview-circle {
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 6px solid var(--accent);
+      background: #111626;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .preview-circle canvas {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .hint {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 4px;
+    }
+
+    .actions {
+      margin-top: 16px;
+      text-align: center;
+    }
+
+    button {
+      padding: 10px 22px;
+      border-radius: 999px;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, #ffb347, #ff7e2a);
+      color: #1b1b1b;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
+      transition: transform 0.08s ease, box-shadow 0.08s ease, opacity 0.1s ease;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .status {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+      min-height: 18px;
+    }
+
+    .status.ok {
+      color: #7bd88f;
+    }
+
+    .status.error {
+      color: #ff7e7e;
+    }
+
+    .section-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .logo-preview {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .logo-chip {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Je crée mon visuel “J’agis pour une industrie mixte et performante”</h1>
+      <p>Complète le formulaire, recadre ta photo dans le cercle, puis valide. Tu recevras ton visuel personnalisé par e-mail.</p>
+    </div>
+
+    <div class="grid">
+      <!-- Colonne gauche : formulaire -->
+      <div class="card">
+        <h2>1. Informations</h2>
+
+        <div class="field">
+          <label for="email">E-mail (pour recevoir le visuel) *</label>
+          <input type="email" id="email" required />
+        </div>
+
+        <div class="field">
+          <label for="fullname">Nom et prénom (optionnel)</label>
+          <input type="text" id="fullname" placeholder="Ex : Prénom Nom" />
+        </div>
+
+        <div class="field">
+          <label>Nombre de logos d’organisation à afficher</label>
+          <div class="inline-group" id="logoCountGroup">
+            <label><input type="radio" name="logoCount" value="0" checked /> 0 logo</label>
+            <label><input type="radio" name="logoCount" value="1" /> 1 logo</label>
+            <label><input type="radio" name="logoCount" value="2" /> 2 logos</label>
+          </div>
+          <small>Si tu choisis 0 logo, le visuel sera généré sans bande blanche.</small>
+        </div>
+
+        <div class="field" id="orgTypeField">
+          <label for="orgType">Type d’organisation pour les logos</label>
+          <select id="orgType">
+            <option value="alumni">Association alumni</option>
+            <option value="organisation">Entreprise / organisation</option>
+          </select>
+        </div>
+
+        <!-- Bloc logos alumni -->
+        <div id="alumniBlock" class="field">
+          <div class="section-title">Logo(s) d’association alumni</div>
+          <div class="field">
+            <label for="alumniSelect1">Logo alumni 1</label>
+            <select id="alumniSelect1">
+              <option value="">Sélectionner...</option>
+              <option value="insead_alumni_fr">INSEAD Alumni France</option>
+              <option value="arts_métiers_alumni">Arts et Métiers Alumni</option>
+              <option value="centralien">Centrale Alumni</option>
+              <option value="autre">Autre (je télécharge le logo)</option>
+            </select>
+            <input type="file" id="alumniLogo1File" accept="image/*" style="display:none;margin-top:6px;" />
+          </div>
+
+          <div class="field" id="alumniLogo2Field">
+            <label for="alumniSelect2">Logo alumni 2 (optionnel)</label>
+            <select id="alumniSelect2">
+              <option value="">Sélectionner...</option>
+              <option value="insead_alumni_fr">INSEAD Alumni France</option>
+              <option value="arts_métiers_alumni">Arts et Métiers Alumni</option>
+              <option value="centralien">Centrale Alumni</option>
+              <option value="autre">Autre (je télécharge le logo)</option>
+            </select>
+            <input type="file" id="alumniLogo2File" accept="image/*" style="display:none;margin-top:6px;" />
+          </div>
+
+          <small>Si ton école n’est pas dans la liste, choisis “Autre” et télécharge le logo correspondant.</small>
+          <div class="logo-preview" id="alumniLogoHint"></div>
+        </div>
+
+        <!-- Bloc logos organisations -->
+        <div id="orgBlock" class="field" style="display:none;">
+          <div class="section-title">Logos d’entreprise / organisation</div>
+          <div class="upload-block">
+            <div style="margin-bottom:6px;"><strong>Logo 1</strong></div>
+            <label class="upload-label-btn" for="orgLogo1">Choisir un logo</label>
+            <input type="file" id="orgLogo1" accept="image/*" />
+            <div class="upload-hint">Format PNG ou JPG recommandé.</div>
+          </div>
+          <div class="upload-block" id="orgLogo2Block" style="margin-top:10px;">
+            <div style="margin-bottom:6px;"><strong>Logo 2 (optionnel)</strong></div>
+            <label class="upload-label-btn" for="orgLogo2">Choisir un second logo</label>
+            <input type="file" id="orgLogo2" accept="image/*" />
+            <div class="upload-hint">Laisse vide si tu n’as qu’un logo.</div>
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:12px;">
+          <label>
+            <input type="checkbox" id="consent" />
+            J’accepte que ma photo et les logos fournis soient utilisés dans le cadre de l’appel à l’action “Pour une industrie mixte et performante”.
+          </label>
+        </div>
+      </div>
+
+      <!-- Colonne droite : upload photo + crop + preview -->
+      <div class="card">
+        <h2>2. Photo de profil</h2>
+        <div class="upload-block">
+          <div><strong>Importer ta photo</strong></div>
+          <label class="upload-label-btn" for="fileInput">Choisir une photo</label>
+          <input type="file" id="fileInput" accept="image/*" />
+          <div class="upload-hint">
+            Idéalement visage ou buste, bien éclairé. Tu pourras recadrer avant de valider.
+          </div>
+
+          <div class="cropper-wrapper">
+            <img id="image" alt="Photo à recadrer" />
+          </div>
+        </div>
+
+        <div class="preview-block">
+          <div class="section-title">Aperçu dans le cercle</div>
+          <div class="preview-circle">
+            <canvas id="previewCanvas"></canvas>
+          </div>
+          <div class="hint">
+            Ajuste le zoom et la position de la photo, puis clique sur “Générer mon visuel”.
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="generateBtn" disabled>Générer mon visuel</button>
+          <div id="statusMsg" class="status"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cropper.js JS -->
+  <script src="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.js"></script>
+
+  <script>
+    // 🔗 À PERSONNALISER : ton webhook Make
+    const MAKE_WEBHOOK_URL = "https://hook.integromat.com/TON_WEBHOOK_ICI";
+
+    // Dictionnaire de logos alumni → adapter les URLs (GitHub Pages ou autre)
+    const alumniLogos = {
+      "insead_alumni_fr": {
+        name: "INSEAD Alumni France",
+        logo_url: "https://tonuser.github.io/tonrepo/logos/insead_alumni_fr.png"
+      },
+      "arts_métiers_alumni": {
+        name: "Arts et Métiers Alumni",
+        logo_url: "https://tonuser.github.io/tonrepo/logos/arts_metiers_alumni.png"
+      },
+      "centralien": {
+        name: "Centrale Alumni",
+        logo_url: "https://tonuser.github.io/tonrepo/logos/centralien.png"
+      }
+    };
+
+    const emailInput = document.getElementById("email");
+    const fullnameInput = document.getElementById("fullname");
+    const logoCountRadios = document.querySelectorAll("input[name='logoCount']");
+    const orgTypeSelect = document.getElementById("orgType");
+
+    const orgTypeField = document.getElementById("orgTypeField");
+    const alumniBlock = document.getElementById("alumniBlock");
+    const orgBlock = document.getElementById("orgBlock");
+    const orgLogo2Block = document.getElementById("orgLogo2Block");
+
+    const alumniSelect1 = document.getElementById("alumniSelect1");
+    const alumniSelect2 = document.getElementById("alumniSelect2");
+    const alumniLogo1File = document.getElementById("alumniLogo1File");
+    const alumniLogo2File = document.getElementById("alumniLogo2File");
+    const alumniLogoHint = document.getElementById("alumniLogoHint");
+
+    const orgLogo1Input = document.getElementById("orgLogo1");
+    const orgLogo2Input = document.getElementById("orgLogo2");
+
+    const consentCheckbox = document.getElementById("consent");
+    const generateBtn = document.getElementById("generateBtn");
+    const statusMsg = document.getElementById("statusMsg");
+
+    const fileInput = document.getElementById("fileInput");
+    const image = document.getElementById("image");
+    const previewCanvas = document.getElementById("previewCanvas");
+    const OUTPUT_SIZE = 800;
+    const previewCtx = previewCanvas.getContext("2d");
+    previewCanvas.width = OUTPUT_SIZE;
+    previewCanvas.height = OUTPUT_SIZE;
+
+    let cropper = null;
+
+    let alumniLogo1Base64 = null;
+    let alumniLogo2Base64 = null;
+    let orgLogo1Base64 = null;
+    let orgLogo2Base64 = null;
+
+    function generateToken() {
+      return (
+        Date.now().toString(36) +
+        Math.random().toString(36).substring(2, 8)
+      );
+    }
+
+    function readFileAsBase64(file) {
+      return new Promise((resolve, reject) => {
+        if (!file) {
+          resolve(null);
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const dataUrl = e.target.result;
+          const base64 = dataUrl.split(",")[1];
+          resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function updatePreview() {
+      if (!cropper) return;
+      const canvas = cropper.getCroppedCanvas({
+        width: OUTPUT_SIZE,
+        height: OUTPUT_SIZE,
+        imageSmoothingQuality: "high"
+      });
+      previewCtx.clearRect(0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+      previewCtx.drawImage(canvas, 0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+    }
+
+    fileInput.addEventListener("change", (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        image.src = e.target.result;
+        if (cropper) {
+          cropper.destroy();
+          cropper = null;
+        }
+        image.onload = () => {
+          cropper = new Cropper(image, {
+            aspectRatio: 1,
+            viewMode: 1,
+            dragMode: "move",
+            autoCropArea: 1,
+            background: false,
+            zoomOnWheel: true,
+            responsive: true,
+            ready() {
+              updatePreview();
+              checkReadyToGenerate();
+            },
+            crop() {
+              updatePreview();
+            }
+          });
+        };
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function checkReadyToGenerate() {
+      const emailOk = emailInput.value.trim() !== "";
+      const consentOk = consentCheckbox.checked;
+      const photoOk = !!cropper;
+      if (emailOk && consentOk && photoOk) {
+        generateBtn.disabled = false;
+      } else {
+        generateBtn.disabled = true;
+      }
+    }
+
+    emailInput.addEventListener("input", checkReadyToGenerate);
+    consentCheckbox.addEventListener("change", checkReadyToGenerate);
+
+    logoCountRadios.forEach(r => {
+      r.addEventListener("change", () => {
+        const val = getLogoCount();
+        if (val === 0) {
+          orgTypeField.style.display = "none";
+          alumniBlock.style.display = "none";
+          orgBlock.style.display = "none";
+        } else {
+          orgTypeField.style.display = "block";
+          updateOrgBlocks();
+        }
+      });
+    });
+
+    orgTypeSelect.addEventListener("change", updateOrgBlocks);
+
+    function getLogoCount() {
+      const sel = Array.from(logoCountRadios).find(r => r.checked);
+      return sel ? parseInt(sel.value, 10) : 0;
+    }
+
+    function updateOrgBlocks() {
+      const count = getLogoCount();
+      const type = orgTypeSelect.value;
+      if (count === 0) {
+        alumniBlock.style.display = "none";
+        orgBlock.style.display = "none";
+        return;
+      }
+      if (type === "alumni") {
+        alumniBlock.style.display = "block";
+        orgBlock.style.display = "none";
+        document.getElementById("alumniLogo2Field").style.display = (count === 2) ? "block" : "none";
+      } else {
+        alumniBlock.style.display = "none";
+        orgBlock.style.display = "block";
+        orgLogo2Block.style.display = (count === 2) ? "block" : "none";
+      }
+    }
+
+    alumniSelect1.addEventListener("change", () => {
+      if (alumniSelect1.value === "autre") {
+        alumniLogo1File.style.display = "block";
+      } else {
+        alumniLogo1File.value = "";
+        alumniLogo1File.style.display = "none";
+      }
+      updateAlumniHint();
+    });
+
+    alumniSelect2.addEventListener("change", () => {
+      if (alumniSelect2.value === "autre") {
+        alumniLogo2File.style.display = "block";
+      } else {
+        alumniLogo2File.value = "";
+        alumniLogo2File.style.display = "none";
+      }
+      updateAlumniHint();
+    });
+
+    function updateAlumniHint() {
+      alumniLogoHint.innerHTML = "";
+      [alumniSelect1, alumniSelect2].forEach((sel, index) => {
+        const key = sel.value;
+        if (key && key !== "autre" && alumniLogos[key]) {
+          const chip = document.createElement("div");
+          chip.className = "logo-chip";
+          chip.textContent = `Logo ${index + 1} : ${alumniLogos[key].name}`;
+          alumniLogoHint.appendChild(chip);
+        } else if (key === "autre") {
+          const chip = document.createElement("div");
+          chip.className = "logo-chip";
+          chip.textContent = `Logo ${index + 1} : autre (upload)`;
+          alumniLogoHint.appendChild(chip);
+        }
+      });
+    }
+
+    alumniLogo1File.addEventListener("change", async () => {
+      const file = alumniLogo1File.files && alumniLogo1File.files[0];
+      alumniLogo1Base64 = file ? await readFileAsBase64(file) : null;
+    });
+
+    alumniLogo2File.addEventListener("change", async () => {
+      const file = alumniLogo2File.files && alumniLogo2File.files[0];
+      alumniLogo2Base64 = file ? await readFileAsBase64(file) : null;
+    });
+
+    orgLogo1Input.addEventListener("change", async () => {
+      const file = orgLogo1Input.files && orgLogo1Input.files[0];
+      orgLogo1Base64 = file ? await readFileAsBase64(file) : null;
+    });
+
+    orgLogo2Input.addEventListener("change", async () => {
+      const file = orgLogo2Input.files && orgLogo2Input.files[0];
+      orgLogo2Base64 = file ? await readFileAsBase64(file) : null;
+    });
+
+    generateBtn.addEventListener("click", async () => {
+      if (!cropper) {
+        statusMsg.textContent = "Merci d’importer et recadrer ta photo avant de générer le visuel.";
+        statusMsg.className = "status error";
+        return;
+      }
+      if (!emailInput.value.trim()) {
+        statusMsg.textContent = "L’e-mail est obligatoire.";
+        statusMsg.className = "status error";
+        return;
+      }
+      if (!consentCheckbox.checked) {
+        statusMsg.textContent = "Merci de valider le consentement.";
+        statusMsg.className = "status error";
+        return;
+      }
+
+      generateBtn.disabled = true;
+      statusMsg.textContent = "Envoi des informations…";
+      statusMsg.className = "status";
+
+      try {
+        const canvas = cropper.getCroppedCanvas({
+          width: OUTPUT_SIZE,
+          height: OUTPUT_SIZE,
+          imageSmoothingQuality: "high"
+        });
+        const dataUrl = canvas.toDataURL("image/png");
+        const photoBase64 = dataUrl.split(",")[1];
+
+        const logoCount = getLogoCount();
+        const orgType = logoCount === 0 ? null : orgTypeSelect.value;
+        const template = (logoCount === 0) ? "sans_bande" : "bande_blanche";
+
+        const alumniEntries = [];
+        if (orgType === "alumni") {
+          if (alumniSelect1.value) {
+            const key1 = alumniSelect1.value;
+            if (key1 !== "autre" && alumniLogos[key1]) {
+              alumniEntries.push({
+                slot: 1,
+                type: "library",
+                key: key1,
+                logo_url: alumniLogos[key1].logo_url,
+                logo_base64: null
+              });
+            } else if (key1 === "autre" && alumniLogo1Base64) {
+              alumniEntries.push({
+                slot: 1,
+                type: "upload",
+                key: null,
+                logo_url: null,
+                logo_base64: alumniLogo1Base64
+              });
+            }
+          }
+          if (logoCount === 2 && alumniSelect2.value) {
+            const key2 = alumniSelect2.value;
+            if (key2 !== "autre" && alumniLogos[key2]) {
+              alumniEntries.push({
+                slot: 2,
+                type: "library",
+                key: key2,
+                logo_url: alumniLogos[key2].logo_url,
+                logo_base64: null
+              });
+            } else if (key2 === "autre" && alumniLogo2Base64) {
+              alumniEntries.push({
+                slot: 2,
+                type: "upload",
+                key: null,
+                logo_url: null,
+                logo_base64: alumniLogo2Base64
+              });
+            }
+          }
+        }
+
+        const orgEntries = [];
+        if (orgType === "organisation") {
+          if (orgLogo1Base64) {
+            orgEntries.push({
+              slot: 1,
+              logo_base64: orgLogo1Base64
+            });
+          }
+          if (logoCount === 2 && orgLogo2Base64) {
+            orgEntries.push({
+              slot: 2,
+              logo_base64: orgLogo2Base64
+            });
+          }
+        }
+
+        const token = generateToken();
+        const now = new Date().toISOString();
+
+        const payload = {
+          token,
+          timestamp: now,
+          email: emailInput.value.trim(),
+          fullname: fullnameInput.value.trim() || null,
+          template,
+          logo_count: logoCount,
+          org_type: orgType,
+          alumni_logos: alumniEntries,
+          org_logos: orgEntries,
+          photo_base64: photoBase64
+        };
+
+        const res = await fetch(MAKE_WEBHOOK_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          throw new Error("Erreur HTTP " + res.status);
+        }
+
+        statusMsg.textContent = "Merci ! Tes informations ont été envoyées. Tu recevras ton visuel par e-mail.";
+        statusMsg.className = "status ok";
+      } catch (err) {
+        console.error(err);
+        statusMsg.textContent = "Une erreur est survenue. Merci de réessayer dans quelques instants.";
+        statusMsg.className = "status error";
+        generateBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
