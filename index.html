@@ -14,11 +14,14 @@
   <style>
     :root {
       --bg-main: #030b2a;
-      --bg-card: rgba(3, 11, 42, 0.95);
+      --bg-card: rgba(3, 11, 42, 0.96);
       --accent: #ffb347;
+      --accent-dark: #ff7e2a;
       --text-main: #ffffff;
       --text-muted: #cfd4ff;
       --border-soft: rgba(255, 255, 255, 0.12);
+      --error: #ff7e7e;
+      --ok: #7bd88f;
     }
 
     * {
@@ -29,83 +32,81 @@
     }
 
     body {
-      background: radial-gradient(circle at top, #1b2c7a 0%, #030b2a 50%, #020516 100%);
+      background: radial-gradient(circle at top, #1b2c7a 0%, #030b2a 45%, #020516 100%);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 12px;
     }
 
-    .container {
+    .page {
       width: 100%;
       max-width: 1100px;
       background: var(--bg-card);
       border-radius: 20px;
-      padding: 24px;
+      padding: 18px 18px 22px;
       border: 1px solid var(--border-soft);
       box-shadow: 0 24px 55px rgba(0, 0, 0, 0.55);
     }
 
     .header {
       text-align: center;
-      margin-bottom: 22px;
+      margin-bottom: 14px;
     }
 
     .header h1 {
-      font-size: 1.5rem;
-      margin-bottom: 6px;
+      font-size: 1.3rem;
+      margin-bottom: 4px;
     }
 
     .header p {
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       color: var(--text-muted);
     }
 
-    .grid {
+    .layout {
       display: grid;
       grid-template-columns: 1.2fr 1fr;
-      gap: 20px;
+      gap: 14px;
     }
 
     @media (max-width: 900px) {
-      .grid {
+      .layout {
         grid-template-columns: 1fr;
       }
     }
 
     .card {
       border: 1px solid var(--border-soft);
-      border-radius: 16px;
-      padding: 16px;
-      background: rgba(5, 16, 70, 0.9);
+      border-radius: 14px;
+      padding: 14px;
+      background: rgba(5, 16, 70, 0.96);
     }
 
     .card h2 {
       font-size: 1rem;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
+    }
+
+    .card h3 {
+      font-size: 0.95rem;
+      margin-bottom: 6px;
     }
 
     .field {
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
-    .field label {
+    label {
+      font-size: 0.86rem;
       display: block;
-      font-size: 0.88rem;
       margin-bottom: 4px;
     }
 
-    .field small {
-      display: block;
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    input[type="text"],
     input[type="email"],
+    input[type="text"],
     select {
       width: 100%;
       padding: 8px 10px;
@@ -118,112 +119,149 @@
     }
 
     input[type="file"] {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
+      margin-top: 4px;
     }
 
-    .radio-group,
-    .inline-group {
+    .radio-group {
       display: flex;
+      gap: 10px;
       flex-wrap: wrap;
-      gap: 12px;
-      font-size: 0.88rem;
+      font-size: 0.86rem;
     }
 
-    .inline-group label,
     .radio-group label {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
       cursor: pointer;
     }
 
-    .upload-block {
-      border: 1px dashed rgba(255, 255, 255, 0.25);
-      border-radius: 16px;
-      padding: 12px;
-      text-align: center;
+    .subblock {
       margin-top: 6px;
+      padding: 8px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.18);
     }
 
-    .upload-label-btn {
-      display: inline-block;
-      padding: 8px 16px;
-      border-radius: 999px;
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      cursor: pointer;
-      font-size: 0.85rem;
-      margin-bottom: 4px;
-    }
-
-    .upload-hint {
+    .subblock small {
       font-size: 0.78rem;
       color: var(--text-muted);
     }
 
-    .cropper-wrapper {
-      margin-top: 12px;
-      max-height: 360px;
-      overflow: hidden;
-      border-radius: 12px;
-      background: #000;
+    .consent-label {
+      font-size: 0.8rem;
+      display: flex;
+      gap: 6px;
+      align-items: flex-start;
+      margin-top: 4px;
     }
 
-    .cropper-wrapper img {
-      max-width: 100%;
-      display: block;
+    .consent-label input {
+      margin-top: 2px;
     }
 
-    .preview-block {
+    .photo-preview-wrapper {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
       margin-top: 8px;
     }
 
-    .preview-circle {
-      width: 220px;
-      height: 220px;
+    .photo-circle {
+      width: 56vw;
+      height: 56vw;
+      max-width: 260px;
+      max-height: 260px;
       border-radius: 50%;
+      border: 4px solid var(--accent);
+      background: rgba(0, 0, 0, 0.4);
       overflow: hidden;
-      border: 6px solid var(--accent);
-      background: #111626;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .preview-circle canvas {
+    .photo-circle img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
 
-    .hint {
-      font-size: 0.85rem;
+    .photo-hint {
+      font-size: 0.78rem;
       color: var(--text-muted);
       text-align: center;
+    }
+
+    .band-section {
+      margin-top: 12px;
+    }
+
+    .band-label {
+      font-size: 0.86rem;
+      margin-bottom: 4px;
+    }
+
+    .band-preview {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 6px 12px;
       margin-top: 4px;
     }
 
+    .band-inner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      min-height: 52px;
+    }
+
+    .band-logo {
+      max-height: 40px;
+      max-width: 140px;
+      object-fit: contain;
+      display: none;
+    }
+
+    .band-logo.visible {
+      display: block;
+    }
+
+    .status {
+      margin-top: 6px;
+      font-size: 0.78rem;
+      min-height: 16px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .status.ok {
+      color: var(--ok);
+    }
+    .status.error {
+      color: var(--error);
+    }
+
     .actions {
-      margin-top: 16px;
+      margin-top: 12px;
       text-align: center;
     }
 
     button {
-      padding: 10px 22px;
+      padding: 10px 20px;
       border-radius: 999px;
       border: none;
-      font-size: 0.95rem;
+      font-size: 0.94rem;
       font-weight: 600;
       cursor: pointer;
-      background: linear-gradient(135deg, #ffb347, #ff7e2a);
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
       color: #1b1b1b;
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
-      transition: transform 0.08s ease, box-shadow 0.08s ease, opacity 0.1s ease;
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.55);
+      transition: transform 0.08s ease, box-shadow 0.08s ease, opacity 0.08s ease;
     }
 
     button:disabled {
@@ -234,55 +272,101 @@
 
     button:hover:not(:disabled) {
       transform: translateY(-1px);
-      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.65);
     }
 
-    .status {
-      margin-top: 8px;
+    .small-btn {
       font-size: 0.8rem;
-      color: var(--text-muted);
-      text-align: center;
-      min-height: 18px;
+      padding: 6px 12px;
+      margin-top: 6px;
     }
 
-    .status.ok {
-      color: #7bd88f;
-    }
-
-    .status.error {
-      color: #ff7e7e;
-    }
-
-    .section-title {
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
-    .logo-preview {
+    /* MODALE DE RECADRAGE */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
       display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 4px;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
     }
 
-    .logo-chip {
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.08);
-      font-size: 0.8rem;
+    .modal-hidden {
+      display: none;
+    }
+
+    .modal {
+      background: #020718;
+      border-radius: 16px;
+      border: 1px solid var(--border-soft);
+      width: 94vw;
+      max-width: 480px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      padding: 12px;
+    }
+
+    .modal-header {
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+
+    .modal-crop-area {
+      flex: 1;
+      min-height: 260px;
+      max-height: 420px;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #000;
+    }
+
+    .modal-crop-area img {
+      max-width: 100%;
+      display: block;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .modal-actions button {
+      box-shadow: none;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-main);
+      border: 1px solid var(--border-soft);
+    }
+
+    @media (max-width: 600px) {
+      .page {
+        padding: 12px;
+      }
+      .header h1 {
+        font-size: 1.1rem;
+      }
+      .header p {
+        font-size: 0.8rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="page">
     <div class="header">
       <h1>Je crée mon visuel “J’agis pour une industrie mixte et performante”</h1>
-      <p>Complète le formulaire, recadre ta photo dans le cercle, puis valide. Tu recevras ton visuel personnalisé par e-mail.</p>
+      <p>Renseigne tes infos, ajoute tes logos, recadre ta photo. Tu recevras ton visuel par e-mail.</p>
     </div>
 
-    <div class="grid">
-      <!-- Colonne gauche : formulaire -->
+    <div class="layout">
+      <!-- COLONNE GAUCHE : INFOS + LOGOS -->
       <div class="card">
         <h2>1. Informations</h2>
 
@@ -297,102 +381,114 @@
         </div>
 
         <div class="field">
-          <label>Nombre de logos d’organisation à afficher</label>
-          <div class="inline-group" id="logoCountGroup">
+          <label>Nombre de logos d’organisation</label>
+          <div class="radio-group">
             <label><input type="radio" name="logoCount" value="0" checked /> 0 logo</label>
             <label><input type="radio" name="logoCount" value="1" /> 1 logo</label>
             <label><input type="radio" name="logoCount" value="2" /> 2 logos</label>
           </div>
-          <small>Si tu choisis 0 logo, le visuel sera généré sans bande blanche.</small>
         </div>
 
-        <div class="field" id="orgTypeField">
-          <label for="orgType">Type d’organisation pour les logos</label>
-          <select id="orgType">
-            <option value="alumni">Association alumni</option>
-            <option value="organisation">Entreprise / organisation</option>
-          </select>
-        </div>
-
-        <!-- Bloc logos alumni -->
-        <div id="alumniBlock" class="field">
-          <div class="section-title">Logo(s) d’association alumni</div>
+        <!-- LOGO 1 -->
+        <div id="logo1Card" class="card" style="margin-top:8px; display:none;">
+          <h3>Logo 1</h3>
           <div class="field">
-            <label for="alumniSelect1">Logo alumni 1</label>
-            <select id="alumniSelect1">
-              <option value="">Sélectionner...</option>
-              <option value="insead_alumni_fr">INSEAD Alumni France</option>
-              <option value="arts_métiers_alumni">Arts et Métiers Alumni</option>
-              <option value="centralien">Centrale Alumni</option>
-              <option value="autre">Autre (je télécharge le logo)</option>
+            <label for="logo1Type">Type d’organisation</label>
+            <select id="logo1Type">
+              <option value="">Sélectionner…</option>
+              <option value="alumni">Association alumni</option>
+              <option value="organisation">Entreprise / organisation</option>
             </select>
-            <input type="file" id="alumniLogo1File" accept="image/*" style="display:none;margin-top:6px;" />
           </div>
 
-          <div class="field" id="alumniLogo2Field">
-            <label for="alumniSelect2">Logo alumni 2 (optionnel)</label>
-            <select id="alumniSelect2">
-              <option value="">Sélectionner...</option>
-              <option value="insead_alumni_fr">INSEAD Alumni France</option>
-              <option value="arts_métiers_alumni">Arts et Métiers Alumni</option>
-              <option value="centralien">Centrale Alumni</option>
-              <option value="autre">Autre (je télécharge le logo)</option>
+          <div id="logo1AlumniBlock" class="subblock" style="display:none;">
+            <label for="logo1Alumni">Association alumni</label>
+            <select id="logo1Alumni">
+              <option value="">Sélectionner…</option>
+              <option value="artsmetiers">Arts et Métiers Alumni</option>
+              <option value="insead">INSEAD Alumni France</option>
+              <option value="centrale">Centrale Alumni</option>
+              <option value="autre">Autre (je téléverse le logo)</option>
             </select>
-            <input type="file" id="alumniLogo2File" accept="image/*" style="display:none;margin-top:6px;" />
+            <input type="file" id="logo1AlumniFile" accept="image/*" style="display:none;" />
+            <small>Si ton école n’est pas dans la liste, choisis “Autre” et importe le logo.</small>
           </div>
 
-          <small>Si ton école n’est pas dans la liste, choisis “Autre” et télécharge le logo correspondant.</small>
-          <div class="logo-preview" id="alumniLogoHint"></div>
-        </div>
-
-        <!-- Bloc logos organisations -->
-        <div id="orgBlock" class="field" style="display:none;">
-          <div class="section-title">Logos d’entreprise / organisation</div>
-          <div class="upload-block">
-            <div style="margin-bottom:6px;"><strong>Logo 1</strong></div>
-            <label class="upload-label-btn" for="orgLogo1">Choisir un logo</label>
-            <input type="file" id="orgLogo1" accept="image/*" />
-            <div class="upload-hint">Format PNG ou JPG recommandé.</div>
-          </div>
-          <div class="upload-block" id="orgLogo2Block" style="margin-top:10px;">
-            <div style="margin-bottom:6px;"><strong>Logo 2 (optionnel)</strong></div>
-            <label class="upload-label-btn" for="orgLogo2">Choisir un second logo</label>
-            <input type="file" id="orgLogo2" accept="image/*" />
-            <div class="upload-hint">Laisse vide si tu n’as qu’un logo.</div>
+          <div id="logo1OrgBlock" class="subblock" style="display:none;">
+            <label for="logo1File">Logo d’entreprise / organisation</label>
+            <input type="file" id="logo1File" accept="image/*" />
+            <small>Un module de recadrage s’ouvrira pour ajuster le logo.</small>
           </div>
         </div>
 
-        <div class="field" style="margin-top:12px;">
-          <label>
+        <!-- LOGO 2 -->
+        <div id="logo2Card" class="card" style="margin-top:8px; display:none;">
+          <h3>Logo 2</h3>
+          <div class="field">
+            <label for="logo2Type">Type d’organisation</label>
+            <select id="logo2Type">
+              <option value="">Sélectionner…</option>
+              <option value="alumni">Association alumni</option>
+              <option value="organisation">Entreprise / organisation</option>
+            </select>
+          </div>
+
+          <div id="logo2AlumniBlock" class="subblock" style="display:none;">
+            <label for="logo2Alumni">Association alumni</label>
+            <select id="logo2Alumni">
+              <option value="">Sélectionner…</option>
+              <option value="artsmetiers">Arts et Métiers Alumni</option>
+              <option value="insead">INSEAD Alumni France</option>
+              <option value="centrale">Centrale Alumni</option>
+              <option value="autre">Autre (je téléverse le logo)</option>
+            </select>
+            <input type="file" id="logo2AlumniFile" accept="image/*" style="display:none;" />
+            <small>Si ton école n’est pas dans la liste, choisis “Autre” et importe le logo.</small>
+          </div>
+
+          <div id="logo2OrgBlock" class="subblock" style="display:none;">
+            <label for="logo2File">Logo d’entreprise / organisation</label>
+            <input type="file" id="logo2File" accept="image/*" />
+            <small>Un module de recadrage s’ouvrira pour ajuster le logo.</small>
+          </div>
+        </div>
+
+        <!-- APERÇU BANDE BLANCHE -->
+        <div class="band-section">
+          <div class="band-label">Aperçu de la bande blanche (logos en bas du visuel)</div>
+          <div class="band-preview">
+            <div class="band-inner">
+              <img id="bandLogo1" class="band-logo" alt="logo 1" />
+              <img id="bandLogo2" class="band-logo" alt="logo 2" />
+            </div>
+          </div>
+        </div>
+
+        <!-- CONSENTEMENT -->
+        <div class="field" style="margin-top:10px;">
+          <label class="consent-label">
             <input type="checkbox" id="consent" />
-            J’accepte que ma photo et les logos fournis soient utilisés dans le cadre de l’appel à l’action “Pour une industrie mixte et performante”.
+            <span>J’accepte que ma photo et les logos fournis soient utilisés pour l’appel à l’action “Pour une industrie mixte et performante”.</span>
           </label>
         </div>
+
       </div>
 
-      <!-- Colonne droite : upload photo + crop + preview -->
+      <!-- COLONNE DROITE : PHOTO + BOUTON -->
       <div class="card">
         <h2>2. Photo de profil</h2>
-        <div class="upload-block">
-          <div><strong>Importer ta photo</strong></div>
-          <label class="upload-label-btn" for="fileInput">Choisir une photo</label>
-          <input type="file" id="fileInput" accept="image/*" />
-          <div class="upload-hint">
-            Idéalement visage ou buste, bien éclairé. Tu pourras recadrer avant de valider.
-          </div>
 
-          <div class="cropper-wrapper">
-            <img id="image" alt="Photo à recadrer" />
-          </div>
+        <div class="field">
+          <label for="photoFile">Importer ta photo *</label>
+          <input type="file" id="photoFile" accept="image/*" />
         </div>
 
-        <div class="preview-block">
-          <div class="section-title">Aperçu dans le cercle</div>
-          <div class="preview-circle">
-            <canvas id="previewCanvas"></canvas>
+        <div class="photo-preview-wrapper">
+          <div class="photo-circle">
+            <img id="photoPreview" alt="aperçu photo" style="display:none;" />
           </div>
-          <div class="hint">
-            Ajuste le zoom et la position de la photo, puis clique sur “Générer mon visuel”.
+          <div class="photo-hint">
+            Ta photo sera affichée dans un cercle. Tu pourras la recadrer dans un cadre vertical avant validation.
           </div>
         </div>
 
@@ -404,362 +500,399 @@
     </div>
   </div>
 
+  <!-- MODALE DE RECADRAGE -->
+  <div id="cropModalBackdrop" class="modal-backdrop modal-hidden">
+    <div class="modal">
+      <div class="modal-header" id="cropModalTitle">Recadrage</div>
+      <div class="modal-crop-area">
+        <img id="cropImage" alt="zone de recadrage" />
+      </div>
+      <div class="modal-actions">
+        <button type="button" id="cropCancelBtn" class="btn-ghost small-btn">Annuler</button>
+        <button type="button" id="cropValidateBtn" class="small-btn">Valider le recadrage</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Cropper.js JS -->
   <script src="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.js"></script>
 
   <script>
-    // 🔗 À PERSONNALISER : ton webhook Make
-    const MAKE_WEBHOOK_URL = "https://hook.integromat.com/TON_WEBHOOK_ICI";
+    // 👉 À ADAPTER PLUS TARD : URL du webhook Make
+    const MAKE_WEBHOOK_URL = null; // ex: "https://hook.eu1.make.com/TON_WEBHOOK"
 
-    // Dictionnaire de logos alumni → adapter les URLs (GitHub Pages ou autre)
-    const alumniLogos = {
-      "insead_alumni_fr": {
-        name: "INSEAD Alumni France",
-        logo_url: "https://tonuser.github.io/tonrepo/logos/insead_alumni_fr.png"
-      },
-      "arts_métiers_alumni": {
-        name: "Arts et Métiers Alumni",
-        logo_url: "https://tonuser.github.io/tonrepo/logos/arts_metiers_alumni.png"
-      },
-      "centralien": {
-        name: "Centrale Alumni",
-        logo_url: "https://tonuser.github.io/tonrepo/logos/centralien.png"
-      }
+    // 👉 Logos alumni pré-enregistrés (à adapter à tes vrais fichiers hébergés)
+    const ALUMNI_LOGOS = {
+      artsmetiers: "logos/artsmetiers.png",
+      insead: "logos/insead.png",
+      centrale: "logos/centrale.png"
     };
 
+    // Références DOM
     const emailInput = document.getElementById("email");
     const fullnameInput = document.getElementById("fullname");
     const logoCountRadios = document.querySelectorAll("input[name='logoCount']");
-    const orgTypeSelect = document.getElementById("orgType");
+    const logo1Card = document.getElementById("logo1Card");
+    const logo2Card = document.getElementById("logo2Card");
 
-    const orgTypeField = document.getElementById("orgTypeField");
-    const alumniBlock = document.getElementById("alumniBlock");
-    const orgBlock = document.getElementById("orgBlock");
-    const orgLogo2Block = document.getElementById("orgLogo2Block");
+    const logo1Type = document.getElementById("logo1Type");
+    const logo2Type = document.getElementById("logo2Type");
 
-    const alumniSelect1 = document.getElementById("alumniSelect1");
-    const alumniSelect2 = document.getElementById("alumniSelect2");
-    const alumniLogo1File = document.getElementById("alumniLogo1File");
-    const alumniLogo2File = document.getElementById("alumniLogo2File");
-    const alumniLogoHint = document.getElementById("alumniLogoHint");
+    const logo1AlumniBlock = document.getElementById("logo1AlumniBlock");
+    const logo1AlumniSelect = document.getElementById("logo1Alumni");
+    const logo1AlumniFile = document.getElementById("logo1AlumniFile");
+    const logo1OrgBlock = document.getElementById("logo1OrgBlock");
+    const logo1File = document.getElementById("logo1File");
 
-    const orgLogo1Input = document.getElementById("orgLogo1");
-    const orgLogo2Input = document.getElementById("orgLogo2");
+    const logo2AlumniBlock = document.getElementById("logo2AlumniBlock");
+    const logo2AlumniSelect = document.getElementById("logo2Alumni");
+    const logo2AlumniFile = document.getElementById("logo2AlumniFile");
+    const logo2OrgBlock = document.getElementById("logo2OrgBlock");
+    const logo2File = document.getElementById("logo2File");
+
+    const bandLogo1 = document.getElementById("bandLogo1");
+    const bandLogo2 = document.getElementById("bandLogo2");
 
     const consentCheckbox = document.getElementById("consent");
+    const photoFileInput = document.getElementById("photoFile");
+    const photoPreview = document.getElementById("photoPreview");
     const generateBtn = document.getElementById("generateBtn");
     const statusMsg = document.getElementById("statusMsg");
 
-    const fileInput = document.getElementById("fileInput");
-    const image = document.getElementById("image");
-    const previewCanvas = document.getElementById("previewCanvas");
-    const OUTPUT_SIZE = 800;
-    const previewCtx = previewCanvas.getContext("2d");
-    previewCanvas.width = OUTPUT_SIZE;
-    previewCanvas.height = OUTPUT_SIZE;
+    const cropModalBackdrop = document.getElementById("cropModalBackdrop");
+    const cropModalTitle = document.getElementById("cropModalTitle");
+    const cropImage = document.getElementById("cropImage");
+    const cropCancelBtn = document.getElementById("cropCancelBtn");
+    const cropValidateBtn = document.getElementById("cropValidateBtn");
 
-    let cropper = null;
+    // État en mémoire
+    const STATE = {
+      cropper: null,
+      currentCropTarget: null, // "photo" | "logo1" | "logo2"
+      currentAspect: null,
+      photoDataUrl: null,
+      logo1DataUrl: null, // pour preview (DataURL ou URL bibliothèques)
+      logo2DataUrl: null,
+      logo1Base64: null, // pour Make si upload
+      logo2Base64: null,
+      photoBase64: null
+    };
 
-    let alumniLogo1Base64 = null;
-    let alumniLogo2Base64 = null;
-    let orgLogo1Base64 = null;
-    let orgLogo2Base64 = null;
-
-    function generateToken() {
-      return (
-        Date.now().toString(36) +
-        Math.random().toString(36).substring(2, 8)
-      );
-    }
-
-    function readFileAsBase64(file) {
-      return new Promise((resolve, reject) => {
-        if (!file) {
-          resolve(null);
-          return;
-        }
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const dataUrl = e.target.result;
-          const base64 = dataUrl.split(",")[1];
-          resolve(base64);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
-
-    function updatePreview() {
-      if (!cropper) return;
-      const canvas = cropper.getCroppedCanvas({
-        width: OUTPUT_SIZE,
-        height: OUTPUT_SIZE,
-        imageSmoothingQuality: "high"
-      });
-      previewCtx.clearRect(0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
-      previewCtx.drawImage(canvas, 0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
-    }
-
-    fileInput.addEventListener("change", (event) => {
-      const file = event.target.files && event.target.files[0];
-      if (!file) return;
-
+    // Helpers
+    function openCropModal(file, target, aspectRatio, title) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        image.src = e.target.result;
-        if (cropper) {
-          cropper.destroy();
-          cropper = null;
+        cropImage.src = e.target.result;
+
+        if (STATE.cropper) {
+          STATE.cropper.destroy();
+          STATE.cropper = null;
         }
-        image.onload = () => {
-          cropper = new Cropper(image, {
-            aspectRatio: 1,
+
+        STATE.currentCropTarget = target;
+        STATE.currentAspect = aspectRatio || NaN;
+
+        cropModalTitle.textContent = title || "Recadrage";
+        cropModalBackdrop.classList.remove("modal-hidden");
+
+        // On laisse un petit délai pour que l'image soit dans le DOM
+        setTimeout(() => {
+          STATE.cropper = new Cropper(cropImage, {
+            aspectRatio: STATE.currentAspect,
             viewMode: 1,
-            dragMode: "move",
-            autoCropArea: 1,
             background: false,
-            zoomOnWheel: true,
-            responsive: true,
-            ready() {
-              updatePreview();
-              checkReadyToGenerate();
-            },
-            crop() {
-              updatePreview();
-            }
+            autoCropArea: 1,
+            dragMode: "move"
           });
-        };
+        }, 50);
       };
       reader.readAsDataURL(file);
-    });
+    }
 
-    function checkReadyToGenerate() {
+    function closeCropModal() {
+      if (STATE.cropper) {
+        STATE.cropper.destroy();
+        STATE.cropper = null;
+      }
+      STATE.currentCropTarget = null;
+      cropModalBackdrop.classList.add("modal-hidden");
+    }
+
+    function updateBandPreview() {
+      if (STATE.logo1DataUrl) {
+        bandLogo1.src = STATE.logo1DataUrl;
+        bandLogo1.classList.add("visible");
+      } else {
+        bandLogo1.classList.remove("visible");
+      }
+
+      if (STATE.logo2DataUrl) {
+        bandLogo2.src = STATE.logo2DataUrl;
+        bandLogo2.classList.add("visible");
+      } else {
+        bandLogo2.classList.remove("visible");
+      }
+    }
+
+    function updateGenerateButtonState() {
       const emailOk = emailInput.value.trim() !== "";
       const consentOk = consentCheckbox.checked;
-      const photoOk = !!cropper;
-      if (emailOk && consentOk && photoOk) {
-        generateBtn.disabled = false;
-      } else {
-        generateBtn.disabled = true;
-      }
+      const photoOk = !!STATE.photoBase64;
+      generateBtn.disabled = !(emailOk && consentOk && photoOk);
     }
 
-    emailInput.addEventListener("input", checkReadyToGenerate);
-    consentCheckbox.addEventListener("change", checkReadyToGenerate);
+    function dataUrlToBase64(dataUrl) {
+      if (!dataUrl) return null;
+      const parts = dataUrl.split(",");
+      return parts.length === 2 ? parts[1] : null;
+    }
 
-    logoCountRadios.forEach(r => {
+    // Gestion du nombre de logos
+    function getLogoCount() {
+      const selected = Array.from(logoCountRadios).find((r) => r.checked);
+      return selected ? parseInt(selected.value, 10) : 0;
+    }
+
+    logoCountRadios.forEach((r) => {
       r.addEventListener("change", () => {
-        const val = getLogoCount();
-        if (val === 0) {
-          orgTypeField.style.display = "none";
-          alumniBlock.style.display = "none";
-          orgBlock.style.display = "none";
+        const count = getLogoCount();
+        if (count === 0) {
+          logo1Card.style.display = "none";
+          logo2Card.style.display = "none";
+        } else if (count === 1) {
+          logo1Card.style.display = "block";
+          logo2Card.style.display = "none";
         } else {
-          orgTypeField.style.display = "block";
-          updateOrgBlocks();
+          logo1Card.style.display = "block";
+          logo2Card.style.display = "block";
         }
       });
     });
 
-    orgTypeSelect.addEventListener("change", updateOrgBlocks);
+    // Gestion types pour logo 1 et 2
+    function handleLogoTypeChange(selectEl, alumniBlock, orgBlock, alumniSelect, alumniFileInput, logoIndex) {
+      selectEl.addEventListener("change", () => {
+        const value = selectEl.value;
+        alumniBlock.style.display = value === "alumni" ? "block" : "none";
+        orgBlock.style.display = value === "organisation" ? "block" : "none";
 
-    function getLogoCount() {
-      const sel = Array.from(logoCountRadios).find(r => r.checked);
-      return sel ? parseInt(sel.value, 10) : 0;
+        if (value !== "alumni") {
+          alumniSelect.value = "";
+          alumniFileInput.value = "";
+        }
+
+        if (value !== "organisation") {
+          if (logoIndex === 1) logo1File.value = "";
+          if (logoIndex === 2) logo2File.value = "";
+        }
+
+        // Réinitialiser la preview du logo correspondant si plus de type sélectionné
+        if (!value) {
+          if (logoIndex === 1) {
+            STATE.logo1DataUrl = null;
+            STATE.logo1Base64 = null;
+          } else {
+            STATE.logo2DataUrl = null;
+            STATE.logo2Base64 = null;
+          }
+          updateBandPreview();
+        }
+      });
     }
 
-    function updateOrgBlocks() {
-      const count = getLogoCount();
-      const type = orgTypeSelect.value;
-      if (count === 0) {
-        alumniBlock.style.display = "none";
-        orgBlock.style.display = "none";
+    handleLogoTypeChange(
+      logo1Type,
+      logo1AlumniBlock,
+      logo1OrgBlock,
+      logo1AlumniSelect,
+      logo1AlumniFile,
+      1
+    );
+    handleLogoTypeChange(
+      logo2Type,
+      logo2AlumniBlock,
+      logo2OrgBlock,
+      logo2AlumniSelect,
+      logo2AlumniFile,
+      2
+    );
+
+    // Gestion choix alumni (bibliothèque ou upload)
+    function handleAlumniSelect(selectEl, fileInput, logoIndex) {
+      selectEl.addEventListener("change", () => {
+        const value = selectEl.value;
+        if (value === "autre") {
+          fileInput.style.display = "block";
+        } else {
+          fileInput.style.display = "none";
+        }
+
+        // Bibliothèque
+        if (value && value !== "autre" && ALUMNI_LOGOS[value]) {
+          const url = ALUMNI_LOGOS[value];
+          if (logoIndex === 1) {
+            STATE.logo1DataUrl = url;
+            STATE.logo1Base64 = null;
+          } else {
+            STATE.logo2DataUrl = url;
+            STATE.logo2Base64 = null;
+          }
+          updateBandPreview();
+        }
+
+        // Si rien sélectionné, on nettoie
+        if (!value) {
+          if (logoIndex === 1) {
+            STATE.logo1DataUrl = null;
+            STATE.logo1Base64 = null;
+          } else {
+            STATE.logo2DataUrl = null;
+            STATE.logo2Base64 = null;
+          }
+          updateBandPreview();
+        }
+      });
+
+      // Upload d'un logo alumni "autre"
+      fileInput.addEventListener("change", () => {
+        const file = fileInput.files && fileInput.files[0];
+        if (!file) return;
+        openCropModal(
+          file,
+          logoIndex === 1 ? "logo1" : "logo2",
+          NaN,
+          "Recadrer le logo alumni"
+        );
+      });
+    }
+
+    handleAlumniSelect(logo1AlumniSelect, logo1AlumniFile, 1);
+    handleAlumniSelect(logo2AlumniSelect, logo2AlumniFile, 2);
+
+    // Upload logos d'organisation
+    logo1File.addEventListener("change", () => {
+      const file = logo1File.files && logo1File.files[0];
+      if (!file) return;
+      openCropModal(file, "logo1", NaN, "Recadrer le logo 1");
+    });
+
+    logo2File.addEventListener("change", () => {
+      const file = logo2File.files && logo2File.files[0];
+      if (!file) return;
+      openCropModal(file, "logo2", NaN, "Recadrer le logo 2");
+    });
+
+    // Upload photo → ouverture modale pour recadrer
+    photoFileInput.addEventListener("change", () => {
+      const file = photoFileInput.files && photoFileInput.files[0];
+      if (!file) return;
+      // Ratio portrait (4:5) pour recadrer, mais affichage final en cercle
+      openCropModal(file, "photo", 4 / 5, "Recadrer ta photo de profil");
+    });
+
+    // Boutons modale
+    cropCancelBtn.addEventListener("click", () => {
+      closeCropModal();
+    });
+
+    cropValidateBtn.addEventListener("click", () => {
+      if (!STATE.cropper || !STATE.currentCropTarget) {
+        closeCropModal();
         return;
       }
-      if (type === "alumni") {
-        alumniBlock.style.display = "block";
-        orgBlock.style.display = "none";
-        document.getElementById("alumniLogo2Field").style.display = (count === 2) ? "block" : "none";
+
+      let canvas;
+      if (STATE.currentCropTarget === "photo") {
+        // Rectangle vertical pour garder un portrait harmonieux
+        canvas = STATE.cropper.getCroppedCanvas({
+          width: 900,
+          height: 1125,
+          imageSmoothingQuality: "high"
+        });
       } else {
-        alumniBlock.style.display = "none";
-        orgBlock.style.display = "block";
-        orgLogo2Block.style.display = (count === 2) ? "block" : "none";
+        // Logos : rectangle libre mais normalisé en taille raisonnable
+        canvas = STATE.cropper.getCroppedCanvas({
+          width: 1200,
+          height: 400,
+          imageSmoothingQuality: "high"
+        });
       }
-    }
 
-    alumniSelect1.addEventListener("change", () => {
-      if (alumniSelect1.value === "autre") {
-        alumniLogo1File.style.display = "block";
-      } else {
-        alumniLogo1File.value = "";
-        alumniLogo1File.style.display = "none";
+      const dataUrl = canvas.toDataURL("image/png");
+
+      if (STATE.currentCropTarget === "photo") {
+        STATE.photoDataUrl = dataUrl;
+        STATE.photoBase64 = dataUrlToBase64(dataUrl);
+        photoPreview.src = dataUrl;
+        photoPreview.style.display = "block";
+        updateGenerateButtonState();
+      } else if (STATE.currentCropTarget === "logo1") {
+        STATE.logo1DataUrl = dataUrl;
+        STATE.logo1Base64 = dataUrlToBase64(dataUrl);
+        updateBandPreview();
+      } else if (STATE.currentCropTarget === "logo2") {
+        STATE.logo2DataUrl = dataUrl;
+        STATE.logo2Base64 = dataUrlToBase64(dataUrl);
+        updateBandPreview();
       }
-      updateAlumniHint();
+
+      closeCropModal();
     });
 
-    alumniSelect2.addEventListener("change", () => {
-      if (alumniSelect2.value === "autre") {
-        alumniLogo2File.style.display = "block";
-      } else {
-        alumniLogo2File.value = "";
-        alumniLogo2File.style.display = "none";
-      }
-      updateAlumniHint();
-    });
+    // Activer / désactiver le bouton de génération
+    emailInput.addEventListener("input", updateGenerateButtonState);
+    consentCheckbox.addEventListener("change", updateGenerateButtonState);
 
-    function updateAlumniHint() {
-      alumniLogoHint.innerHTML = "";
-      [alumniSelect1, alumniSelect2].forEach((sel, index) => {
-        const key = sel.value;
-        if (key && key !== "autre" && alumniLogos[key]) {
-          const chip = document.createElement("div");
-          chip.className = "logo-chip";
-          chip.textContent = `Logo ${index + 1} : ${alumniLogos[key].name}`;
-          alumniLogoHint.appendChild(chip);
-        } else if (key === "autre") {
-          const chip = document.createElement("div");
-          chip.className = "logo-chip";
-          chip.textContent = `Logo ${index + 1} : autre (upload)`;
-          alumniLogoHint.appendChild(chip);
-        }
-      });
-    }
-
-    alumniLogo1File.addEventListener("change", async () => {
-      const file = alumniLogo1File.files && alumniLogo1File.files[0];
-      alumniLogo1Base64 = file ? await readFileAsBase64(file) : null;
-    });
-
-    alumniLogo2File.addEventListener("change", async () => {
-      const file = alumniLogo2File.files && alumniLogo2File.files[0];
-      alumniLogo2Base64 = file ? await readFileAsBase64(file) : null;
-    });
-
-    orgLogo1Input.addEventListener("change", async () => {
-      const file = orgLogo1Input.files && orgLogo1Input.files[0];
-      orgLogo1Base64 = file ? await readFileAsBase64(file) : null;
-    });
-
-    orgLogo2Input.addEventListener("change", async () => {
-      const file = orgLogo2Input.files && orgLogo2Input.files[0];
-      orgLogo2Base64 = file ? await readFileAsBase64(file) : null;
-    });
-
+    // Soumission
     generateBtn.addEventListener("click", async () => {
-      if (!cropper) {
-        statusMsg.textContent = "Merci d’importer et recadrer ta photo avant de générer le visuel.";
-        statusMsg.className = "status error";
+      statusMsg.className = "status";
+      statusMsg.textContent = "";
+
+      if (!STATE.photoBase64) {
+        statusMsg.textContent = "Merci de recadrer ta photo avant de générer le visuel.";
+        statusMsg.classList.add("error");
         return;
       }
       if (!emailInput.value.trim()) {
         statusMsg.textContent = "L’e-mail est obligatoire.";
-        statusMsg.className = "status error";
+        statusMsg.classList.add("error");
         return;
       }
       if (!consentCheckbox.checked) {
-        statusMsg.textContent = "Merci de valider le consentement.";
-        statusMsg.className = "status error";
+        statusMsg.textContent = "Merci de cocher la case de consentement.";
+        statusMsg.classList.add("error");
         return;
       }
 
-      generateBtn.disabled = true;
-      statusMsg.textContent = "Envoi des informations…";
-      statusMsg.className = "status";
+      const logoCount = getLogoCount();
+
+      const payload = {
+        email: emailInput.value.trim(),
+        fullname: fullnameInput.value.trim() || null,
+        logo_count: logoCount,
+        photo_base64: STATE.photoBase64,
+        logo1_base64: STATE.logo1Base64,
+        logo2_base64: STATE.logo2Base64,
+        logo1_source_url: STATE.logo1Base64 ? null : STATE.logo1DataUrl || null,
+        logo2_source_url: STATE.logo2Base64 ? null : STATE.logo2DataUrl || null,
+        timestamp: new Date().toISOString()
+      };
+
+      // Pour l’instant : soit on envoie à Make si URL renseignée, soit on fait une simple simulation
+      if (!MAKE_WEBHOOK_URL) {
+        console.log("Payload prêt pour Make :", payload);
+        statusMsg.textContent = "Simulation : le visuel serait généré et envoyé. (Webhook Make non configuré)";
+        statusMsg.classList.add("ok");
+        return;
+      }
 
       try {
-        const canvas = cropper.getCroppedCanvas({
-          width: OUTPUT_SIZE,
-          height: OUTPUT_SIZE,
-          imageSmoothingQuality: "high"
-        });
-        const dataUrl = canvas.toDataURL("image/png");
-        const photoBase64 = dataUrl.split(",")[1];
-
-        const logoCount = getLogoCount();
-        const orgType = logoCount === 0 ? null : orgTypeSelect.value;
-        const template = (logoCount === 0) ? "sans_bande" : "bande_blanche";
-
-        const alumniEntries = [];
-        if (orgType === "alumni") {
-          if (alumniSelect1.value) {
-            const key1 = alumniSelect1.value;
-            if (key1 !== "autre" && alumniLogos[key1]) {
-              alumniEntries.push({
-                slot: 1,
-                type: "library",
-                key: key1,
-                logo_url: alumniLogos[key1].logo_url,
-                logo_base64: null
-              });
-            } else if (key1 === "autre" && alumniLogo1Base64) {
-              alumniEntries.push({
-                slot: 1,
-                type: "upload",
-                key: null,
-                logo_url: null,
-                logo_base64: alumniLogo1Base64
-              });
-            }
-          }
-          if (logoCount === 2 && alumniSelect2.value) {
-            const key2 = alumniSelect2.value;
-            if (key2 !== "autre" && alumniLogos[key2]) {
-              alumniEntries.push({
-                slot: 2,
-                type: "library",
-                key: key2,
-                logo_url: alumniLogos[key2].logo_url,
-                logo_base64: null
-              });
-            } else if (key2 === "autre" && alumniLogo2Base64) {
-              alumniEntries.push({
-                slot: 2,
-                type: "upload",
-                key: null,
-                logo_url: null,
-                logo_base64: alumniLogo2Base64
-              });
-            }
-          }
-        }
-
-        const orgEntries = [];
-        if (orgType === "organisation") {
-          if (orgLogo1Base64) {
-            orgEntries.push({
-              slot: 1,
-              logo_base64: orgLogo1Base64
-            });
-          }
-          if (logoCount === 2 && orgLogo2Base64) {
-            orgEntries.push({
-              slot: 2,
-              logo_base64: orgLogo2Base64
-            });
-          }
-        }
-
-        const token = generateToken();
-        const now = new Date().toISOString();
-
-        const payload = {
-          token,
-          timestamp: now,
-          email: emailInput.value.trim(),
-          fullname: fullnameInput.value.trim() || null,
-          template,
-          logo_count: logoCount,
-          org_type: orgType,
-          alumni_logos: alumniEntries,
-          org_logos: orgEntries,
-          photo_base64: photoBase64
-        };
+        generateBtn.disabled = true;
+        statusMsg.textContent = "Envoi des informations…";
 
         const res = await fetch(MAKE_WEBHOOK_URL, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
 
@@ -768,11 +901,12 @@
         }
 
         statusMsg.textContent = "Merci ! Tes informations ont été envoyées. Tu recevras ton visuel par e-mail.";
-        statusMsg.className = "status ok";
+        statusMsg.classList.add("ok");
       } catch (err) {
         console.error(err);
-        statusMsg.textContent = "Une erreur est survenue. Merci de réessayer dans quelques instants.";
-        statusMsg.className = "status error";
+        statusMsg.textContent = "Une erreur est survenue lors de l’envoi. Merci de réessayer.";
+        statusMsg.classList.add("error");
+      } finally {
         generateBtn.disabled = false;
       }
     });
