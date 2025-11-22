@@ -5,46 +5,83 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Créer mon visuel – Appel à l’action</title>
 
-  <!-- CROP ChiroppeR -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.css"
-  />
+  <!-- CROPJS -->
+  <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.css" />
 
-  <!-- TON CSS -->
+  <!-- STYLE -->
   <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* 🔵 Cercle visuel autour de la zone de recadrage */
+    .cropper-view-box,
+    .cropper-face {
+      border-radius: 50% !important;
+    }
+
+    /* 🔵 Masque foncé autour du cercle */
+    .cropper-modal {
+      background-color: rgba(0, 0, 0, 0.6) !important;
+    }
+
+    /* 🔵 Forcer un crop parfaitement rond */
+    #cropArea img {
+      max-width: 100%;
+      display: block;
+    }
+
+    #cropArea {
+      width: 300px;
+      height: 300px;
+      margin: auto;
+      position: relative;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #111;
+    }
+
+    /* Prévisualisation ronde */
+    #circlePreview {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #222;
+      margin: auto;
+      border: 4px solid #f8a53b;
+    }
+  </style>
 </head>
 
 <body>
   <div class="container">
 
-    <!-- 🌟 INTRO -->
+    <!-- INTRO -->
     <h1>Je crée mon visuel “J’agis pour une industrie mixte et performante”</h1>
     <p class="intro">
       Complète le formulaire, importe ta photo, recadre-la dans le cercle,
-      puis valide. Tu recevras ton visuel personnalisé directement par e-mail.
+      puis valide. Tu recevras ton visuel personnalisé par e-mail.
     </p>
 
-    <!-- 1️⃣ INFORMATIONS -->
+    <!-- INFORMATIONS -->
     <div class="sectionBox">
       <h2>1. Informations</h2>
 
-      <label for="email">E-mail (pour recevoir ton visuel) *</label>
-      <input type="email" id="email" placeholder="ton.email@exemple.com" required />
+      <label for="email">E-mail *</label>
+      <input type="email" id="email" required placeholder="ton.email@exemple.com" />
 
-      <label for="fullname">Nom et prénom (optionnel)</label>
+      <label for="fullname">Nom (optionnel)</label>
       <input type="text" id="fullname" placeholder="Ex : Alex Dupont" />
 
-      <h3>Nombre de logos d’organisation à afficher</h3>
+      <h3>Nombre de logos d’organisation</h3>
       <div class="radioGroup">
         <label><input type="radio" name="logoCount" value="0" checked /> 0 logo</label>
         <label><input type="radio" name="logoCount" value="1" /> 1 logo</label>
         <label><input type="radio" name="logoCount" value="2" /> 2 logos</label>
       </div>
-      <p class="help">Si tu choisis 0 logo, le visuel sera généré sans bande blanche.</p>
+      <p class="help">0 logo = visuel généré sans bande blanche.</p>
     </div>
 
-    <!-- 2️⃣ LOGOS -->
+    <!-- LOGOS -->
     <div id="logosSection" class="sectionBox hidden">
       <h2>2. Logos organisationnels</h2>
 
@@ -59,18 +96,16 @@
         </select>
 
         <div id="logo1AlumniList">
-          <label>Logo d’association alumni</label>
+          <label>Logo alumni</label>
           <select id="logo1Alumni" class="alumniDrop"></select>
         </div>
 
         <div id="logo1Upload" class="uploadBlock hidden">
-          <label>Importer un logo (PNG/JPG)</label>
+          <label>Importer un logo</label>
           <input type="file" id="logo1File" accept="image/*" />
         </div>
 
-        <div class="logoPreview">
-          <canvas id="logoPreview1"></canvas>
-        </div>
+        <canvas id="logoPreview1" class="logoCanvas"></canvas>
       </div>
 
       <!-- LOGO 2 -->
@@ -84,59 +119,54 @@
         </select>
 
         <div id="logo2AlumniList">
-          <label>Logo d’association alumni</label>
+          <label>Logo alumni</label>
           <select id="logo2Alumni" class="alumniDrop"></select>
         </div>
 
         <div id="logo2Upload" class="uploadBlock hidden">
-          <label>Importer un logo (PNG/JPG)</label>
+          <label>Importer un logo</label>
           <input type="file" id="logo2File" accept="image/*" />
         </div>
 
-        <div class="logoPreview">
-          <canvas id="logoPreview2"></canvas>
-        </div>
+        <canvas id="logoPreview2" class="logoCanvas"></canvas>
       </div>
     </div>
 
-    <!-- 3️⃣ PHOTO -->
+    <!-- PHOTO -->
     <div class="sectionBox">
       <h2>3. Photo de profil</h2>
 
       <button id="uploadBtn">Choisir une photo</button>
       <input type="file" id="photoInput" accept="image/*" class="hidden" />
 
-      <p class="help">
-        Idéalement visage ou buste, bien éclairé. Tu pourras recadrer avant validation.
-      </p>
+      <p class="help">Tu peux zoomer/déplacer ton visage dans le cercle.</p>
 
       <div class="cropWrapper">
-        <div id="cropArea">
-          <!-- l’image à recadrer apparaît ici -->
-        </div>
+        <div id="cropArea"></div>
 
         <div class="previewWrapper">
-          <h3>Aperçu dans le cercle</h3>
+          <h3>Aperçu final</h3>
           <div id="circlePreview"></div>
         </div>
       </div>
     </div>
 
-    <!-- 4️⃣ CONSENTEMENT -->
+    <!-- CONSENT -->
     <div class="sectionBox">
       <label>
         <input type="checkbox" id="consent" />
-        J'accepte que ma photo et les logos fournis soient utilisés dans le cadre de
-        l’appel à l’action “Pour une industrie mixte et performante”.
+        J’autorise l’usage de ma photo et logos dans l’appel à l’action.
       </label>
     </div>
 
-    <!-- 5️⃣ BOUTON FINAL -->
+    <!-- GENERER -->
     <button id="generateBtn" disabled>Générer mon visuel</button>
+
   </div>
 
   <!-- SCRIPTS -->
   <script src="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.js"></script>
   <script src="script.js"></script>
+
 </body>
 </html>
