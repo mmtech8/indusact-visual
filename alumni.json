@@ -16,7 +16,7 @@
     { "id": "enac", "name": "ENAC Alumni", "logo": "logos/alumni/enac.png" },
     { "id": "ens", "name": "ENS Alumni", "logo": "logos/alumni/ens.png" },
     { "id": "ensae", "name": "ENSAE Alumni", "logo": "logos/alumni/ensae.png" },
-    { "id": "ensta_paris", "name": "ENSTA Paris Alumni", "logo": "logos/alumni/ensta_paris.png" },
+    { "id": "ensta", "name": "ENSTA Alumni", "logo": "logos/alumni/ensta.png" },
     { "id": "epf", "name": "EPF Alumni", "logo": "logos/alumni/epf.png" },
     { "id": "epita", "name": "EPITA Alumni", "logo": "logos/alumni/epita.png" },
     { "id": "escp", "name": "ESCP Alumni", "logo": "logos/alumni/escp.png" },
