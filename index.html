@@ -132,24 +132,33 @@
       </div>
     </div>
 
-    <!-- 3 : PHOTO -->
-    <div class="sectionBox">
-      <h2>3. Photo de profil</h2>
+<!-- =======================
+     3. PHOTO DE PROFIL
+======================= -->
+<section class="section">
+  <h2>3. Photo de profil</h2>
 
-      <button id="uploadBtn">Choisir une photo</button>
-      <input type="file" id="photoInput" class="hidden" accept="image/*" />
+  <label class="btn-upload">
+    <input type="file" id="photoFile" accept="image/*">
+    Choisir une photo
+  </label>
 
-      <p class="help">Vous pouvez zoomer/déplacer votre visage dans le cercle.</p>
+  <p>Vous pouvez zoomer et déplacer votre visage dans la zone ci-dessous.</p>
 
-      <div class="cropWrapper">
-        <div id="cropArea"></div>
-
-        <div class="previewWrapper">
-          <h3>Aperçu final</h3>
-          <div id="circlePreview"></div>
-        </div>
-      </div>
+  <div class="photo-wrapper">
+    <!-- Zone de recadrage sans ellipse -->
+    <div id="cropContainer">
+      <img id="photoToCrop" src="" alt="" />
     </div>
+
+    <!-- Aperçu final -->
+    <div class="preview-final">
+      <p>Aperçu final</p>
+      <canvas id="finalPreviewCanvas" width="600" height="750"></canvas>
+    </div>
+  </div>
+</section>
+
 
     <!-- CONSENTEMENT -->
     <div class="sectionBox">
