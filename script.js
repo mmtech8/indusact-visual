@@ -184,7 +184,7 @@ async function drawFinalCanvas() {
     ctx.clearRect(0, 0, finalCanvas.width, finalCanvas.height);
 
     // Charger template
-    const template = await loadImage(nbLogos == 0 ? "template_nologo.png" : "template_white.png");
+    const template = await loadImage(nbLogos == 0 ? "template_FR_nologo.png" : "template_FR_white.png");
     ctx.drawImage(template, 0, 0, 1080, 1350);
 
     // PHOTO CIRCULAIRE
