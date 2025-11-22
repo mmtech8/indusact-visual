@@ -4,365 +4,15 @@
   <meta charset="UTF-8" />
   <title>Visuel – Industrie mixte et performante</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+  <link rel="stylesheet" href="style.css" />
   <!-- Cropper.js CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.css"
-  />
-
-  <style>
-    :root {
-      --bg-main: #030b2a;
-      --bg-card: rgba(3, 11, 42, 0.96);
-      --accent: #ffb347;
-      --accent-dark: #ff7e2a;
-      --text-main: #ffffff;
-      --text-muted: #cfd4ff;
-      --border-soft: rgba(255, 255, 255, 0.12);
-      --error: #ff7e7e;
-      --ok: #7bd88f;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    body {
-      background: radial-gradient(circle at top, #1b2c7a 0%, #030b2a 45%, #020516 100%);
-      color: var(--text-main);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px;
-    }
-
-    .page {
-      width: 100%;
-      max-width: 1100px;
-      background: var(--bg-card);
-      border-radius: 20px;
-      padding: 18px 18px 22px;
-      border: 1px solid var(--border-soft);
-      box-shadow: 0 24px 55px rgba(0, 0, 0, 0.55);
-    }
-
-    .header {
-      text-align: center;
-      margin-bottom: 14px;
-    }
-
-    .header h1 {
-      font-size: 1.3rem;
-      margin-bottom: 4px;
-    }
-
-    .header p {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: 14px;
-    }
-
-    @media (max-width: 900px) {
-      .layout {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .card {
-      border: 1px solid var(--border-soft);
-      border-radius: 14px;
-      padding: 14px;
-      background: rgba(5, 16, 70, 0.96);
-    }
-
-    .card h2 {
-      font-size: 1rem;
-      margin-bottom: 8px;
-    }
-
-    .card h3 {
-      font-size: 0.95rem;
-      margin-bottom: 6px;
-    }
-
-    .field {
-      margin-bottom: 10px;
-    }
-
-    label {
-      font-size: 0.86rem;
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    input[type="email"],
-    input[type="text"],
-    select {
-      width: 100%;
-      padding: 8px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border-soft);
-      background: rgba(3, 9, 38, 0.95);
-      color: var(--text-main);
-      font-size: 0.9rem;
-      outline: none;
-    }
-
-    input[type="file"] {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    .radio-group {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      font-size: 0.86rem;
-    }
-
-    .radio-group label {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
-    }
-
-    .subblock {
-      margin-top: 6px;
-      padding: 8px;
-      border-radius: 10px;
-      background: rgba(0, 0, 0, 0.18);
-    }
-
-    .subblock small {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-    }
-
-    .consent-label {
-      font-size: 0.8rem;
-      display: flex;
-      gap: 6px;
-      align-items: flex-start;
-      margin-top: 4px;
-    }
-
-    .consent-label input {
-      margin-top: 2px;
-    }
-
-    .photo-preview-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .photo-circle {
-      width: 56vw;
-      height: 56vw;
-      max-width: 260px;
-      max-height: 260px;
-      border-radius: 50%;
-      border: 4px solid var(--accent);
-      background: rgba(0, 0, 0, 0.4);
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .photo-circle img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .photo-hint {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      text-align: center;
-    }
-
-    .band-section {
-      margin-top: 12px;
-    }
-
-    .band-label {
-      font-size: 0.86rem;
-      margin-bottom: 4px;
-    }
-
-    .band-preview {
-      background: #ffffff;
-      border-radius: 10px;
-      padding: 6px 12px;
-      margin-top: 4px;
-    }
-
-    .band-inner {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 24px;
-      min-height: 52px;
-    }
-
-    .band-logo {
-      max-height: 40px;
-      max-width: 140px;
-      object-fit: contain;
-      display: none;
-    }
-
-    .band-logo.visible {
-      display: block;
-    }
-
-    .status {
-      margin-top: 6px;
-      font-size: 0.78rem;
-      min-height: 16px;
-      color: var(--text-muted);
-      text-align: center;
-    }
-
-    .status.ok {
-      color: var(--ok);
-    }
-    .status.error {
-      color: var(--error);
-    }
-
-    .actions {
-      margin-top: 12px;
-      text-align: center;
-    }
-
-    button {
-      padding: 10px 20px;
-      border-radius: 999px;
-      border: none;
-      font-size: 0.94rem;
-      font-weight: 600;
-      cursor: pointer;
-      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-      color: #1b1b1b;
-      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.55);
-      transition: transform 0.08s ease, box-shadow 0.08s ease, opacity 0.08s ease;
-    }
-
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
-
-    button:hover:not(:disabled) {
-      transform: translateY(-1px);
-      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.65);
-    }
-
-    .small-btn {
-      font-size: 0.8rem;
-      padding: 6px 12px;
-      margin-top: 6px;
-    }
-
-    /* MODALE DE RECADRAGE */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-    }
-
-    .modal-hidden {
-      display: none;
-    }
-
-    .modal {
-      background: #020718;
-      border-radius: 16px;
-      border: 1px solid var(--border-soft);
-      width: 94vw;
-      max-width: 480px;
-      max-height: 90vh;
-      display: flex;
-      flex-direction: column;
-      padding: 12px;
-    }
-
-    .modal-header {
-      font-size: 0.95rem;
-      margin-bottom: 6px;
-      text-align: center;
-    }
-
-    .modal-crop-area {
-      flex: 1;
-      min-height: 260px;
-      max-height: 420px;
-      overflow: hidden;
-      border-radius: 10px;
-      background: #000;
-    }
-
-    .modal-crop-area img {
-      max-width: 100%;
-      display: block;
-    }
-
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .modal-actions button {
-      box-shadow: none;
-    }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--text-main);
-      border: 1px solid var(--border-soft);
-    }
-
-    @media (max-width: 600px) {
-      .page {
-        padding: 12px;
-      }
-      .header h1 {
-        font-size: 1.1rem;
-      }
-      .header p {
-        font-size: 0.8rem;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.css" />
 </head>
 <body>
   <div class="page">
     <div class="header">
-      <h1>Je crée mon visuel “J’agis pour une industrie mixte et performante”</h1>
-      <p>Renseigne tes infos, ajoute tes logos, recadre ta photo. Tu recevras ton visuel par e-mail.</p>
+      <h1>Je crée mon visuel « J’agis pour une industrie mixte et performante »</h1>
+      <p>Renseigne tes informations, ajoute éventuellement tes logos, recadre ta photo. Tu recevras ton visuel par e-mail.</p>
     </div>
 
     <div class="layout">
@@ -390,7 +40,7 @@
         </div>
 
         <!-- LOGO 1 -->
-        <div id="logo1Card" class="card" style="margin-top:8px; display:none;">
+        <div id="logo1Card" class="card inner-card" style="display:none;">
           <h3>Logo 1</h3>
           <div class="field">
             <label for="logo1Type">Type d’organisation</label>
@@ -403,16 +53,17 @@
 
           <div id="logo1AlumniBlock" class="subblock" style="display:none;">
             <label for="logo1Alumni">Association alumni</label>
-            <select id="logo1Alumni">
-              <option value="">Sélectionner…</option>
-              <option value="artsmetiers">Arts et Métiers Alumni</option>
-              <option value="insead">INSEAD Alumni France</option>
-              <option value="centrale">Centrale Alumni</option>
-              <option value="autre">Autre (je téléverse le logo)</option>
-            </select>
+            <input
+              type="text"
+              id="logo1AlumniSearch"
+              placeholder="Rechercher une association…"
+              style="width:100%; padding:6px 10px; margin-bottom:6px; border-radius:999px; border:1px solid var(--border-soft); background:rgba(3,9,38,0.95); color:var(--text-main); font-size:0.85rem;"
+            />
+            <select id="logo1Alumni"></select>
             <input type="file" id="logo1AlumniFile" accept="image/*" style="display:none;" />
-            <small>Si ton école n’est pas dans la liste, choisis “Autre” et importe le logo.</small>
+            <small>Si ton école n’est pas dans la liste, choisis « Autre » et importe le logo.</small>
           </div>
+
 
           <div id="logo1OrgBlock" class="subblock" style="display:none;">
             <label for="logo1File">Logo d’entreprise / organisation</label>
@@ -422,7 +73,7 @@
         </div>
 
         <!-- LOGO 2 -->
-        <div id="logo2Card" class="card" style="margin-top:8px; display:none;">
+        <div id="logo2Card" class="card inner-card" style="display:none;">
           <h3>Logo 2</h3>
           <div class="field">
             <label for="logo2Type">Type d’organisation</label>
@@ -433,18 +84,19 @@
             </select>
           </div>
 
-          <div id="logo2AlumniBlock" class="subblock" style="display:none;">
-            <label for="logo2Alumni">Association alumni</label>
-            <select id="logo2Alumni">
-              <option value="">Sélectionner…</option>
-              <option value="artsmetiers">Arts et Métiers Alumni</option>
-              <option value="insead">INSEAD Alumni France</option>
-              <option value="centrale">Centrale Alumni</option>
-              <option value="autre">Autre (je téléverse le logo)</option>
-            </select>
-            <input type="file" id="logo2AlumniFile" accept="image/*" style="display:none;" />
-            <small>Si ton école n’est pas dans la liste, choisis “Autre” et importe le logo.</small>
-          </div>
+<div id="logo2AlumniBlock" class="subblock" style="display:none;">
+  <label for="logo2Alumni">Association alumni</label>
+  <input
+    type="text"
+    id="logo2AlumniSearch"
+    placeholder="Rechercher une association…"
+    style="width:100%; padding:6px 10px; margin-bottom:6px; border-radius:999px; border:1px solid var(--border-soft); background:rgba(3,9,38,0.95); color:var(--text-main); font-size:0.85rem;"
+  />
+  <select id="logo2Alumni"></select>
+  <input type="file" id="logo2AlumniFile" accept="image/*" style="display:none;" />
+  <small>Si ton école n’est pas dans la liste, choisis « Autre » et importe le logo.</small>
+</div>
+
 
           <div id="logo2OrgBlock" class="subblock" style="display:none;">
             <label for="logo2File">Logo d’entreprise / organisation</label>
@@ -455,7 +107,7 @@
 
         <!-- APERÇU BANDE BLANCHE -->
         <div class="band-section">
-          <div class="band-label">Aperçu de la bande blanche (logos en bas du visuel)</div>
+          <div class="band-label">Aperçu de la bande blanche (bas du visuel)</div>
           <div class="band-preview">
             <div class="band-inner">
               <img id="bandLogo1" class="band-logo" alt="logo 1" />
@@ -468,10 +120,9 @@
         <div class="field" style="margin-top:10px;">
           <label class="consent-label">
             <input type="checkbox" id="consent" />
-            <span>J’accepte que ma photo et les logos fournis soient utilisés pour l’appel à l’action “Pour une industrie mixte et performante”.</span>
+            <span>J’accepte que ma photo et les logos fournis soient utilisés pour l’appel à l’action « Pour une industrie mixte et performante ».</span>
           </label>
         </div>
-
       </div>
 
       <!-- COLONNE DROITE : PHOTO + BOUTON -->
@@ -488,7 +139,7 @@
             <img id="photoPreview" alt="aperçu photo" style="display:none;" />
           </div>
           <div class="photo-hint">
-            Ta photo sera affichée dans un cercle. Tu pourras la recadrer dans un cadre vertical avant validation.
+            Ta photo sera affichée dans un cercle. Tu pourras la recadrer avant validation.
           </div>
         </div>
 
@@ -516,400 +167,6 @@
 
   <!-- Cropper.js JS -->
   <script src="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.js"></script>
-
-  <script>
-    // 👉 À ADAPTER PLUS TARD : URL du webhook Make
-    const MAKE_WEBHOOK_URL = null; // ex: "https://hook.eu1.make.com/TON_WEBHOOK"
-
-    // 👉 Logos alumni pré-enregistrés (à adapter à tes vrais fichiers hébergés)
-    const ALUMNI_LOGOS = {
-      artsmetiers: "logos/artsmetiers.png",
-      insead: "logos/insead.png",
-      centrale: "logos/centrale.png"
-    };
-
-    // Références DOM
-    const emailInput = document.getElementById("email");
-    const fullnameInput = document.getElementById("fullname");
-    const logoCountRadios = document.querySelectorAll("input[name='logoCount']");
-    const logo1Card = document.getElementById("logo1Card");
-    const logo2Card = document.getElementById("logo2Card");
-
-    const logo1Type = document.getElementById("logo1Type");
-    const logo2Type = document.getElementById("logo2Type");
-
-    const logo1AlumniBlock = document.getElementById("logo1AlumniBlock");
-    const logo1AlumniSelect = document.getElementById("logo1Alumni");
-    const logo1AlumniFile = document.getElementById("logo1AlumniFile");
-    const logo1OrgBlock = document.getElementById("logo1OrgBlock");
-    const logo1File = document.getElementById("logo1File");
-
-    const logo2AlumniBlock = document.getElementById("logo2AlumniBlock");
-    const logo2AlumniSelect = document.getElementById("logo2Alumni");
-    const logo2AlumniFile = document.getElementById("logo2AlumniFile");
-    const logo2OrgBlock = document.getElementById("logo2OrgBlock");
-    const logo2File = document.getElementById("logo2File");
-
-    const bandLogo1 = document.getElementById("bandLogo1");
-    const bandLogo2 = document.getElementById("bandLogo2");
-
-    const consentCheckbox = document.getElementById("consent");
-    const photoFileInput = document.getElementById("photoFile");
-    const photoPreview = document.getElementById("photoPreview");
-    const generateBtn = document.getElementById("generateBtn");
-    const statusMsg = document.getElementById("statusMsg");
-
-    const cropModalBackdrop = document.getElementById("cropModalBackdrop");
-    const cropModalTitle = document.getElementById("cropModalTitle");
-    const cropImage = document.getElementById("cropImage");
-    const cropCancelBtn = document.getElementById("cropCancelBtn");
-    const cropValidateBtn = document.getElementById("cropValidateBtn");
-
-    // État en mémoire
-    const STATE = {
-      cropper: null,
-      currentCropTarget: null, // "photo" | "logo1" | "logo2"
-      currentAspect: null,
-      photoDataUrl: null,
-      logo1DataUrl: null, // pour preview (DataURL ou URL bibliothèques)
-      logo2DataUrl: null,
-      logo1Base64: null, // pour Make si upload
-      logo2Base64: null,
-      photoBase64: null
-    };
-
-    // Helpers
-    function openCropModal(file, target, aspectRatio, title) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        cropImage.src = e.target.result;
-
-        if (STATE.cropper) {
-          STATE.cropper.destroy();
-          STATE.cropper = null;
-        }
-
-        STATE.currentCropTarget = target;
-        STATE.currentAspect = aspectRatio || NaN;
-
-        cropModalTitle.textContent = title || "Recadrage";
-        cropModalBackdrop.classList.remove("modal-hidden");
-
-        // On laisse un petit délai pour que l'image soit dans le DOM
-        setTimeout(() => {
-          STATE.cropper = new Cropper(cropImage, {
-            aspectRatio: STATE.currentAspect,
-            viewMode: 1,
-            background: false,
-            autoCropArea: 1,
-            dragMode: "move"
-          });
-        }, 50);
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function closeCropModal() {
-      if (STATE.cropper) {
-        STATE.cropper.destroy();
-        STATE.cropper = null;
-      }
-      STATE.currentCropTarget = null;
-      cropModalBackdrop.classList.add("modal-hidden");
-    }
-
-    function updateBandPreview() {
-      if (STATE.logo1DataUrl) {
-        bandLogo1.src = STATE.logo1DataUrl;
-        bandLogo1.classList.add("visible");
-      } else {
-        bandLogo1.classList.remove("visible");
-      }
-
-      if (STATE.logo2DataUrl) {
-        bandLogo2.src = STATE.logo2DataUrl;
-        bandLogo2.classList.add("visible");
-      } else {
-        bandLogo2.classList.remove("visible");
-      }
-    }
-
-    function updateGenerateButtonState() {
-      const emailOk = emailInput.value.trim() !== "";
-      const consentOk = consentCheckbox.checked;
-      const photoOk = !!STATE.photoBase64;
-      generateBtn.disabled = !(emailOk && consentOk && photoOk);
-    }
-
-    function dataUrlToBase64(dataUrl) {
-      if (!dataUrl) return null;
-      const parts = dataUrl.split(",");
-      return parts.length === 2 ? parts[1] : null;
-    }
-
-    // Gestion du nombre de logos
-    function getLogoCount() {
-      const selected = Array.from(logoCountRadios).find((r) => r.checked);
-      return selected ? parseInt(selected.value, 10) : 0;
-    }
-
-    logoCountRadios.forEach((r) => {
-      r.addEventListener("change", () => {
-        const count = getLogoCount();
-        if (count === 0) {
-          logo1Card.style.display = "none";
-          logo2Card.style.display = "none";
-        } else if (count === 1) {
-          logo1Card.style.display = "block";
-          logo2Card.style.display = "none";
-        } else {
-          logo1Card.style.display = "block";
-          logo2Card.style.display = "block";
-        }
-      });
-    });
-
-    // Gestion types pour logo 1 et 2
-    function handleLogoTypeChange(selectEl, alumniBlock, orgBlock, alumniSelect, alumniFileInput, logoIndex) {
-      selectEl.addEventListener("change", () => {
-        const value = selectEl.value;
-        alumniBlock.style.display = value === "alumni" ? "block" : "none";
-        orgBlock.style.display = value === "organisation" ? "block" : "none";
-
-        if (value !== "alumni") {
-          alumniSelect.value = "";
-          alumniFileInput.value = "";
-        }
-
-        if (value !== "organisation") {
-          if (logoIndex === 1) logo1File.value = "";
-          if (logoIndex === 2) logo2File.value = "";
-        }
-
-        // Réinitialiser la preview du logo correspondant si plus de type sélectionné
-        if (!value) {
-          if (logoIndex === 1) {
-            STATE.logo1DataUrl = null;
-            STATE.logo1Base64 = null;
-          } else {
-            STATE.logo2DataUrl = null;
-            STATE.logo2Base64 = null;
-          }
-          updateBandPreview();
-        }
-      });
-    }
-
-    handleLogoTypeChange(
-      logo1Type,
-      logo1AlumniBlock,
-      logo1OrgBlock,
-      logo1AlumniSelect,
-      logo1AlumniFile,
-      1
-    );
-    handleLogoTypeChange(
-      logo2Type,
-      logo2AlumniBlock,
-      logo2OrgBlock,
-      logo2AlumniSelect,
-      logo2AlumniFile,
-      2
-    );
-
-    // Gestion choix alumni (bibliothèque ou upload)
-    function handleAlumniSelect(selectEl, fileInput, logoIndex) {
-      selectEl.addEventListener("change", () => {
-        const value = selectEl.value;
-        if (value === "autre") {
-          fileInput.style.display = "block";
-        } else {
-          fileInput.style.display = "none";
-        }
-
-        // Bibliothèque
-        if (value && value !== "autre" && ALUMNI_LOGOS[value]) {
-          const url = ALUMNI_LOGOS[value];
-          if (logoIndex === 1) {
-            STATE.logo1DataUrl = url;
-            STATE.logo1Base64 = null;
-          } else {
-            STATE.logo2DataUrl = url;
-            STATE.logo2Base64 = null;
-          }
-          updateBandPreview();
-        }
-
-        // Si rien sélectionné, on nettoie
-        if (!value) {
-          if (logoIndex === 1) {
-            STATE.logo1DataUrl = null;
-            STATE.logo1Base64 = null;
-          } else {
-            STATE.logo2DataUrl = null;
-            STATE.logo2Base64 = null;
-          }
-          updateBandPreview();
-        }
-      });
-
-      // Upload d'un logo alumni "autre"
-      fileInput.addEventListener("change", () => {
-        const file = fileInput.files && fileInput.files[0];
-        if (!file) return;
-        openCropModal(
-          file,
-          logoIndex === 1 ? "logo1" : "logo2",
-          NaN,
-          "Recadrer le logo alumni"
-        );
-      });
-    }
-
-    handleAlumniSelect(logo1AlumniSelect, logo1AlumniFile, 1);
-    handleAlumniSelect(logo2AlumniSelect, logo2AlumniFile, 2);
-
-    // Upload logos d'organisation
-    logo1File.addEventListener("change", () => {
-      const file = logo1File.files && logo1File.files[0];
-      if (!file) return;
-      openCropModal(file, "logo1", NaN, "Recadrer le logo 1");
-    });
-
-    logo2File.addEventListener("change", () => {
-      const file = logo2File.files && logo2File.files[0];
-      if (!file) return;
-      openCropModal(file, "logo2", NaN, "Recadrer le logo 2");
-    });
-
-    // Upload photo → ouverture modale pour recadrer
-    photoFileInput.addEventListener("change", () => {
-      const file = photoFileInput.files && photoFileInput.files[0];
-      if (!file) return;
-      // Ratio portrait (4:5) pour recadrer, mais affichage final en cercle
-      openCropModal(file, "photo", 4 / 5, "Recadrer ta photo de profil");
-    });
-
-    // Boutons modale
-    cropCancelBtn.addEventListener("click", () => {
-      closeCropModal();
-    });
-
-    cropValidateBtn.addEventListener("click", () => {
-      if (!STATE.cropper || !STATE.currentCropTarget) {
-        closeCropModal();
-        return;
-      }
-
-      let canvas;
-      if (STATE.currentCropTarget === "photo") {
-        // Rectangle vertical pour garder un portrait harmonieux
-        canvas = STATE.cropper.getCroppedCanvas({
-          width: 900,
-          height: 1125,
-          imageSmoothingQuality: "high"
-        });
-      } else {
-        // Logos : rectangle libre mais normalisé en taille raisonnable
-        canvas = STATE.cropper.getCroppedCanvas({
-          width: 1200,
-          height: 400,
-          imageSmoothingQuality: "high"
-        });
-      }
-
-      const dataUrl = canvas.toDataURL("image/png");
-
-      if (STATE.currentCropTarget === "photo") {
-        STATE.photoDataUrl = dataUrl;
-        STATE.photoBase64 = dataUrlToBase64(dataUrl);
-        photoPreview.src = dataUrl;
-        photoPreview.style.display = "block";
-        updateGenerateButtonState();
-      } else if (STATE.currentCropTarget === "logo1") {
-        STATE.logo1DataUrl = dataUrl;
-        STATE.logo1Base64 = dataUrlToBase64(dataUrl);
-        updateBandPreview();
-      } else if (STATE.currentCropTarget === "logo2") {
-        STATE.logo2DataUrl = dataUrl;
-        STATE.logo2Base64 = dataUrlToBase64(dataUrl);
-        updateBandPreview();
-      }
-
-      closeCropModal();
-    });
-
-    // Activer / désactiver le bouton de génération
-    emailInput.addEventListener("input", updateGenerateButtonState);
-    consentCheckbox.addEventListener("change", updateGenerateButtonState);
-
-    // Soumission
-    generateBtn.addEventListener("click", async () => {
-      statusMsg.className = "status";
-      statusMsg.textContent = "";
-
-      if (!STATE.photoBase64) {
-        statusMsg.textContent = "Merci de recadrer ta photo avant de générer le visuel.";
-        statusMsg.classList.add("error");
-        return;
-      }
-      if (!emailInput.value.trim()) {
-        statusMsg.textContent = "L’e-mail est obligatoire.";
-        statusMsg.classList.add("error");
-        return;
-      }
-      if (!consentCheckbox.checked) {
-        statusMsg.textContent = "Merci de cocher la case de consentement.";
-        statusMsg.classList.add("error");
-        return;
-      }
-
-      const logoCount = getLogoCount();
-
-      const payload = {
-        email: emailInput.value.trim(),
-        fullname: fullnameInput.value.trim() || null,
-        logo_count: logoCount,
-        photo_base64: STATE.photoBase64,
-        logo1_base64: STATE.logo1Base64,
-        logo2_base64: STATE.logo2Base64,
-        logo1_source_url: STATE.logo1Base64 ? null : STATE.logo1DataUrl || null,
-        logo2_source_url: STATE.logo2Base64 ? null : STATE.logo2DataUrl || null,
-        timestamp: new Date().toISOString()
-      };
-
-      // Pour l’instant : soit on envoie à Make si URL renseignée, soit on fait une simple simulation
-      if (!MAKE_WEBHOOK_URL) {
-        console.log("Payload prêt pour Make :", payload);
-        statusMsg.textContent = "Simulation : le visuel serait généré et envoyé. (Webhook Make non configuré)";
-        statusMsg.classList.add("ok");
-        return;
-      }
-
-      try {
-        generateBtn.disabled = true;
-        statusMsg.textContent = "Envoi des informations…";
-
-        const res = await fetch(MAKE_WEBHOOK_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-
-        if (!res.ok) {
-          throw new Error("Erreur HTTP " + res.status);
-        }
-
-        statusMsg.textContent = "Merci ! Tes informations ont été envoyées. Tu recevras ton visuel par e-mail.";
-        statusMsg.classList.add("ok");
-      } catch (err) {
-        console.error(err);
-        statusMsg.textContent = "Une erreur est survenue lors de l’envoi. Merci de réessayer.";
-        statusMsg.classList.add("error");
-      } finally {
-        generateBtn.disabled = false;
-      }
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
