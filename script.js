@@ -1,427 +1,278 @@
-// ------------------------
-// CONFIG DE BASE
-// ------------------------
+/* ------------------------------------------
+   VARIABLES GLOBALES
+-------------------------------------------*/
 
-// ⛔️ À REMPLACER par ton vrai webhook Make
-const MAKE_WEBHOOK_URL = "https://hook.integromat.com/TON_WEBHOOK_ICI";
+// Instances croppie
+let cropPhoto = null;
+let cropLogo1 = null;
+let cropLogo2 = null;
 
-// Dimensions de la photo croppée envoyée à Make
-const CROPPED_SIZE = 800;
+// Base64 finals
+let photoFinal = null;
+let logo1Final = null;
+let logo2Final = null;
 
-// ------------------------
-// RÉFÉRENCES DOM
-// ------------------------
+// Canvas final
+const finalCanvas = document.getElementById("finalCanvas");
+const ctx = finalCanvas.getContext("2d");
 
-const emailInput = document.getElementById("email");
-const fullnameInput = document.getElementById("fullname");
-const logoCountRadios = document.querySelectorAll("input[name='logoCount']");
+// Bande blanche du template avec logos
+const BAND_TOP = 1122; 
+const BAND_BOTTOM = 1284;
+const BAND_HEIGHT = BAND_BOTTOM - BAND_TOP;
+const PAD_X = 57;
+const MAX_LOGO_HEIGHT = 142; // hauteur utile
 
-const logosSection = document.getElementById("logosSection");
-const logo2Block = document.getElementById("logo2Block");
 
-const typeLogo1Select = document.getElementById("typeLogo1");
-const logo1AlumniList = document.getElementById("logo1AlumniList");
-const logo1AlumniSelect = document.getElementById("logo1Alumni");
-const logo1UploadBlock = document.getElementById("logo1Upload");
-const logo1FileInput = document.getElementById("logo1File");
-const logoPreview1Canvas = document.getElementById("logoPreview1");
+/* ------------------------------------------
+   ACTIVATION / DÉSACTIVATION BOUTON GÉNÉRER
+-------------------------------------------*/
+function updateGenerateButton() {
+    const email = document.getElementById("email").value.trim();
+    const consent = document.getElementById("consent").checked;
 
-const typeLogo2Select = document.getElementById("typeLogo2");
-const logo2AlumniList = document.getElementById("logo2AlumniList");
-const logo2AlumniSelect = document.getElementById("logo2Alumni");
-const logo2UploadBlock = document.getElementById("logo2Upload");
-const logo2FileInput = document.getElementById("logo2File");
-const logoPreview2Canvas = document.getElementById("logoPreview2");
+    if (email !== "" && consent && photoFinal !== null) {
+        document.getElementById("generateBtn").disabled = false;
+    } else {
+        document.getElementById("generateBtn").disabled = true;
+    }
+}
 
-const uploadBtn = document.getElementById("uploadBtn");
-const photoInput = document.getElementById("photoInput");
-const cropArea = document.getElementById("cropArea");
-const circlePreview = document.getElementById("circlePreview");
 
-const consentCheckbox = document.getElementById("consent");
-const generateBtn = document.getElementById("generateBtn");
+/* ------------------------------------------
+   INITIALISATION DU CROPPER PHOTO (CERCLE)
+-------------------------------------------*/
+document.getElementById("photoUpload").addEventListener("change", function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
 
-// ------------------------
-// ÉTAT GLOBAL
-// ------------------------
+    const reader = new FileReader();
+    reader.onload = function (event) {
 
-let cropper = null;
-let croppedImageDataUrl = null;
+        // Détruire ancien cropper si existant
+        if (cropPhoto) cropPhoto.destroy();
 
-let alumniList = []; // chargé depuis alumni.json
+        cropPhoto = new Croppie(document.getElementById("photoCropArea"), {
+            viewport: { width: 240, height: 240, type: "circle" },
+            boundary: { width: 280, height: 280 },
+            enableOrientation: true,
+            showZoomer: true,
+        });
 
-let logo1Data = { type: null, alumniId: null, alumniName: null, dataUrl: null };
-let logo2Data = { type: null, alumniId: null, alumniName: null, dataUrl: null };
-
-// ------------------------
-// INIT
-// ------------------------
-
-document.addEventListener("DOMContentLoaded", () => {
-  // Charger la liste des alumni
-  loadAlumniList();
-
-  // Gestion du nombre de logos
-  logoCountRadios.forEach((radio) => {
-    radio.addEventListener("change", onLogoCountChange);
-  });
-
-  // Type d’organisation par logo
-  typeLogo1Select.addEventListener("change", () =>
-    onLogoTypeChange(1, typeLogo1Select.value)
-  );
-  typeLogo2Select.addEventListener("change", () =>
-    onLogoTypeChange(2, typeLogo2Select.value)
-  );
-
-  // Sélection logo alumni
-  logo1AlumniSelect.addEventListener("change", () =>
-    onAlumniLogoSelected(1, logo1AlumniSelect.value)
-  );
-  logo2AlumniSelect.addEventListener("change", () =>
-    onAlumniLogoSelected(2, logo2AlumniSelect.value)
-  );
-
-  // Upload logos
-  logo1FileInput.addEventListener("change", () =>
-    onLogoFileSelected(1, logo1FileInput.files[0])
-  );
-  logo2FileInput.addEventListener("change", () =>
-    onLogoFileSelected(2, logo2FileInput.files[0])
-  );
-
-  // Upload photo
-  uploadBtn.addEventListener("click", () => photoInput.click());
-  photoInput.addEventListener("change", onPhotoSelected);
-
-  // Consentement / email => activer bouton
-  emailInput.addEventListener("input", updateGenerateButtonState);
-  consentCheckbox.addEventListener("change", updateGenerateButtonState);
-
-  // Génération
-  generateBtn.addEventListener("click", onGenerateClicked);
+        cropPhoto.bind({ url: event.target.result });
+    };
+    reader.readAsDataURL(file);
 });
 
-// ------------------------
-// CHARGEMENT ALUMNI
-// ------------------------
 
-async function loadAlumniList() {
-  try {
-    const res = await fetch("alumni.json");
-    if (!res.ok) throw new Error("Erreur chargement alumni.json");
-    alumniList = await res.json();
+/* EXPORT PHOTO CROPPÉE À LA DEMANDE */
+function exportPhoto() {
+    return cropPhoto
+        .result({
+            type: "base64",
+            size: { width: 600, height: 600 },
+            format: "png",
+            circle: true,
+        })
+        .then((output) => {
+            photoFinal = output;
 
-    // Peupler les deux listes
-    fillAlumniSelect(logo1AlumniSelect, alumniList);
-    fillAlumniSelect(logo2AlumniSelect, alumniList);
-  } catch (e) {
-    console.error("Impossible de charger alumni.json", e);
-    // En cas de problème, on laisse les listes vides
-  }
+            // Aperçu rond
+            document.getElementById("photoPreview").style.backgroundImage = `url(${output})`;
+
+            updateGenerateButton();
+        });
 }
 
-function fillAlumniSelect(selectEl, list) {
-  selectEl.innerHTML = "";
-  const placeholder = document.createElement("option");
-  placeholder.value = "";
-  placeholder.textContent = "Sélectionner…";
-  selectEl.appendChild(placeholder);
 
-  list.forEach((al) => {
-    const opt = document.createElement("option");
-    opt.value = al.id || al.name;
-    opt.textContent = al.name;
-    opt.dataset.file = al.file || "";
-    selectEl.appendChild(opt);
-  });
-}
+/* ------------------------------------------
+   CROPPER LOGO 1
+-------------------------------------------*/
+document.getElementById("logoUpload1").addEventListener("change", function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
 
-// ------------------------
-// GESTION NOMBRE DE LOGOS
-// ------------------------
+    const reader = new FileReader();
+    reader.onload = function (event) {
 
-function onLogoCountChange() {
-  const count = getLogoCount();
+        if (cropLogo1) cropLogo1.destroy();
 
-  if (count === 0) {
-    logosSection.classList.add("hidden");
-  } else {
-    logosSection.classList.remove("hidden");
-  }
+        cropLogo1 = new Croppie(document.getElementById("logoCrop1"), {
+            viewport: { width: 200, height: 120, type: "square" },
+            boundary: { width: 280, height: 280 },
+            enableOrientation: true,
+            showZoomer: true,
+        });
 
-  if (count === 2) {
-    logo2Block.classList.remove("hidden");
-  } else {
-    logo2Block.classList.add("hidden");
-    // reset logo2Data si on repasse à 0 ou 1
-    logo2Data = { type: null, alumniId: null, alumniName: null, dataUrl: null };
-    clearCanvas(logoPreview2Canvas);
-  }
-
-  updateGenerateButtonState();
-}
-
-function getLogoCount() {
-  const selected = Array.from(logoCountRadios).find((r) => r.checked);
-  return selected ? parseInt(selected.value, 10) : 0;
-}
-
-// ------------------------
-// TYPE D’ORGANISATION PAR LOGO
-// ------------------------
-
-function onLogoTypeChange(logoIndex, type) {
-  const isAlumni = type === "alumni";
-
-  if (logoIndex === 1) {
-    logo1AlumniList.classList.toggle("hidden", !isAlumni);
-    logo1UploadBlock.classList.toggle("hidden", isAlumni);
-    logo1Data = { type, alumniId: null, alumniName: null, dataUrl: null };
-    clearCanvas(logoPreview1Canvas);
-  } else {
-    logo2AlumniList.classList.toggle("hidden", !isAlumni);
-    logo2UploadBlock.classList.toggle("hidden", isAlumni);
-    logo2Data = { type, alumniId: null, alumniName: null, dataUrl: null };
-    clearCanvas(logoPreview2Canvas);
-  }
-}
-
-// ------------------------
-// LOGOS ALUMNI (BIBLIOTHÈQUE)
-// ------------------------
-
-function onAlumniLogoSelected(logoIndex, alumniId) {
-  const list = alumniList || [];
-  const found = list.find((al) => (al.id || al.name) === alumniId);
-  if (!found) return;
-
-  const path = found.file; // ex: "logos/alumni/ax.png"
-
-  const img = new Image();
-  img.crossOrigin = "anonymous";
-  img.onload = () => {
-    if (logoIndex === 1) {
-      drawLogoOnCanvas(logoPreview1Canvas, img);
-      logo1Data = {
-        type: "alumni",
-        alumniId: alumniId,
-        alumniName: found.name,
-        dataUrl: null, // pas besoin, côté Make on a le path
-      };
-    } else {
-      drawLogoOnCanvas(logoPreview2Canvas, img);
-      logo2Data = {
-        type: "alumni",
-        alumniId: alumniId,
-        alumniName: found.name,
-        dataUrl: null,
-      };
-    }
-  };
-  img.onerror = (e) => console.error("Erreur chargement logo alumni", e);
-  img.src = path;
-}
-
-// ------------------------
-// LOGOS UPLOAD
-// ------------------------
-
-function onLogoFileSelected(logoIndex, file) {
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const img = new Image();
-    img.onload = () => {
-      if (logoIndex === 1) {
-        drawLogoOnCanvas(logoPreview1Canvas, img);
-        logo1Data = {
-          type: "upload",
-          alumniId: null,
-          alumniName: null,
-          dataUrl: e.target.result, // base64 du logo
-        };
-      } else {
-        drawLogoOnCanvas(logoPreview2Canvas, img);
-        logo2Data = {
-          type: "upload",
-          alumniId: null,
-          alumniName: null,
-          dataUrl: e.target.result,
-        };
-      }
+        cropLogo1.bind({ url: event.target.result });
     };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
+    reader.readAsDataURL(file);
+});
+
+
+function exportLogo1() {
+    if (!cropLogo1) return Promise.resolve(null);
+
+    return cropLogo1
+        .result({
+            type: "base64",
+            size: { width: 500, height: 300 },
+            format: "png",
+        })
+        .then((output) => {
+            logo1Final = output;
+            document.getElementById("logoPreview1").style.backgroundImage = `url(${output})`;
+            return output;
+        });
 }
 
-function drawLogoOnCanvas(canvas, img) {
-  const ctx = canvas.getContext("2d");
-  const width = 380;
-  const height = 120; // bande rectangulaire
-  canvas.width = width;
-  canvas.height = height;
 
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, width, height);
+/* ------------------------------------------
+   CROPPER LOGO 2
+-------------------------------------------*/
+document.getElementById("logoUpload2").addEventListener("change", function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  // on garde les proportions du logo
-  const ratio = Math.min(width / img.width, height / img.height);
-  const drawWidth = img.width * ratio;
-  const drawHeight = img.height * ratio;
-  const dx = (width - drawWidth) / 2;
-  const dy = (height - drawHeight) / 2;
+    const reader = new FileReader();
+    reader.onload = function (event) {
 
-  ctx.drawImage(img, dx, dy, drawWidth, drawHeight);
+        if (cropLogo2) cropLogo2.destroy();
+
+        cropLogo2 = new Croppie(document.getElementById("logoCrop2"), {
+            viewport: { width: 200, height: 120, type: "square" },
+            boundary: { width: 280, height: 280 },
+            enableOrientation: true,
+            showZoomer: true,
+        });
+
+        cropLogo2.bind({ url: event.target.result });
+    };
+    reader.readAsDataURL(file);
+});
+
+function exportLogo2() {
+    if (!cropLogo2) return Promise.resolve(null);
+
+    return cropLogo2
+        .result({
+            type: "base64",
+            size: { width: 500, height: 300 },
+            format: "png",
+        })
+        .then((output) => {
+            logo2Final = output;
+            document.getElementById("logoPreview2").style.backgroundImage = `url(${output})`;
+            return output;
+        });
 }
 
-function clearCanvas(canvas) {
-  if (!canvas) return;
-  const ctx = canvas.getContext("2d");
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
 
-// ------------------------
-// PHOTO + CROPPER
-// ------------------------
+/* ------------------------------------------
+   DESSIN DU VISUEL FINAL SUR LE CANVAS
+-------------------------------------------*/
+async function drawFinalCanvas() {
 
-function onPhotoSelected() {
-  const file = photoInput.files[0];
-  if (!file) return;
+    const nbLogos = document.querySelector("input[name='nbLogos']:checked").value;
 
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    // Clear cropArea
-    cropArea.innerHTML = "";
-    const img = document.createElement("img");
-    img.id = "photoToCrop";
-    img.src = e.target.result;
-    cropArea.appendChild(img);
+    // Export des éléments recadrés
+    await exportPhoto();
+    if (nbLogos >= 1) await exportLogo1();
+    if (nbLogos == 2) await exportLogo2();
 
-    // Détruire l’ancien cropper si besoin
-    if (cropper) {
-      cropper.destroy();
-      cropper = null;
+    // Effacer canvas
+    ctx.clearRect(0, 0, finalCanvas.width, finalCanvas.height);
+
+    // Charger template
+    const template = await loadImage(nbLogos == 0 ? "template_nologo.png" : "template_white.png");
+    ctx.drawImage(template, 0, 0, 1080, 1350);
+
+    // PHOTO CIRCULAIRE
+    if (photoFinal) {
+        const photoImg = await loadImage(photoFinal);
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(305, 450, 240, 0, Math.PI * 2); 
+        ctx.closePath();
+        ctx.clip();
+
+        ctx.drawImage(photoImg, 65, 210, 480, 480);
+        ctx.restore();
     }
 
-    cropper = new Cropper(img, {
-      aspectRatio: 1,
-      viewMode: 2,
-      background: false,
-      autoCropArea: 1,
-      dragMode: "move",
-      movable: true,
-      zoomable: true,
-      responsive: true,
-      minCropBoxWidth: 100,
-      minCropBoxHeight: 100,
-      ready() {
-        updateCroppedPreview();
-      },
-      crop() {
-        updateCroppedPreview();
-      },
-    });
-  };
-
-  reader.readAsDataURL(file);
+    // LOGOS
+    if (nbLogos >= 1 && logo1Final) {
+        await placeCenteredLogos(nbLogos);
+    }
 }
 
-function updateCroppedPreview() {
-  if (!cropper) return;
 
-  const canvas = cropper.getCroppedCanvas({
-    width: CROPPED_SIZE,
-    height: CROPPED_SIZE,
-    imageSmoothingEnabled: true,
-    imageSmoothingQuality: "high",
-  });
+/* ------------------------------------------
+   GESTION DU PLACEMENT AUTOMATIQUE DES LOGOS
+-------------------------------------------*/
+async function placeCenteredLogos(nb) {
+    const logos = [];
 
-  if (!canvas) return;
+    if (logo1Final) logos.push(await loadImage(logo1Final));
+    if (nb === "2" && logo2Final) logos.push(await loadImage(logo2Final));
 
-  croppedImageDataUrl = canvas.toDataURL("image/png");
-  circlePreview.style.backgroundImage = `url(${croppedImageDataUrl})`;
-
-  updateGenerateButtonState();
-}
-
-// ------------------------
-// GESTION BOUTON "GÉNÉRER"
-// ------------------------
-
-function updateGenerateButtonState() {
-  const emailOk = emailInput.value.trim().length > 0;
-  const consentOk = consentCheckbox.checked;
-  const photoOk = !!croppedImageDataUrl;
-
-  const enable = emailOk && consentOk && photoOk;
-  generateBtn.disabled = !enable;
-}
-
-// ------------------------
-// GÉNÉRATION + ENVOI VERS MAKE
-// ------------------------
-
-async function onGenerateClicked() {
-  if (generateBtn.disabled) return;
-
-  const email = emailInput.value.trim();
-  const fullname = fullnameInput.value.trim();
-  const logoCount = getLogoCount();
-
-  if (!email || !croppedImageDataUrl || !consentCheckbox.checked) {
-    alert("Merci de remplir l’e-mail, d’ajouter ta photo et de cocher le consentement.");
-    return;
-  }
-
-  const template = logoCount === 0 ? "sans_bande" : "avec_bande";
-
-  const payload = {
-    email,
-    fullname: fullname || null,
-    logoCount,
-    template,
-    logos: {
-      logo1: logoCount >= 1 ? logo1Data : null,
-      logo2: logoCount === 2 ? logo2Data : null,
-    },
-    photoBase64: croppedImageDataUrl,
-    token: generateToken(),
-    createdAt: new Date().toISOString(),
-  };
-
-  generateBtn.disabled = true;
-  generateBtn.textContent = "Génération en cours…";
-
-  try {
-    const res = await fetch(MAKE_WEBHOOK_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
+    // Process logos (redimension dynamique)
+    const processed = logos.map((img) => {
+        const ratio = img.width / img.height;
+        const drawHeight = MAX_LOGO_HEIGHT;
+        const drawWidth = drawHeight * ratio;
+        return { img, w: drawWidth, h: drawHeight };
     });
 
-    if (!res.ok) {
-      throw new Error("Erreur API Make : " + res.status);
+    // Placement
+    if (processed.length === 1) {
+        const { img, w, h } = processed[0];
+
+        const x = (1080 - w) / 2;
+        const y = BAND_TOP + (BAND_HEIGHT - h) / 2;
+
+        ctx.drawImage(img, x, y, w, h);
     }
 
-    alert("Merci ! Ton visuel sera envoyé par e-mail dans quelques instants.");
-  } catch (e) {
-    console.error(e);
-    alert("Un problème est survenu lors de l’envoi. Merci de réessayer plus tard.");
-  } finally {
-    generateBtn.disabled = false;
-    generateBtn.textContent = "Générer mon visuel";
-  }
+    if (processed.length === 2) {
+        const spacing = 70;
+        const totalWidth = processed[0].w + processed[1].w + spacing;
+
+        let x = (1080 - totalWidth) / 2;
+        const y = BAND_TOP + (BAND_HEIGHT - processed[0].h) / 2;
+
+        ctx.drawImage(processed[0].img, x, y, processed[0].w, processed[0].h);
+
+        x += processed[0].w + spacing;
+
+        ctx.drawImage(processed[1].img, x, y, processed[1].w, processed[1].h);
+    }
 }
 
-function generateToken() {
-  return (
-    "tok_" +
-    Math.random().toString(36).substring(2, 10) +
-    Date.now().toString(36)
-  );
+
+/* ------------------------------------------
+   UTILITAIRE : CHARGEMENT IMAGE
+-------------------------------------------*/
+function loadImage(src) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.src = src;
+    });
 }
+
+
+/* ------------------------------------------
+   BOUTON "GÉNÉRER"
+-------------------------------------------*/
+document.getElementById("generateBtn").addEventListener("click", async () => {
+    await drawFinalCanvas();
+
+    const finalBase64 = finalCanvas.toDataURL("image/png");
+
+    alert("Visuel généré !");
+
+    // Tu peux maintenant envoyer à MAKE :
+    // fetch("WEBHOOK_MAKE", { method: "POST", body: JSON.stringify({ email, finalBase64 }) })
+});
