@@ -1,0 +1,17 @@
+{
+  "artsmetiers": {
+    "id": "artsmetiers",
+    "name": "Arts et Métiers Alumni",
+    "logo": "logos/artsmetiers.png"
+  },
+  "insead": {
+    "id": "insead",
+    "name": "INSEAD Alumni France",
+    "logo": "logos/insead.png"
+  },
+  "centrale": {
+    "id": "centrale",
+    "name": "Centrale Alumni",
+    "logo": "logos/centrale.png"
+  }
+}
