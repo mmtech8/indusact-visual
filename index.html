@@ -1,181 +1,139 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Créer mon visuel – Appel à l’action</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Créer mon visuel – IndusAct</title>
 
-  <!-- Cropper.js -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.css"
-  />
+    <!-- STYLES -->
+    <link rel="stylesheet" href="style.css" />
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="style.css" />
+    <!-- CROPPIE -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"></script>
 
-  <style>
-    /* Masque rond pour la zone de recadrage */
-    .cropper-view-box,
-    .cropper-face {
-      border-radius: 50% !important;
-    }
-
-    /* Assombrissement autour de la zone ronde */
-    .cropper-modal {
-      background-color: rgba(0, 0, 0, 0.6) !important;
-    }
-
-    /* Cercle pour la preview */
-    #circlePreview {
-      width: 220px;
-      height: 220px;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 4px solid #f8a53b;
-      background: #222;
-      margin: auto;
-    }
-
-    /* Zone de crop */
-    #cropArea {
-      width: 320px;
-      height: 320px;
-      margin: auto;
-      background: #111;
-      border-radius: 50%;
-      overflow: hidden;
-      position: relative;
-    }
-  </style>
 </head>
-
 <body>
 
-  <div class="container">
+    <div class="container">
 
-    <!-- INTRO -->
-    <h1>Je crée mon visuel<br>“J’agis pour une industrie mixte et performante”</h1>
-    <p class="intro">
-      Importez votre photo, recadrez-la dans le cercle, ajoutez vos logos, puis générez votre visuel.
-    </p>
+        <h1 class="title">Je crée mon visuel<br>“J’agis pour une industrie mixte et performante”</h1>
+        <p class="subtitle">Complète le formulaire, recadre ta photo et tes logos, puis valide. Tu recevras ton visuel final par e-mail.</p>
 
-    <!-- 1 : INFORMATIONS -->
-    <div class="sectionBox">
-      <h2>1. Informations</h2>
+        <!-- SECTION 1 : INFORMATIONS -->
+        <section class="block">
+            <h2>1. Informations</h2>
 
-      <label for="email">Email (obligatoire)</label>
-      <input type="email" id="email" required placeholder="exemple@domain.com" />
+            <label>Email (pour recevoir le visuel) *</label>
+            <input id="email" type="email" required />
 
-      <label for="fullname">Nom complet (optionnel)</label>
-      <input type="text" id="fullname" placeholder="Jean Dupont" />
+            <label>Nom et prénom (optionnel)</label>
+            <input id="fullname" type="text" placeholder="Ex : Prénom Nom" />
 
-      <h3>Nombre de logos à afficher</h3>
-      <div class="radioGroup">
-        <label><input type="radio" name="logoCount" value="0" checked /> 0 logo</label>
-        <label><input type="radio" name="logoCount" value="1" /> 1 logo</label>
-        <label><input type="radio" name="logoCount" value="2" /> 2 logos</label>
-      </div>
-      <p class="help">Si vous choisissez 0 logo, la bande blanche ne sera pas affichée.</p>
+            <label>Nombre de logos d’organisation à afficher</label>
+            <div class="radio-line">
+                <label><input type="radio" name="nbLogos" value="0" checked> 0 logo</label>
+                <label><input type="radio" name="nbLogos" value="1"> 1 logo</label>
+                <label><input type="radio" name="nbLogos" value="2"> 2 logos</label>
+            </div>
+            <p class="hint">Si tu choisis 0 logo, le visuel sera généré <b>sans bande blanche</b>.</p>
+
+            <!-- TYPE ORGANISATION -->
+            <label>Type d’organisation</label>
+            <select id="orgaType">
+                <option value="alumni">Association alumni</option>
+                <option value="other">Entreprise / organisation</option>
+            </select>
+
+            <!-- LOGOS ALUMNI -->
+            <div id="alumniZone">
+                <label>Logo alumni 1</label>
+                <select id="alumni1"></select>
+
+                <div id="alumni2container">
+                    <label>Logo alumni 2</label>
+                    <select id="alumni2"></select>
+                </div>
+            </div>
+
+            <!-- LOGOS UPLOAD -->
+            <div id="uploadZone">
+                <label>Importer un logo</label>
+                <input id="logoUpload1" type="file" accept="image/*" />
+
+                <div id="uploadLogo2">
+                    <label>Importer un second logo</label>
+                    <input id="logoUpload2" type="file" accept="image/*" />
+                </div>
+            </div>
+
+            <!-- Consentement -->
+            <label class="checkbox-line">
+                <input type="checkbox" id="consent" />
+                J’accepte que ma photo et les logos fournis soient utilisés dans le cadre de l’appel à l’action.
+            </label>
+
+        </section>
+
+        <!-- SECTION 2 : PHOTO -->
+        <section class="block">
+            <h2>2. Photo de profil</h2>
+
+            <button class="btn" onclick="document.getElementById('photoUpload').click()">Choisir une photo</button>
+            <input id="photoUpload" type="file" accept="image/*" style="display:none;" />
+
+            <p class="hint">Tu peux zoomer/déplacer ta photo. Le cadrage est circulaire.</p>
+
+            <div class="crop-wrapper">
+                <div id="photoCropArea"></div>
+
+                <div>
+                    <p>Aperçu final</p>
+                    <div id="photoPreview" class="circle-preview"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3 : LOGOS -->
+        <section class="block" id="logoCropSection">
+            <h2>3. Recadrage des logos</h2>
+
+            <div id="logo1CropContainer" class="crop-wrapper">
+                <div>
+                    <p>Logo 1</p>
+                    <div id="logoCrop1"></div>
+                </div>
+                <div>
+                    <p>Aperçu</p>
+                    <div id="logoPreview1" class="logo-preview"></div>
+                </div>
+            </div>
+
+            <div id="logo2CropContainer" class="crop-wrapper">
+                <div>
+                    <p>Logo 2</p>
+                    <div id="logoCrop2"></div>
+                </div>
+                <div>
+                    <p>Aperçu</p>
+                    <div id="logoPreview2" class="logo-preview"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BOUTON FINAL -->
+        <button id="generateBtn" class="btn btn-big" disabled>Générer mon visuel</button>
+
+        <!-- APERÇU DU VISUEL FINAL -->
+        <section class="block">
+            <h2>4. Aperçu du visuel final</h2>
+            <canvas id="finalCanvas" width="1080" height="1350"></canvas>
+        </section>
+
     </div>
 
-    <!-- 2 : LOGOS -->
-    <div id="logosSection" class="sectionBox hidden">
-      <h2>2. Logos organisationnels</h2>
-
-      <!-- LOGO 1 -->
-      <div class="logoBlock">
-        <h3>Logo 1</h3>
-
-        <label>Type d’organisation</label>
-        <select id="typeLogo1">
-          <option value="alumni">Association alumni</option>
-          <option value="autre">Organisation / entreprise</option>
-        </select>
-
-        <!-- Sélection depuis la librairie alumni -->
-        <div id="logo1AlumniList">
-          <label>Choisir une association alumni</label>
-          <select id="logo1Alumni"></select>
-        </div>
-
-        <!-- Upload -->
-        <div id="logo1Upload" class="uploadBlock hidden">
-          <label>Uploader un logo</label>
-          <input type="file" id="logo1File" accept="image/*" />
-        </div>
-
-        <canvas id="logoPreview1" class="logoCanvas"></canvas>
-      </div>
-
-      <!-- LOGO 2 -->
-      <div id="logo2Block" class="logoBlock hidden">
-        <h3>Logo 2</h3>
-
-        <label>Type d’organisation</label>
-        <select id="typeLogo2">
-          <option value="alumni">Association alumni</option>
-          <option value="autre">Organisation / entreprise</option>
-        </select>
-
-        <div id="logo2AlumniList">
-          <label>Choisir une association alumni</label>
-          <select id="logo2Alumni"></select>
-        </div>
-
-        <div id="logo2Upload" class="uploadBlock hidden">
-          <label>Uploader un logo</label>
-          <input type="file" id="logo2File" accept="image/*" />
-        </div>
-
-        <canvas id="logoPreview2" class="logoCanvas"></canvas>
-      </div>
-    </div>
-
-<!-- =======================
-     3. PHOTO DE PROFIL
-======================= -->
-<section class="section">
-  <h2>3. Photo de profil</h2>
-
-  <label class="btn-upload">
-    <input type="file" id="photoFile" accept="image/*">
-    Choisir une photo
-  </label>
-
-  <p>Vous pouvez zoomer et déplacer votre visage dans la zone ci-dessous.</p>
-
-  <div class="photo-wrapper">
-    <!-- Zone de recadrage sans ellipse -->
-    <div id="cropContainer">
-      <img id="photoToCrop" src="" alt="" />
-    </div>
-
-    <!-- Aperçu final -->
-    <div class="preview-final">
-      <p>Aperçu final</p>
-      <canvas id="finalPreviewCanvas" width="600" height="750"></canvas>
-    </div>
-  </div>
-</section>
-
-
-    <!-- CONSENTEMENT -->
-    <div class="sectionBox">
-      <label>
-        <input type="checkbox" id="consent" />
-        J’autorise l’usage de ma photo et des logos dans le cadre de l’appel à l’action.
-      </label>
-    </div>
-
-    <!-- BOUTON -->
-    <button id="generateBtn" disabled>Générer mon visuel</button>
-
-  </div>
-
-  <!-- JS -->
-  <script src="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.js"></script>
-  <script src="script.js"></script>
+    <!-- SCRIPT -->
+    <script src="script.js"></script>
 
 </body>
 </html>
