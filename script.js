@@ -2,59 +2,53 @@
    CONFIG GLOBALE
 -------------------------------------------*/
 
-// Webhook Make — À personnaliser
+// Webhook Make — à personnaliser
 const MAKE_WEBHOOK_URL = "https://hook.integromat.com/XXX";
 
-// Coordonnées exactes de la bande blanche (px)
+// Coordonnées de la bande blanche (px)
 const BAND_TOP = 1122;
 const BAND_BOTTOM = 1284;
 const BAND_HEIGHT = BAND_BOTTOM - BAND_TOP;
 
-// Hauteur maximum autorisée pour un logo (px)
+// Hauteur max des logos dans la bande (px)
 const MAX_LOGO_HEIGHT = 142;
 
-// Bibliothèque Alumni (chargée dynamiquement)
-let ALUMNI_LOGOS = {};  
+// Position de la photo dans le visuel final (px)
+// 0,98 cm → ~37 px ; 9,17 cm → ~347 px ; 12,33 cm → ~466 px
+const PHOTO_X = 37;
+const PHOTO_Y = 347;
+const PHOTO_SIZE = 466;
+const PHOTO_RADIUS = PHOTO_SIZE / 2;
+const PHOTO_CENTER_X = PHOTO_X + PHOTO_RADIUS;
+const PHOTO_CENTER_Y = PHOTO_Y + PHOTO_RADIUS;
 
+// Bibliothèque alumni (à partir de data/alumni.json)
+let ALUMNI_LOGOS = {};
+let alumniList = [];
 
-/* ------------------------------------------
-   CHARGEMENT DU FICHIER alumni.json
--------------------------------------------*/
-async function loadAlumniLogos() {
-    try {
-        const response = await fetch("data/alumni.json");
-        const data = await response.json();
-        ALUMNI_LOGOS = data.alumni.reduce((acc, item) => {
-            acc[item.id] = item.logo;
-            return acc;
-        }, {});
-    } catch (err) {
-        console.error("Erreur lors du chargement de alumni.json :", err);
-    }
-}
-loadAlumniLogos();
-
-
-/* ------------------------------------------
-   VARIABLES GLOBALES
--------------------------------------------*/
-
+// Croppie instances
 let cropPhoto = null;
 let cropLogo1 = null;
 let cropLogo2 = null;
 
+// Sources finales
 let photoSource = null;
 let logo1Source = null;
 let logo2Source = null;
 
+// Canvas final (HD mais caché en UI)
 const finalCanvas = document.getElementById("finalCanvas");
 const ctx = finalCanvas.getContext("2d");
 
+// Image d’aperçu floue
+const previewImg = document.getElementById("previewImage");
+
+// État
 let hasPreview = false;
 
 
 /* ------------------------------------------
-   UTILITAIRE : CHARGEMENT IMAGE
+   UTILITAIRE : CHARGER UNE IMAGE
 -------------------------------------------*/
 function loadImage(src) {
     return new Promise((resolve, reject) => {
@@ -67,7 +61,109 @@ function loadImage(src) {
 
 
 /* ------------------------------------------
-   ACTUALISATION DES BOUTONS
+   CHARGEMENT ALUMNI.JSON
+-------------------------------------------*/
+async function loadAlumniLogos() {
+    try {
+        const response = await fetch("data/alumni.json");
+        const data = await response.json();
+        alumniList = data.alumni || [];
+
+        ALUMNI_LOGOS = alumniList.reduce((acc, item) => {
+            acc[item.id] = item.logo;
+            return acc;
+        }, {});
+
+        populateAlumniSelects();
+    } catch (err) {
+        console.error("Erreur lors du chargement de data/alumni.json :", err);
+    }
+}
+
+function populateAlumniSelects() {
+    const selects = [
+        document.getElementById("logo1Alumni"),
+        document.getElementById("logo2Alumni")
+    ];
+
+    selects.forEach((select) => {
+        if (!select) return;
+
+        // Reset
+        select.innerHTML = "";
+
+        // Option vide
+        const emptyOpt = document.createElement("option");
+        emptyOpt.value = "";
+        emptyOpt.textContent = "Choisis ton association d’alumni";
+        select.appendChild(emptyOpt);
+
+        // Alumni
+        alumniList.forEach((a) => {
+            const opt = document.createElement("option");
+            opt.value = a.id;
+            opt.textContent = a.name;
+            select.appendChild(opt);
+        });
+
+        // Option "je n’ai pas trouvé"
+        const uploadOpt = document.createElement("option");
+        uploadOpt.value = "__upload__";
+        uploadOpt.textContent =
+            "Je n’ai pas trouvé mon association – j’importe mon logo";
+        select.appendChild(uploadOpt);
+
+        // Activation filtrage clavier
+        setupAlumniFilter(select);
+    });
+}
+
+// Filtrage du <select> via saisie clavier
+function setupAlumniFilter(select) {
+    let filter = "";
+    let timer = null;
+
+    select.addEventListener("keydown", (e) => {
+        const key = e.key;
+
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => {
+            filter = "";
+            resetAlumniOptions(select);
+        }, 1500);
+
+        if (key === "Backspace") {
+            filter = filter.slice(0, -1);
+        } else if (key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+            filter += key.toLowerCase();
+        } else if (key === "Escape") {
+            filter = "";
+            resetAlumniOptions(select);
+            return;
+        } else {
+            return;
+        }
+
+        const options = Array.from(select.options);
+        options.forEach((opt, index) => {
+            if (index === 0 || opt.value === "__upload__") {
+                opt.hidden = false;
+                return;
+            }
+            opt.hidden = !opt.text.toLowerCase().includes(filter);
+        });
+    });
+}
+
+function resetAlumniOptions(select) {
+    Array.from(select.options).forEach((opt) => {
+        opt.hidden = false;
+    });
+}
+
+
+/* ------------------------------------------
+   MISE À JOUR DES BOUTONS
 -------------------------------------------*/
 function updateButtons() {
     const email = document.getElementById("email").value.trim();
@@ -84,9 +180,12 @@ function updateButtons() {
 
 
 /* ------------------------------------------
-   PHOTO : UPLOAD + CROPPING
+   PHOTO : UPLOAD + RECADRAGE (pas d’aperçu rond)
 -------------------------------------------*/
-document.getElementById("photoUpload").addEventListener("change", (e) => {
+const photoUploadInput = document.getElementById("photoUpload");
+const photoZoomInput = document.getElementById("photoZoom");
+
+photoUploadInput.addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -103,15 +202,16 @@ document.getElementById("photoUpload").addEventListener("change", (e) => {
 
         cropPhoto.bind({ url: event.target.result });
 
-        document.getElementById("photoZoom").value = 1;
+        photoZoomInput.value = 1;
         cropPhoto.setZoom(1);
+
         updateButtons();
     };
 
     reader.readAsDataURL(file);
 });
 
-document.getElementById("photoZoom").addEventListener("input", (e) => {
+photoZoomInput.addEventListener("input", (e) => {
     if (!cropPhoto) return;
     cropPhoto.setZoom(parseFloat(e.target.value));
 });
@@ -122,20 +222,19 @@ function exportPhoto() {
     return cropPhoto
         .result({
             type: "base64",
-            size: { width: 600, height: 600 },
+            size: { width: PHOTO_SIZE, height: PHOTO_SIZE },
             format: "png",
             circle: true
         })
         .then((output) => {
             photoSource = output;
-            document.getElementById("photoPreview").style.backgroundImage = `url(${output})`;
             return output;
         });
 }
 
 
 /* ------------------------------------------
-   GESTION 0 / 1 / 2 LOGOS
+   NB DE LOGOS (0 / 1 / 2)
 -------------------------------------------*/
 document.querySelectorAll("input[name='nbLogos']").forEach((radio) => {
     radio.addEventListener("change", () => {
@@ -151,52 +250,56 @@ document.querySelectorAll("input[name='nbLogos']").forEach((radio) => {
 
 
 /* ------------------------------------------
-   LOGO 1 : GESTION TYPE
+   LOGO 1 : TYPE & ALUMNI
 -------------------------------------------*/
-document.getElementById("logo1Type").addEventListener("change", (e) => {
-    const type = e.target.value;
+const logo1TypeSelect = document.getElementById("logo1Type");
+const logo1AlumniZone = document.getElementById("logo1AlumniZone");
+const logo1UploadZone = document.getElementById("logo1UploadZone");
+const logo1AlumniSelect = document.getElementById("logo1Alumni");
+const logo1ZoomInput = document.getElementById("logo1Zoom");
+
+logo1TypeSelect.addEventListener("change", () => {
+    const type = logo1TypeSelect.value;
 
     logo1Source = null;
     document.getElementById("logoPreview1").style.backgroundImage = "";
     document.getElementById("logoPreview1Alumni").style.backgroundImage = "";
 
-    document.getElementById("logo1AlumniZone").style.display =
-        type === "alumni" ? "block" : "none";
-    document.getElementById("logo1UploadZone").style.display =
-        type === "other" ? "block" : "none";
+    if (type === "alumni") {
+        logo1AlumniZone.style.display = "block";
+        const val = logo1AlumniSelect.value;
+        logo1UploadZone.style.display = val === "__upload__" ? "block" : "none";
+    } else if (type === "other") {
+        logo1AlumniZone.style.display = "none";
+        logo1UploadZone.style.display = "block";
+    } else {
+        logo1AlumniZone.style.display = "none";
+        logo1UploadZone.style.display = "none";
+    }
 });
 
+logo1AlumniSelect.addEventListener("change", () => {
+    const val = logo1AlumniSelect.value;
 
-/* ------------------------------------------
-   LOGO 1 : ALUMNI (Sélection + Preview)
--------------------------------------------*/
-document.getElementById("logo1AlumniSearch").addEventListener("input", () => {
-    const term = document.getElementById("logo1AlumniSearch").value.toLowerCase();
-    const select = document.getElementById("logo1Alumni");
-
-    Array.from(select.options).forEach((opt, index) => {
-        if (index === 0) return;
-        opt.hidden = !opt.text.toLowerCase().includes(term);
-    });
-});
-
-document.getElementById("logo1Alumni").addEventListener("change", () => {
-    const val = document.getElementById("logo1Alumni").value;
+    if (val === "__upload__") {
+        logo1Source = null;
+        document.getElementById("logoPreview1Alumni").style.backgroundImage = "";
+        logo1UploadZone.style.display = "block";
+        return;
+    }
 
     if (val && ALUMNI_LOGOS[val]) {
         logo1Source = ALUMNI_LOGOS[val];
+        logo1UploadZone.style.display = "none";
         document.getElementById("logoPreview1Alumni").style.backgroundImage =
             `url(${logo1Source})`;
     } else {
         logo1Source = null;
+        logo1UploadZone.style.display = "none";
         document.getElementById("logoPreview1Alumni").style.backgroundImage = "";
     }
 });
 
-
-/* ------------------------------------------
-   LOGO 1 : UPLOAD + CROP
--------------------------------------------*/
 document.getElementById("logoUpload1").addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -213,33 +316,54 @@ document.getElementById("logoUpload1").addEventListener("change", (e) => {
         });
 
         cropLogo1.bind({ url: event.target.result });
-        document.getElementById("logo1Zoom").value = 1;
+
+        logo1ZoomInput.value = 1;
         cropLogo1.setZoom(1);
     };
     reader.readAsDataURL(file);
 });
 
-document.getElementById("logo1Zoom").addEventListener("input", (e) => {
+logo1ZoomInput.addEventListener("input", (e) => {
     if (!cropLogo1) return;
     cropLogo1.setZoom(parseFloat(e.target.value));
 });
 
 function exportLogo1() {
-    const type = document.getElementById("logo1Type").value;
+    const type = logo1TypeSelect.value;
 
-    if (type === "alumni") return Promise.resolve(logo1Source);
+    if (type === "alumni") {
+        const val = logo1AlumniSelect.value;
+        if (val === "__upload__" && cropLogo1) {
+            return cropLogo1
+                .result({
+                    type: "base64",
+                    size: { width: 500, height: 300 },
+                    format: "png"
+                })
+                .then((output) => {
+                    logo1Source = output;
+                    document.getElementById("logoPreview1").style.backgroundImage =
+                        `url(${output})`;
+                    return output;
+                });
+        } else {
+            return Promise.resolve(logo1Source || null);
+        }
+    }
 
     if (type === "other" && cropLogo1) {
-        return cropLogo1.result({
-            type: "base64",
-            size: { width: 500, height: 300 },
-            format: "png"
-        }).then((output) => {
-            logo1Source = output;
-            document.getElementById("logoPreview1").style.backgroundImage =
-                `url(${output})`;
-            return output;
-        });
+        return cropLogo1
+            .result({
+                type: "base64",
+                size: { width: 500, height: 300 },
+                format: "png"
+            })
+            .then((output) => {
+                logo1Source = output;
+                document.getElementById("logoPreview1").style.backgroundImage =
+                    `url(${output})`;
+                return output;
+            });
     }
 
     return Promise.resolve(null);
@@ -247,41 +371,52 @@ function exportLogo1() {
 
 
 /* ------------------------------------------
-   LOGO 2 – même logique que LOGO 1
+   LOGO 2 : TYPE & ALUMNI
 -------------------------------------------*/
+const logo2TypeSelect = document.getElementById("logo2Type");
+const logo2AlumniZone = document.getElementById("logo2AlumniZone");
+const logo2UploadZone = document.getElementById("logo2UploadZone");
+const logo2AlumniSelect = document.getElementById("logo2Alumni");
+const logo2ZoomInput = document.getElementById("logo2Zoom");
 
-document.getElementById("logo2Type").addEventListener("change", (e) => {
-    const type = e.target.value;
+logo2TypeSelect.addEventListener("change", () => {
+    const type = logo2TypeSelect.value;
 
     logo2Source = null;
     document.getElementById("logoPreview2").style.backgroundImage = "";
     document.getElementById("logoPreview2Alumni").style.backgroundImage = "";
 
-    document.getElementById("logo2AlumniZone").style.display =
-        type === "alumni" ? "block" : "none";
-    document.getElementById("logo2UploadZone").style.display =
-        type === "other" ? "block" : "none";
+    if (type === "alumni") {
+        logo2AlumniZone.style.display = "block";
+        const val = logo2AlumniSelect.value;
+        logo2UploadZone.style.display = val === "__upload__" ? "block" : "none";
+    } else if (type === "other") {
+        logo2AlumniZone.style.display = "none";
+        logo2UploadZone.style.display = "block";
+    } else {
+        logo2AlumniZone.style.display = "none";
+        logo2UploadZone.style.display = "none";
+    }
 });
 
-document.getElementById("logo2AlumniSearch").addEventListener("input", () => {
-    const term = document.getElementById("logo2AlumniSearch").value.toLowerCase();
-    const select = document.getElementById("logo2Alumni");
+logo2AlumniSelect.addEventListener("change", () => {
+    const val = logo2AlumniSelect.value;
 
-    Array.from(select.options).forEach((opt, index) => {
-        if (index === 0) return;
-        opt.hidden = !opt.text.toLowerCase().includes(term);
-    });
-});
-
-document.getElementById("logo2Alumni").addEventListener("change", () => {
-    const val = document.getElementById("logo2Alumni").value;
+    if (val === "__upload__") {
+        logo2Source = null;
+        document.getElementById("logoPreview2Alumni").style.backgroundImage = "";
+        logo2UploadZone.style.display = "block";
+        return;
+    }
 
     if (val && ALUMNI_LOGOS[val]) {
         logo2Source = ALUMNI_LOGOS[val];
+        logo2UploadZone.style.display = "none";
         document.getElementById("logoPreview2Alumni").style.backgroundImage =
             `url(${logo2Source})`;
     } else {
         logo2Source = null;
+        logo2UploadZone.style.display = "none";
         document.getElementById("logoPreview2Alumni").style.backgroundImage = "";
     }
 });
@@ -302,34 +437,56 @@ document.getElementById("logoUpload2").addEventListener("change", (e) => {
         });
 
         cropLogo2.bind({ url: event.target.result });
-        document.getElementById("logo2Zoom").value = 1;
+
+        logo2ZoomInput.value = 1;
         cropLogo2.setZoom(1);
     };
     reader.readAsDataURL(file);
 });
 
-document.getElementById("logo2Zoom").addEventListener("input", (e) => {
+logo2ZoomInput.addEventListener("input", (e) => {
     if (!cropLogo2) return;
     cropLogo2.setZoom(parseFloat(e.target.value));
 });
 
 function exportLogo2() {
-    const type = document.getElementById("logo2Type").value;
+    const type = logo2TypeSelect.value;
 
-    if (type === "alumni") return Promise.resolve(logo2Source);
+    if (type === "alumni") {
+        const val = logo2AlumniSelect.value;
+        if (val === "__upload__" && cropLogo2) {
+            return cropLogo2
+                .result({
+                    type: "base64",
+                    size: { width: 500, height: 300 },
+                    format: "png"
+                })
+                .then((output) => {
+                    logo2Source = output;
+                    document.getElementById("logoPreview2").style.backgroundImage =
+                        `url(${output})`;
+                    return output;
+                });
+        } else {
+            return Promise.resolve(logo2Source || null);
+        }
+    }
 
     if (type === "other" && cropLogo2) {
-        return cropLogo2.result({
-            type: "base64",
-            size: { width: 500, height: 300 },
-            format: "png"
-        }).then((output) => {
-            logo2Source = output;
-            document.getElementById("logoPreview2").style.backgroundImage =
-                `url(${output})`;
-            return output;
-        });
+        return cropLogo2
+            .result({
+                type: "base64",
+                size: { width: 500, height: 300 },
+                format: "png"
+            })
+            .then((output) => {
+                logo2Source = output;
+                document.getElementById("logoPreview2").style.backgroundImage =
+                    `url(${output})`;
+                return output;
+            });
     }
+
     return Promise.resolve(null);
 }
 
@@ -338,14 +495,15 @@ function exportLogo2() {
    CHOIX DU TEMPLATE
 -------------------------------------------*/
 function getTemplatePath(nbLogos) {
-    return nbLogos === "0"
-        ? "templates/FR/template_FR_nologo.png"
-        : "templates/FR/template_FR_white.png";
+    if (nbLogos === "0") {
+        return "templates/FR/template_FR_nologo.png";
+    }
+    return "templates/FR/template_FR_white.png";
 }
 
 
 /* ------------------------------------------
-   POSITIONNEMENT AUTOMATIQUE DES LOGOS
+   POSITIONNEMENT DES LOGOS DANS LA BANDE
 -------------------------------------------*/
 async function placeLogosOnCanvas(nbLogos) {
     const logos = [];
@@ -383,7 +541,7 @@ async function placeLogosOnCanvas(nbLogos) {
 
 
 /* ------------------------------------------
-   CONSTRUCTION DU VISUEL FINAL
+   CONSTRUCTION DU VISUEL FINAL + APERÇU FLOU
 -------------------------------------------*/
 async function drawFinalCanvas() {
     const nbLogos = document.querySelector("input[name='nbLogos']:checked").value;
@@ -393,27 +551,38 @@ async function drawFinalCanvas() {
     if (nbLogos === "2") await exportLogo2();
 
     if (!photoSource) {
-        alert("Merci d’importer et recadrer ta photo.");
+        alert("Merci d’importer et de recadrer ta photo avant de générer ton visuel.");
         return;
     }
 
     ctx.clearRect(0, 0, finalCanvas.width, finalCanvas.height);
 
-    const template = await loadImage(getTemplatePath(nbLogos));
+    const templatePath = getTemplatePath(nbLogos);
+    const template = await loadImage(templatePath);
     ctx.drawImage(template, 0, 0, 1080, 1350);
 
+    // Photo
     const photoImg = await loadImage(photoSource);
 
     ctx.save();
     ctx.beginPath();
-    ctx.arc(305, 455, 250, 0, Math.PI * 2);
+    ctx.arc(PHOTO_CENTER_X, PHOTO_CENTER_Y, PHOTO_RADIUS, 0, Math.PI * 2);
+    ctx.closePath();
     ctx.clip();
-    ctx.drawImage(photoImg, 55, 205, 500, 500);
+    ctx.drawImage(photoImg, PHOTO_X, PHOTO_Y, PHOTO_SIZE, PHOTO_SIZE);
     ctx.restore();
 
+    // Logos
     if (nbLogos !== "0") {
         await placeLogosOnCanvas(nbLogos);
     }
+
+    // Aperçu flou basse qualité
+    const previewBase64 = finalCanvas.toDataURL("image/jpeg", 0.12);
+    previewImg.src = previewBase64;
+    previewImg.style.filter = "blur(1.6px)";
+    previewImg.style.width = "350px";
+    previewImg.style.pointerEvents = "none";
 
     hasPreview = true;
     updateButtons();
@@ -421,34 +590,37 @@ async function drawFinalCanvas() {
 
 
 /* ------------------------------------------
-   ÉVÈNEMENTS : PREVIEW & SEND
+   PREVIEW & ENVOI
 -------------------------------------------*/
 document.getElementById("previewBtn").addEventListener("click", drawFinalCanvas);
 
 document.getElementById("sendBtn").addEventListener("click", async () => {
     if (!hasPreview) {
-        alert("Merci de générer un aperçu d’abord.");
+        alert("Merci de générer d’abord un aperçu.");
         return;
     }
 
     const email = document.getElementById("email").value.trim();
     if (!email) {
-        alert("Merci de renseigner ton email.");
+        alert("Merci de renseigner ton e-mail.");
         return;
     }
 
     const fullname = document.getElementById("fullname").value.trim();
     const nbLogos = document.querySelector("input[name='nbLogos']:checked").value;
 
+    // Visuel HD pour Make (PNG plein format)
+    const hdBase64 = finalCanvas.toDataURL("image/png");
+
     const payload = {
         email,
         fullname,
         nbLogos,
-        logo1Type: document.getElementById("logo1Type").value,
-        logo2Type: document.getElementById("logo2Type").value,
-        logo1Alumni: document.getElementById("logo1Alumni").value || null,
-        logo2Alumni: document.getElementById("logo2Alumni").value || null,
-        image: finalCanvas.toDataURL("image/png"),
+        logo1Type: logo1TypeSelect.value,
+        logo2Type: logo2TypeSelect.value,
+        logo1Alumni: logo1AlumniSelect.value || null,
+        logo2Alumni: logo2AlumniSelect.value || null,
+        image: hdBase64,
         timestamp: new Date().toISOString()
     };
 
@@ -459,16 +631,22 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
             body: JSON.stringify(payload)
         });
 
-        alert("Ton visuel a été envoyé ! Tu vas recevoir un e-mail avec ton image et des suggestions de texte.");
+        alert(
+            "Ton visuel a été généré. Tu vas recevoir un e-mail avec la version HD et des suggestions de texte pour ton post."
+        );
     } catch (err) {
         console.error(err);
-        alert("Erreur lors de l’envoi. Réessaie plus tard.");
+        alert("Une erreur est survenue lors de l’envoi. Merci de réessayer plus tard.");
     }
 });
 
 
 /* ------------------------------------------
-   UX : LISTENERS
+   UX DE BASE
 -------------------------------------------*/
 document.getElementById("email").addEventListener("input", updateButtons);
 document.getElementById("consent").addEventListener("change", updateButtons);
+
+// Initialisation
+updateButtons();
+loadAlumniLogos();
