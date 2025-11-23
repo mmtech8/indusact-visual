@@ -2,242 +2,257 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Créer mon visuel – J’agis pour une industrie mixte et performante</title>
+    <title>J’agis pour une industrie mixte et performante</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- STYLES -->
+    <!-- Croppie CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/croppie/croppie.css" />
+
+    <!-- Styles -->
     <link rel="stylesheet" href="style.css" />
-
-    <!-- CROPPIE -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"></script>
 </head>
 <body>
-
-<div class="container">
-
-    <h1 class="title">Je crée mon visuel<br>“J’agis pour une industrie mixte et performante”</h1>
-    <p class="subtitle">
-        Complète les informations, personnalise ton visuel, puis génère un aperçu avant de le recevoir par e-mail.
-    </p>
-
-    <!-- 1. INFORMATIONS -->
-    <section class="block">
-        <h2>1. Informations</h2>
-
-        <label for="email">Email (pour recevoir ton visuel) *</label>
-        <input id="email" type="email" placeholder="ton.email@exemple.com" required />
-
-        <label for="fullname">Identité (optionnel)</label>
-        <input id="fullname" type="text" placeholder="Ex : Prénom Nom" />
-    </section>
-
-    <!-- 2. PERSONNALISATION DU VISUEL -->
-    <section class="block">
-        <h2>2. Personnalisation du visuel</h2>
-
-        <!-- PHOTO DE PROFIL -->
-        <div class="sub-block">
-            <h3>Photo de profil</h3>
-
-            <button class="btn" type="button" onclick="document.getElementById('photoUpload').click()">
-                Choisir une photo
-            </button>
-            <input id="photoUpload" type="file" accept="image/*" style="display:none;" />
-
-            <p class="hint">
-                Ta photo sera affichée dans un cercle. Tu peux zoomer et déplacer pour ajuster le cadrage.
+    <main class="page">
+        <header class="page-header">
+            <h1>J’agis pour une industrie mixte et performante</h1>
+            <p>
+                Personnalise ton visuel en quelques étapes, puis reçois la version HD par e-mail,
+                prête à être postée sur LinkedIn.
             </p>
+        </header>
 
-            <div class="photo-crop-wrapper">
-                <div id="photoCropArea"></div>
+        <section class="layout">
+            <!-- COLONNE GAUCHE : FORMULAIRE -->
+            <section class="form-column">
+                <!-- 1. Informations -->
+                <section class="card">
+                    <h2>1. Tes informations</h2>
 
-                <div class="zoom-control">
-                    <label for="photoZoom">Zoom</label>
-                    <input id="photoZoom" type="range" min="0" max="2" step="0.01" value="1" />
-                    <div class="scale-labels">
-                        <span>-</span>
-                        <span>|</span>
-                        <span>+</span>
+                    <div class="field">
+                        <label for="email">Adresse e-mail *</label>
+                        <input type="email" id="email" placeholder="prenom.nom@example.com" required />
                     </div>
-                </div>
 
-                <div class="photo-preview-wrapper">
-                    <p>Aperçu du cadrage</p>
-                    <div id="photoPreview" class="circle-preview"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ORGANISATIONS D’APPARTENANCE -->
-        <div class="sub-block">
-            <h3>Ajout d’organisations d’appartenance</h3>
-            <p class="hint">
-                Tu peux valoriser ton appartenance à 2 organisations si tu le souhaites (association d’alumni, entreprise, association...).
-            </p>
-
-            <label>Combien de logos d’organisation veux-tu mettre en avant ?</label>
-            <div class="radio-line">
-                <label><input type="radio" name="nbLogos" value="0" checked> Aucune</label>
-                <label><input type="radio" name="nbLogos" value="1"> 1 logo</label>
-                <label><input type="radio" name="nbLogos" value="2"> 2 logos</label>
-            </div>
-
-            <!-- LOGO 1 -->
-            <div id="logo1Section" class="logo-section">
-                <h4>Logo 1</h4>
-
-                <label for="logo1Type">Type d’organisation</label>
-                <select id="logo1Type">
-                    <option value="">Sélectionne...</option>
-                    <option value="alumni">Association d’alumni</option>
-                    <option value="other">Entreprise / association</option>
-                </select>
-
-                <!-- Alumni Logo 1 -->
-                <div id="logo1AlumniZone" class="logo-alumni-zone" style="display:none;">
-                    <label for="logo1Alumni">Sélectionne ton association alumni</label>
-                    <!-- Tu pourras connecter ça à un JSON ou le remplir à la main -->
-                    <input id="logo1AlumniSearch" type="text" placeholder="Tape le nom de ton asso..." />
-                    <select id="logo1Alumni">
-                        <option value="">Choisis dans la liste</option>
-                        <option value="insead">INSEAD Alumni Association</option>
-                        <option value="arts_metiers">Arts & Métiers Alumni</option>
-                        <option value="hec">HEC Alumni</option>
-                        <option value="essec">ESSEC Alumni</option>
-                        <option value="centrale">Centrale Alumni</option>
-                        <!-- etc. -->
-                    </select>
-
-                    <div class="logo-preview-wrapper">
-                        <p>Aperçu du logo alumni</p>
-                        <div id="logoPreview1Alumni" class="logo-preview"></div>
+                    <div class="field">
+                        <label for="fullname">Identité (facultatif)</label>
+                        <input type="text" id="fullname" placeholder="Prénom Nom" />
                     </div>
-                </div>
 
-                <!-- Upload / Recadrage Logo 1 -->
-                <div id="logo1UploadZone" class="logo-upload-zone" style="display:none;">
-                    <label for="logoUpload1">Importer un logo</label>
-                    <input id="logoUpload1" type="file" accept="image/*" />
+                    <label class="checkbox-row">
+                        <input type="checkbox" id="consent" />
+                        <span>
+                            J’autorise l’utilisation de ma photo et des logos d’organisation dans le cadre de 
+                            l’appel à l’action « Pour une industrie mixte et performante ».
+                        </span>
+                    </label>
+                </section>
 
-                    <p class="hint">Tu peux zoomer et déplacer le logo pour qu’il s’intègre bien dans la bande blanche.</p>
+                <!-- 2. Personnalisation du visuel -->
+                <section class="card">
+                    <h2>2. Personnalise ton visuel</h2>
 
-                    <div class="crop-wrapper">
-                        <div id="logoCrop1"></div>
+                    <!-- PHOTO -->
+                    <div class="subsection">
+                        <h3>Photo de profil</h3>
+                        <p class="help-text">
+                            Importe une photo de toi, recadre-la dans le rond, puis ajuste le zoom pour que ton visage
+                            soit bien visible.
+                        </p>
 
-                        <div class="zoom-control">
-                            <label for="logo1Zoom">Zoom</label>
-                            <input id="logo1Zoom" type="range" min="0" max="2" step="0.01" value="1" />
-                            <div class="scale-labels">
-                                <span>-</span>
-                                <span>|</span>
-                                <span>+</span>
+                        <div class="field">
+                            <label for="photoUpload">Importer ta photo *</label>
+                            <input type="file" id="photoUpload" accept="image/*" />
+                        </div>
+
+                        <div class="crop-wrapper">
+                            <div id="photoCropArea" class="crop-area"></div>
+                        </div>
+
+                        <div class="slider-row">
+                            <label for="photoZoom">Zoom</label>
+                            <input
+                                type="range"
+                                id="photoZoom"
+                                min="0.5"
+                                max="2"
+                                step="0.01"
+                                value="1"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- LOGOS -->
+                    <div class="subsection">
+                        <h3>Organisations d’appartenance (facultatif)</h3>
+                        <p class="help-text">
+                            Tu peux afficher jusqu’à deux logos (association d’alumni, entreprise, association…).
+                        </p>
+
+                        <div class="field">
+                            <span>Combien de logos souhaites-tu afficher ?</span>
+                            <div class="radio-row">
+                                <label>
+                                    <input type="radio" name="nbLogos" value="0" checked />
+                                    Aucun
+                                </label>
+                                <label>
+                                    <input type="radio" name="nbLogos" value="1" />
+                                    1 logo
+                                </label>
+                                <label>
+                                    <input type="radio" name="nbLogos" value="2" />
+                                    2 logos
+                                </label>
                             </div>
                         </div>
 
-                        <div class="logo-preview-wrapper">
-                            <p>Aperçu du logo 1</p>
-                            <div id="logoPreview1" class="logo-preview"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                        <!-- LOGO 1 -->
+                        <div id="logo1Section" class="logo-section" style="display: none;">
+                            <h4>Logo 1</h4>
 
-            <!-- LOGO 2 -->
-            <div id="logo2Section" class="logo-section" style="display:none;">
-                <h4>Logo 2</h4>
+                            <div class="field">
+                                <label for="logo1Type">Type d’organisation</label>
+                                <select id="logo1Type">
+                                    <option value="">Sélectionner</option>
+                                    <option value="alumni">Association d’alumni</option>
+                                    <option value="other">Entreprise / Association</option>
+                                </select>
+                            </div>
 
-                <label for="logo2Type">Type d’organisation</label>
-                <select id="logo2Type">
-                    <option value="">Sélectionne...</option>
-                    <option value="alumni">Association d’alumni</option>
-                    <option value="other">Entreprise / association</option>
-                </select>
+                            <!-- Zone Alumni -->
+                            <div id="logo1AlumniZone" class="field" style="display: none;">
+                                <label for="logo1Alumni">Association d’alumni</label>
+                                <select id="logo1Alumni"></select>
+                                <p class="help-text small">
+                                    Commence à taper le nom de ton association dans la liste pour filtrer.
+                                </p>
+                                <div
+                                    id="logoPreview1Alumni"
+                                    class="logo-preview alumni-preview"
+                                ></div>
+                            </div>
 
-                <!-- Alumni Logo 2 -->
-                <div id="logo2AlumniZone" class="logo-alumni-zone" style="display:none;">
-                    <label for="logo2Alumni">Sélectionne ton association alumni</label>
-                    <input id="logo2AlumniSearch" type="text" placeholder="Tape le nom de ton asso..." />
-                    <select id="logo2Alumni">
-                        <option value="">Choisis dans la liste</option>
-                        <option value="insead">INSEAD Alumni Association</option>
-                        <option value="arts_metiers">Arts & Métiers Alumni</option>
-                        <option value="hec">HEC Alumni</option>
-                        <option value="essec">ESSEC Alumni</option>
-                        <option value="centrale">Centrale Alumni</option>
-                        <!-- etc. -->
-                    </select>
+                            <!-- Upload logo 1 -->
+                            <div id="logo1UploadZone" style="display: none;">
+                                <div class="field">
+                                    <label for="logoUpload1">Importer un logo</label>
+                                    <input type="file" id="logoUpload1" accept="image/*" />
+                                </div>
 
-                    <div class="logo-preview-wrapper">
-                        <p>Aperçu du logo alumni</p>
-                        <div id="logoPreview2Alumni" class="logo-preview"></div>
-                    </div>
-                </div>
+                                <div class="crop-wrapper">
+                                    <div id="logoCrop1" class="crop-area logo-crop"></div>
+                                </div>
 
-                <!-- Upload / Recadrage Logo 2 -->
-                <div id="logo2UploadZone" class="logo-upload-zone" style="display:none;">
-                    <label for="logoUpload2">Importer un logo</label>
-                    <input id="logoUpload2" type="file" accept="image/*" />
+                                <div class="slider-row">
+                                    <label for="logo1Zoom">Zoom</label>
+                                    <input
+                                        type="range"
+                                        id="logo1Zoom"
+                                        min="0.5"
+                                        max="2"
+                                        step="0.01"
+                                        value="1"
+                                    />
+                                </div>
 
-                    <p class="hint">Tu peux zoomer et déplacer le logo pour qu’il s’intègre bien dans la bande blanche.</p>
-
-                    <div class="crop-wrapper">
-                        <div id="logoCrop2"></div>
-
-                        <div class="zoom-control">
-                            <label for="logo2Zoom">Zoom</label>
-                            <input id="logo2Zoom" type="range" min="0" max="2" step="0.01" value="1" />
-                            <div class="scale-labels">
-                                <span>-</span>
-                                <span>|</span>
-                                <span>+</span>
+                                <div id="logoPreview1" class="logo-preview"></div>
                             </div>
                         </div>
 
-                        <div class="logo-preview-wrapper">
-                            <p>Aperçu du logo 2</p>
-                            <div id="logoPreview2" class="logo-preview"></div>
+                        <!-- LOGO 2 -->
+                        <div id="logo2Section" class="logo-section" style="display: none;">
+                            <h4>Logo 2</h4>
+
+                            <div class="field">
+                                <label for="logo2Type">Type d’organisation</label>
+                                <select id="logo2Type">
+                                    <option value="">Sélectionner</option>
+                                    <option value="alumni">Association d’alumni</option>
+                                    <option value="other">Entreprise / Association</option>
+                                </select>
+                            </div>
+
+                            <!-- Zone Alumni -->
+                            <div id="logo2AlumniZone" class="field" style="display: none;">
+                                <label for="logo2Alumni">Association d’alumni</label>
+                                <select id="logo2Alumni"></select>
+                                <p class="help-text small">
+                                    Commence à taper le nom de ton association dans la liste pour filtrer.
+                                </p>
+                                <div
+                                    id="logoPreview2Alumni"
+                                    class="logo-preview alumni-preview"
+                                ></div>
+                            </div>
+
+                            <!-- Upload logo 2 -->
+                            <div id="logo2UploadZone" style="display: none;">
+                                <div class="field">
+                                    <label for="logoUpload2">Importer un logo</label>
+                                    <input type="file" id="logoUpload2" accept="image/*" />
+                                </div>
+
+                                <div class="crop-wrapper">
+                                    <div id="logoCrop2" class="crop-area logo-crop"></div>
+                                </div>
+
+                                <div class="slider-row">
+                                    <label for="logo2Zoom">Zoom</label>
+                                    <input
+                                        type="range"
+                                        id="logo2Zoom"
+                                        min="0.5"
+                                        max="2"
+                                        step="0.01"
+                                        value="1"
+                                    />
+                                </div>
+
+                                <div id="logoPreview2" class="logo-preview"></div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-        </div><!-- fin sub-block organisations -->
+                    <!-- BOUTONS -->
+                    <div class="buttons-row">
+                        <button id="previewBtn" type="button" disabled>
+                            Générer l’aperçu
+                        </button>
+                        <button id="sendBtn" type="button" disabled>
+                            Recevoir mon visuel par e-mail
+                        </button>
+                    </div>
+                </section>
+            </section>
 
-    </section>
+            <!-- COLONNE DROITE : APERÇU -->
+            <section class="preview-column">
+                <section class="card preview-card">
+                    <h2>Aperçu de ton visuel</h2>
+                    <p class="help-text">
+                        Tu verras ici un aperçu flouté. La version HD sans flou te sera envoyée par e-mail.
+                    </p>
 
-    <!-- CONSENTEMENT -->
-    <section class="block">
-        <h2>3. Consentement</h2>
-        <label class="checkbox-line">
-            <input type="checkbox" id="consent" />
-            J’autorise l’usage de ma photo et des logos fournis dans le cadre de l’appel à l’action.
-        </label>
-    </section>
+                    <div class="preview-wrapper">
+                        <img id="previewImage" class="preview" alt="Aperçu visuel" />
+                    </div>
 
-    <!-- BOUTONS : APERÇU + ENVOI -->
-    <section class="block">
-        <h2>4. Prévisualisation et envoi</h2>
+                    <!-- Canvas HD caché (utilisé pour générer le visuel et l’envoyer à Make) -->
+                    <canvas
+                        id="finalCanvas"
+                        width="1080"
+                        height="1350"
+                        class="final-canvas"
+                    ></canvas>
+                </section>
+            </section>
+        </section>
+    </main>
 
-        <button id="previewBtn" class="btn btn-big" type="button">
-            Générer l’aperçu
-        </button>
+    <!-- Croppie JS -->
+    <script src="https://unpkg.com/croppie/croppie.min.js"></script>
 
-        <button id="sendBtn" class="btn btn-big btn-secondary" type="button" disabled>
-            Envoyer mon visuel par e-mail
-        </button>
-
-        <p class="hint">
-            Après avoir généré l’aperçu, tu pourras vérifier ton visuel avant de l’envoyer. Tu recevras un e-mail avec le visuel et quelques suggestions de texte pour ton post.
-        </p>
-
-        <div class="final-preview-wrapper">
-            <canvas id="finalCanvas" width="1080" height="1350"></canvas>
-        </div>
-    </section>
-
-</div>
-
-<script src="script.js"></script>
+    <!-- Script principal -->
+    <script src="script.js"></script>
 </body>
 </html>
