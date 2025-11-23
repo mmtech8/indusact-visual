@@ -1,263 +1,357 @@
-/* ------------------------------
-   RESET & BASE
------------------------------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
 body {
     margin: 0;
     padding: 0;
-    font-family: "Inter", sans-serif;
-    background: #030b33;
-    color: #ffffff;
-    -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4 {
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f4f6fb;
+    color: #1f2430;
+}
+
+/* PAGE GLOBALE */
+
+.page {
+    max-width: 1200px;
+    margin: 24px auto 40px;
+    padding: 0 16px;
+}
+
+.page-header {
+    margin-bottom: 24px;
+}
+
+.page-header h1 {
+    font-size: 1.6rem;
+    margin: 0 0 8px;
+}
+
+.page-header p {
     margin: 0;
-    font-weight: 700;
+    color: #5a6475;
+    font-size: 0.95rem;
 }
 
-.container {
-    max-width: 900px;
-    margin: auto;
-    padding: 25px;
-}
+/* LAYOUT 2 COLONNES */
 
-/* ------------------------------
-   TITRES
------------------------------- */
-.title {
-    font-size: 32px;
-    text-align: center;
-    margin-bottom: 10px;
-}
-
-.subtitle {
-    text-align: center;
-    font-size: 16px;
-    opacity: 0.85;
-    margin-bottom: 40px;
-}
-
-/* ------------------------------
-   BLOCS
------------------------------- */
-.block {
-    background: rgba(255,255,255,0.05);
-    padding: 25px;
-    border-radius: 14px;
-    margin-bottom: 35px;
-    border: 1px solid rgba(255,255,255,0.08);
-}
-
-.block h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
-}
-
-.sub-block {
-    margin-bottom: 35px;
-}
-
-/* ------------------------------
-   FORMULAIRES
------------------------------- */
-label {
-    display: block;
-    font-weight: 600;
-    margin-top: 15px;
-}
-
-input, select {
-    width: 100%;
-    padding: 11px 12px;
-    margin-top: 6px;
-    font-size: 16px;
-    border-radius: 8px;
-    border: none;
-    background: #ffffff;
-    color: #000;
-}
-
-.radio-line {
+.layout {
     display: flex;
-    gap: 25px;
-    margin-top: 12px;
+    gap: 20px;
+    align-items: flex-start;
 }
 
-.checkbox-line {
+.form-column {
+    flex: 2;
+    min-width: 0;
+}
+
+.preview-column {
+    flex: 1.3;
+    min-width: 0;
+}
+
+/* CARDS */
+
+.card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px 18px 18px;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+    margin-bottom: 16px;
+}
+
+.card h2 {
+    font-size: 1.1rem;
+    margin: 0 0 6px;
+}
+
+.card h3 {
+    font-size: 1rem;
+    margin: 14px 0 4px;
+}
+
+.card h4 {
+    font-size: 0.95rem;
+    margin: 10px 0 4px;
+}
+
+/* TEXTES SECONDAIRES */
+
+.help-text {
+    margin: 0 0 10px;
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.help-text.small {
+    font-size: 0.78rem;
+}
+
+/* FORM ELEMENTS */
+
+.field {
+    margin-bottom: 12px;
+}
+
+.field label {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+input[type="text"],
+input[type="email"],
+select {
+    width: 100%;
+    padding: 8px 9px;
+    border-radius: 8px;
+    border: 1px solid #d0d5dd;
+    font-size: 0.9rem;
+    outline: none;
+    background: #ffffff;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+select:focus {
+    border-color: #334155;
+    box-shadow: 0 0 0 1px rgba(51, 65, 85, 0.16);
+}
+
+input[type="file"] {
+    font-size: 0.85rem;
+}
+
+.checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: #4b5563;
+    margin-top: 6px;
+}
+
+.checkbox-row input[type="checkbox"] {
+    margin-top: 2px;
+}
+
+.radio-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    margin-top: 4px;
+    font-size: 0.85rem;
+}
+
+.radio-row label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* CROPPING ZONES */
+
+.crop-wrapper {
+    margin: 8px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.crop-area {
+    width: 300px;
+    height: 300px;
+    background: #f1f5f9;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.logo-crop {
+    height: 200px;
+}
+
+/* SLIDERS */
+
+.slider-row {
     display: flex;
     align-items: center;
     gap: 10px;
+    font-size: 0.84rem;
+    margin: 6px 0 10px;
 }
 
-/* ------------------------------
-   BOUTONS
------------------------------- */
-.btn {
-    display: inline-block;
-    background: linear-gradient(90deg, #ffb347, #ff7c33);
-    color: #00133d;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 25px;
-    font-weight: 700;
-    cursor: pointer;
-    font-size: 16px;
+.slider-row label {
+    white-space: nowrap;
 }
 
-.btn-big {
-    width: 100%;
-    padding: 14px;
-    font-size: 18px;
-    margin-top: 15px;
+.slider-row input[type="range"] {
+    flex: 1;
 }
 
-.btn-secondary {
-    background: #ffffff;
-    color: #00133d;
-}
+/* LOGO PREVIEW */
 
-.btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-/* ------------------------------
-   HINT
------------------------------- */
-.hint {
-    margin-top: 8px;
-    opacity: 0.8;
-    font-size: 13px;
-    line-height: 1.4;
-}
-
-/* ------------------------------
-   PHOTO – RECADRAGE
------------------------------- */
-.photo-crop-wrapper {
-    margin-top: 20px;
-}
-
-#photoCropArea {
-    width: 280px;
-    height: 280px;
-    background: #001226;
-    border-radius: 14px;
-    overflow: hidden;
-    margin-bottom: 15px;
-}
-
-/* Aperçu rond */
-.circle-preview {
-    width: 240px;
-    height: 240px;
-    margin-top: 15px;
-    border-radius: 50%;
-    background: #0c1a3d;
-    border: 6px solid #ffb347;
-    background-size: cover;
-    background-position: center;
-    overflow: hidden;
-}
-
-.photo-preview-wrapper { 
-    margin-top: 15px;
-}
-
-/* ------------------------------
-   LOGOS – RECADRAGE
------------------------------- */
 .logo-section {
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #e5e7eb;
 }
 
-#logoCrop1, #logoCrop2 {
-    width: 280px;
-    height: 180px;
-    background: #001226;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.logo-preview {
-    width: 240px;
-    height: 140px;
-    background: white;
-    border-radius: 10px;
-    margin-top: 10px;
+.logo-preview,
+.alumni-preview {
+    margin-top: 8px;
+    width: 100%;
+    max-width: 230px;
+    height: 80px;
+    border-radius: 8px;
+    border: 1px dashed #cbd5e1;
+    background-color: #f8fafc;
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
 }
 
-/* ------------------------------
-   ZOOM SLIDERS
------------------------------- */
-.zoom-control {
-    margin-top: 15px;
-}
+/* BOUTONS */
 
-.zoom-control input[type="range"] {
-    width: 180px;
-    margin-top: 8px;
-}
-
-.scale-labels {
-    font-size: 14px;
+.buttons-row {
     display: flex;
-    justify-content: space-between;
-    width: 180px;
-    margin-top: 4px;
-    opacity: 0.8;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
 }
 
-/* ------------------------------
-   PREVIEW FINAL
------------------------------- */
-.final-preview-wrapper {
-    margin-top: 25px;
-    text-align: center;
+button {
+    border-radius: 999px;
+    border: none;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.15s ease, transform 0.1s ease;
 }
 
-#finalCanvas {
-    width: 100%;
-    max-width: 430px;
+#previewBtn {
+    background: #0f172a;
+    color: #ffffff;
+}
+
+#previewBtn:disabled {
+    background: #cbd5e1;
+    color: #64748b;
+    cursor: not-allowed;
+}
+
+#sendBtn {
+    background: #e5e7eb;
+    color: #111827;
+}
+
+#sendBtn:disabled {
+    background: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+button:not(:disabled):hover {
+    transform: translateY(-1px);
+}
+
+/* PREVIEW COLUMN */
+
+.preview-card {
+    height: 100%;
+}
+
+.preview-wrapper {
+    margin-top: 12px;
+    padding: 10px;
     border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: #000;
-    margin-top: 20px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 260px;
 }
 
-/* ------------------------------
-   RESPONSIVE
------------------------------- */
-@media (max-width: 760px) {
+.preview {
+    max-width: 100%;
+    border-radius: 16px;
+    display: block;
+    -webkit-touch-callout: none;
+    user-select: none;
+}
 
-    .container {
-        padding: 18px;
-    }
+/* Canvas HD caché */
 
-    .title {
-        font-size: 26px;
-    }
+.final-canvas {
+    display: none;
+}
 
-    .photo-crop-wrapper,
-    .crop-wrapper {
-        display: flex;
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+    .layout {
         flex-direction: column;
-        align-items: center;
     }
 
-    #photoCropArea,
-    #logoCrop1,
-    #logoCrop2 {
-        width: 92%;
+    .preview-wrapper {
+        min-height: 220px;
     }
 
-    .circle-preview,
-    .logo-preview {
-        margin: auto;
+    .preview-column {
+        order: 2;
+    }
+
+    .form-column {
+        order: 1;
+    }
+
+    .page {
+        margin-top: 16px;
+    }
+}
+
+@media (max-width: 600px) {
+    .card {
+        padding: 14px 12px 16px;
+    }
+
+    .crop-area {
+        width: 100%;
+        max-width: 280px;
+        height: 280px;
+    }
+
+    .logo-preview,
+    .alumni-preview {
+        max-width: 100%;
+    }
+
+    .buttons-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    .preview-wrapper {
+        min-height: 200px;
     }
 }
