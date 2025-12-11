@@ -5,8 +5,11 @@
     <title>J’agis pour une industrie mixte et performante</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Croppie CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/croppie/croppie.css" />
+    <!-- CropperJS CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.css"
+    />
 
     <!-- Styles -->
     <link rel="stylesheet" href="style.css" />
@@ -16,8 +19,8 @@
         <header class="page-header">
             <h1>J’agis pour une industrie mixte et performante</h1>
             <p>
-                Personnalise ton visuel en quelques étapes, puis reçois la version HD par e-mail,
-                prête à être postée sur LinkedIn.
+                Personnalisez votre visuel en quelques étapes, puis recevez la version HD par e-mail,
+                prête à être publiée sur LinkedIn.
             </p>
         </header>
 
@@ -26,11 +29,16 @@
             <section class="form-column">
                 <!-- 1. Informations -->
                 <section class="card">
-                    <h2>1. Tes informations</h2>
+                    <h2>1. Vos informations</h2>
 
                     <div class="field">
                         <label for="email">Adresse e-mail *</label>
-                        <input type="email" id="email" placeholder="prenom.nom@example.com" required />
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="prenom.nom@example.com"
+                            required
+                        />
                     </div>
 
                     <div class="field">
@@ -41,7 +49,7 @@
                     <label class="checkbox-row">
                         <input type="checkbox" id="consent" />
                         <span>
-                            J’autorise l’utilisation de ma photo et des logos d’organisation dans le cadre de 
+                            J’autorise l’utilisation de ma photo et des logos d’organisation dans le cadre de
                             l’appel à l’action « Pour une industrie mixte et performante ».
                         </span>
                     </label>
@@ -49,23 +57,25 @@
 
                 <!-- 2. Personnalisation du visuel -->
                 <section class="card">
-                    <h2>2. Personnalise ton visuel</h2>
+                    <h2>2. Personnalisez votre visuel</h2>
 
                     <!-- PHOTO -->
                     <div class="subsection">
                         <h3>Photo de profil</h3>
                         <p class="help-text">
-                            Importe une photo de toi, recadre-la dans le rond, puis ajuste le zoom pour que ton visage
+                            Importez une photo de vous, recadrez-la dans le rond, puis ajustez le zoom pour que votre visage
                             soit bien visible.
                         </p>
 
                         <div class="field">
-                            <label for="photoUpload">Importer ta photo *</label>
+                            <label for="photoUpload">Importer votre photo *</label>
                             <input type="file" id="photoUpload" accept="image/*" />
                         </div>
 
                         <div class="crop-wrapper">
-                            <div id="photoCropArea" class="crop-area"></div>
+                            <div class="crop-area">
+                                <img id="photoCropImage" class="crop-image" alt="" />
+                            </div>
                         </div>
 
                         <div class="slider-row">
@@ -85,11 +95,11 @@
                     <div class="subsection">
                         <h3>Organisations d’appartenance (facultatif)</h3>
                         <p class="help-text">
-                            Tu peux afficher jusqu’à deux logos (association d’alumni, entreprise, association…).
+                            Vous pouvez afficher jusqu’à deux logos (association d’alumni, entreprise, institution, association…).
                         </p>
 
                         <div class="field">
-                            <span>Combien de logos souhaites-tu afficher ?</span>
+                            <span>Combien de logos souhaitez-vous afficher ?</span>
                             <div class="radio-row">
                                 <label>
                                     <input type="radio" name="nbLogos" value="0" checked />
@@ -115,7 +125,7 @@
                                 <select id="logo1Type">
                                     <option value="">Sélectionner</option>
                                     <option value="alumni">Association d’alumni</option>
-                                    <option value="other">Entreprise / Association</option>
+                                    <option value="other">Organisation (entreprise, institution, association…)</option>
                                 </select>
                             </div>
 
@@ -124,7 +134,11 @@
                                 <label for="logo1Alumni">Association d’alumni</label>
                                 <select id="logo1Alumni"></select>
                                 <p class="help-text small">
-                                    Commence à taper le nom de ton association dans la liste pour filtrer.
+                                    Commencez à taper le nom de votre association dans la liste pour filtrer.
+                                </p>
+                                <p class="help-text small">
+                                    Si vous ne trouvez pas votre association, sélectionnez l’option
+                                    « Je n’ai pas trouvé mon association – j’importe mon logo » en bas de la liste.
                                 </p>
                                 <div
                                     id="logoPreview1Alumni"
@@ -140,7 +154,13 @@
                                 </div>
 
                                 <div class="crop-wrapper">
-                                    <div id="logoCrop1" class="crop-area logo-crop"></div>
+                                    <div id="logoCrop1" class="crop-area logo-crop">
+                                        <img
+                                            id="logoCropImage1"
+                                            class="crop-image"
+                                            alt=""
+                                        />
+                                    </div>
                                 </div>
 
                                 <div class="slider-row">
@@ -168,7 +188,7 @@
                                 <select id="logo2Type">
                                     <option value="">Sélectionner</option>
                                     <option value="alumni">Association d’alumni</option>
-                                    <option value="other">Entreprise / Association</option>
+                                    <option value="other">Organisation (entreprise, institution, association…)</option>
                                 </select>
                             </div>
 
@@ -177,7 +197,11 @@
                                 <label for="logo2Alumni">Association d’alumni</label>
                                 <select id="logo2Alumni"></select>
                                 <p class="help-text small">
-                                    Commence à taper le nom de ton association dans la liste pour filtrer.
+                                    Commencez à taper le nom de votre association dans la liste pour filtrer.
+                                </p>
+                                <p class="help-text small">
+                                    Si vous ne trouvez pas votre association, sélectionnez l’option
+                                    « Je n’ai pas trouvé mon association – j’importe mon logo » en bas de la liste.
                                 </p>
                                 <div
                                     id="logoPreview2Alumni"
@@ -193,7 +217,13 @@
                                 </div>
 
                                 <div class="crop-wrapper">
-                                    <div id="logoCrop2" class="crop-area logo-crop"></div>
+                                    <div id="logoCrop2" class="crop-area logo-crop">
+                                        <img
+                                            id="logoCropImage2"
+                                            class="crop-image"
+                                            alt=""
+                                        />
+                                    </div>
                                 </div>
 
                                 <div class="slider-row">
@@ -228,9 +258,10 @@
             <!-- COLONNE DROITE : APERÇU -->
             <section class="preview-column">
                 <section class="card preview-card">
-                    <h2>Aperçu de ton visuel</h2>
+                    <h2>Aperçu de votre visuel</h2>
                     <p class="help-text">
-                        Tu verras ici un aperçu flouté. La version HD sans flou te sera envoyée par e-mail.
+                        Vous verrez ici un aperçu réduit. La version HD sans limitation sera
+                        envoyée directement sur votre e-mail.
                     </p>
 
                     <div class="preview-wrapper">
@@ -249,8 +280,8 @@
         </section>
     </main>
 
-    <!-- Croppie JS -->
-    <script src="https://unpkg.com/croppie/croppie.min.js"></script>
+    <!-- CropperJS -->
+    <script src="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.js"></script>
 
     <!-- Script principal -->
     <script src="script.js"></script>
