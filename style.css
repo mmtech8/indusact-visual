@@ -177,6 +177,13 @@ input[type="file"] {
     overflow: hidden;
 }
 
+/* image utilisée par CropperJS */
+.crop-image {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+}
+
 .logo-crop {
     height: 200px;
 }
@@ -289,7 +296,7 @@ button:not(:disabled):hover {
 }
 
 .preview {
-    max-width: 100%;
+    max-width: 220px; /* aperçu volontairement réduit */
     border-radius: 16px;
     display: block;
     -webkit-touch-callout: none;
