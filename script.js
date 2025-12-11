@@ -14,7 +14,6 @@ const BAND_HEIGHT = BAND_BOTTOM - BAND_TOP;
 const MAX_LOGO_HEIGHT = 142;
 
 // Position de la photo dans le visuel final (px)
-// 0,98 cm → ~37 px ; 9,17 cm → ~347 px ; 12,33 cm → ~466 px
 const PHOTO_X = 37;
 const PHOTO_Y = 347;
 const PHOTO_SIZE = 466;
@@ -26,12 +25,12 @@ const PHOTO_CENTER_Y = PHOTO_Y + PHOTO_RADIUS;
 let ALUMNI_LOGOS = {};
 let alumniList = [];
 
-// Croppie instances
+// Instances CropperJS
 let cropPhoto = null;
 let cropLogo1 = null;
 let cropLogo2 = null;
 
-// Sources finales
+// Sources finales (base64)
 let photoSource = null;
 let logo1Source = null;
 let logo2Source = null;
@@ -40,12 +39,11 @@ let logo2Source = null;
 const finalCanvas = document.getElementById("finalCanvas");
 const ctx = finalCanvas.getContext("2d");
 
-// Image d’aperçu floue
+// Image d’aperçu
 const previewImg = document.getElementById("previewImage");
 
 // État
 let hasPreview = false;
-
 
 /* ------------------------------------------
    UTILITAIRE : CHARGER UNE IMAGE
@@ -58,7 +56,6 @@ function loadImage(src) {
         img.src = src;
     });
 }
-
 
 /* ------------------------------------------
    CHARGEMENT ALUMNI.JSON
@@ -89,16 +86,13 @@ function populateAlumniSelects() {
     selects.forEach((select) => {
         if (!select) return;
 
-        // Reset
         select.innerHTML = "";
 
-        // Option vide
         const emptyOpt = document.createElement("option");
         emptyOpt.value = "";
-        emptyOpt.textContent = "Choisis ton association d’alumni";
+        emptyOpt.textContent = "Choisissez votre association d’alumni";
         select.appendChild(emptyOpt);
 
-        // Alumni
         alumniList.forEach((a) => {
             const opt = document.createElement("option");
             opt.value = a.id;
@@ -106,14 +100,12 @@ function populateAlumniSelects() {
             select.appendChild(opt);
         });
 
-        // Option "je n’ai pas trouvé"
         const uploadOpt = document.createElement("option");
         uploadOpt.value = "__upload__";
         uploadOpt.textContent =
             "Je n’ai pas trouvé mon association – j’importe mon logo";
         select.appendChild(uploadOpt);
 
-        // Activation filtrage clavier
         setupAlumniFilter(select);
     });
 }
@@ -161,7 +153,6 @@ function resetAlumniOptions(select) {
     });
 }
 
-
 /* ------------------------------------------
    MISE À JOUR DES BOUTONS
 -------------------------------------------*/
@@ -178,12 +169,12 @@ function updateButtons() {
     sendBtn.disabled = !hasPreview;
 }
 
-
 /* ------------------------------------------
-   PHOTO : UPLOAD + RECADRAGE (pas d’aperçu rond)
+   PHOTO : UPLOAD + RECADRAGE (CropperJS)
 -------------------------------------------*/
 const photoUploadInput = document.getElementById("photoUpload");
 const photoZoomInput = document.getElementById("photoZoom");
+const photoCropImage = document.getElementById("photoCropImage");
 
 photoUploadInput.addEventListener("change", (e) => {
     const file = e.target.files[0];
@@ -191,20 +182,24 @@ photoUploadInput.addEventListener("change", (e) => {
 
     const reader = new FileReader();
     reader.onload = (event) => {
-        if (cropPhoto) cropPhoto.destroy();
+        photoCropImage.src = event.target.result;
 
-        cropPhoto = new Croppie(document.getElementById("photoCropArea"), {
-            viewport: { width: 260, height: 260, type: "circle" },
-            boundary: { width: 300, height: 300 },
-            enableOrientation: true,
-            showZoomer: false
+        if (cropPhoto) {
+            cropPhoto.destroy();
+        }
+
+        cropPhoto = new Cropper(photoCropImage, {
+            aspectRatio: 1,
+            viewMode: 1,
+            dragMode: "move",
+            autoCropArea: 1,
+            background: false,
+            guides: false,
+            movable: true,
+            zoomOnWheel: true
         });
 
-        cropPhoto.bind({ url: event.target.result });
-
         photoZoomInput.value = 1;
-        cropPhoto.setZoom(1);
-
         updateButtons();
     };
 
@@ -213,25 +208,21 @@ photoUploadInput.addEventListener("change", (e) => {
 
 photoZoomInput.addEventListener("input", (e) => {
     if (!cropPhoto) return;
-    cropPhoto.setZoom(parseFloat(e.target.value));
+    const zoom = parseFloat(e.target.value);
+    cropPhoto.zoomTo(zoom);
 });
 
 function exportPhoto() {
     if (!cropPhoto) return Promise.resolve(null);
 
-    return cropPhoto
-        .result({
-            type: "base64",
-            size: { width: PHOTO_SIZE, height: PHOTO_SIZE },
-            format: "png",
-            circle: true
-        })
-        .then((output) => {
-            photoSource = output;
-            return output;
-        });
-}
+    const canvas = cropPhoto.getCroppedCanvas({
+        width: PHOTO_SIZE,
+        height: PHOTO_SIZE
+    });
 
+    photoSource = canvas.toDataURL("image/png");
+    return Promise.resolve(photoSource);
+}
 
 /* ------------------------------------------
    NB DE LOGOS (0 / 1 / 2)
@@ -248,7 +239,6 @@ document.querySelectorAll("input[name='nbLogos']").forEach((radio) => {
     });
 });
 
-
 /* ------------------------------------------
    LOGO 1 : TYPE & ALUMNI
 -------------------------------------------*/
@@ -257,6 +247,7 @@ const logo1AlumniZone = document.getElementById("logo1AlumniZone");
 const logo1UploadZone = document.getElementById("logo1UploadZone");
 const logo1AlumniSelect = document.getElementById("logo1Alumni");
 const logo1ZoomInput = document.getElementById("logo1Zoom");
+const logoCropImage1 = document.getElementById("logoCropImage1");
 
 logo1TypeSelect.addEventListener("change", () => {
     const type = logo1TypeSelect.value;
@@ -306,26 +297,32 @@ document.getElementById("logoUpload1").addEventListener("change", (e) => {
 
     const reader = new FileReader();
     reader.onload = (event) => {
-        if (cropLogo1) cropLogo1.destroy();
+        logoCropImage1.src = event.target.result;
 
-        cropLogo1 = new Croppie(document.getElementById("logoCrop1"), {
-            viewport: { width: 240, height: 140, type: "square" },
-            boundary: { width: 300, height: 200 },
-            enableOrientation: true,
-            showZoomer: false
+        if (cropLogo1) {
+            cropLogo1.destroy();
+        }
+
+        cropLogo1 = new Cropper(logoCropImage1, {
+            aspectRatio: 5 / 3,
+            viewMode: 1,
+            dragMode: "move",
+            autoCropArea: 1,
+            background: false,
+            guides: false,
+            movable: true,
+            zoomOnWheel: true
         });
 
-        cropLogo1.bind({ url: event.target.result });
-
         logo1ZoomInput.value = 1;
-        cropLogo1.setZoom(1);
     };
     reader.readAsDataURL(file);
 });
 
 logo1ZoomInput.addEventListener("input", (e) => {
     if (!cropLogo1) return;
-    cropLogo1.setZoom(parseFloat(e.target.value));
+    const zoom = parseFloat(e.target.value);
+    cropLogo1.zoomTo(zoom);
 });
 
 function exportLogo1() {
@@ -334,41 +331,34 @@ function exportLogo1() {
     if (type === "alumni") {
         const val = logo1AlumniSelect.value;
         if (val === "__upload__" && cropLogo1) {
-            return cropLogo1
-                .result({
-                    type: "base64",
-                    size: { width: 500, height: 300 },
-                    format: "png"
-                })
-                .then((output) => {
-                    logo1Source = output;
-                    document.getElementById("logoPreview1").style.backgroundImage =
-                        `url(${output})`;
-                    return output;
-                });
+            const canvas = cropLogo1.getCroppedCanvas({
+                width: 500,
+                height: 300
+            });
+            const output = canvas.toDataURL("image/png");
+            logo1Source = output;
+            document.getElementById("logoPreview1").style.backgroundImage =
+                `url(${output})`;
+            return Promise.resolve(output);
         } else {
             return Promise.resolve(logo1Source || null);
         }
     }
 
     if (type === "other" && cropLogo1) {
-        return cropLogo1
-            .result({
-                type: "base64",
-                size: { width: 500, height: 300 },
-                format: "png"
-            })
-            .then((output) => {
-                logo1Source = output;
-                document.getElementById("logoPreview1").style.backgroundImage =
-                    `url(${output})`;
-                return output;
-            });
+        const canvas = cropLogo1.getCroppedCanvas({
+            width: 500,
+            height: 300
+        });
+        const output = canvas.toDataURL("image/png");
+        logo1Source = output;
+        document.getElementById("logoPreview1").style.backgroundImage =
+            `url(${output})`;
+        return Promise.resolve(output);
     }
 
     return Promise.resolve(null);
 }
-
 
 /* ------------------------------------------
    LOGO 2 : TYPE & ALUMNI
@@ -378,6 +368,7 @@ const logo2AlumniZone = document.getElementById("logo2AlumniZone");
 const logo2UploadZone = document.getElementById("logo2UploadZone");
 const logo2AlumniSelect = document.getElementById("logo2Alumni");
 const logo2ZoomInput = document.getElementById("logo2Zoom");
+const logoCropImage2 = document.getElementById("logoCropImage2");
 
 logo2TypeSelect.addEventListener("change", () => {
     const type = logo2TypeSelect.value;
@@ -427,26 +418,32 @@ document.getElementById("logoUpload2").addEventListener("change", (e) => {
 
     const reader = new FileReader();
     reader.onload = (event) => {
-        if (cropLogo2) cropLogo2.destroy();
+        logoCropImage2.src = event.target.result;
 
-        cropLogo2 = new Croppie(document.getElementById("logoCrop2"), {
-            viewport: { width: 240, height: 140, type: "square" },
-            boundary: { width: 300, height: 200 },
-            enableOrientation: true,
-            showZoomer: false
+        if (cropLogo2) {
+            cropLogo2.destroy();
+        }
+
+        cropLogo2 = new Cropper(logoCropImage2, {
+            aspectRatio: 5 / 3,
+            viewMode: 1,
+            dragMode: "move",
+            autoCropArea: 1,
+            background: false,
+            guides: false,
+            movable: true,
+            zoomOnWheel: true
         });
 
-        cropLogo2.bind({ url: event.target.result });
-
         logo2ZoomInput.value = 1;
-        cropLogo2.setZoom(1);
     };
     reader.readAsDataURL(file);
 });
 
 logo2ZoomInput.addEventListener("input", (e) => {
     if (!cropLogo2) return;
-    cropLogo2.setZoom(parseFloat(e.target.value));
+    const zoom = parseFloat(e.target.value);
+    cropLogo2.zoomTo(zoom);
 });
 
 function exportLogo2() {
@@ -455,41 +452,34 @@ function exportLogo2() {
     if (type === "alumni") {
         const val = logo2AlumniSelect.value;
         if (val === "__upload__" && cropLogo2) {
-            return cropLogo2
-                .result({
-                    type: "base64",
-                    size: { width: 500, height: 300 },
-                    format: "png"
-                })
-                .then((output) => {
-                    logo2Source = output;
-                    document.getElementById("logoPreview2").style.backgroundImage =
-                        `url(${output})`;
-                    return output;
-                });
+            const canvas = cropLogo2.getCroppedCanvas({
+                width: 500,
+                height: 300
+            });
+            const output = canvas.toDataURL("image/png");
+            logo2Source = output;
+            document.getElementById("logoPreview2").style.backgroundImage =
+                `url(${output})`;
+            return Promise.resolve(output);
         } else {
             return Promise.resolve(logo2Source || null);
         }
     }
 
     if (type === "other" && cropLogo2) {
-        return cropLogo2
-            .result({
-                type: "base64",
-                size: { width: 500, height: 300 },
-                format: "png"
-            })
-            .then((output) => {
-                logo2Source = output;
-                document.getElementById("logoPreview2").style.backgroundImage =
-                    `url(${output})`;
-                return output;
-            });
+        const canvas = cropLogo2.getCroppedCanvas({
+            width: 500,
+            height: 300
+        });
+        const output = canvas.toDataURL("image/png");
+        logo2Source = output;
+        document.getElementById("logoPreview2").style.backgroundImage =
+            `url(${output})`;
+        return Promise.resolve(output);
     }
 
     return Promise.resolve(null);
 }
-
 
 /* ------------------------------------------
    CHOIX DU TEMPLATE
@@ -500,7 +490,6 @@ function getTemplatePath(nbLogos) {
     }
     return "templates/FR/template_FR_white.png";
 }
-
 
 /* ------------------------------------------
    POSITIONNEMENT DES LOGOS DANS LA BANDE
@@ -539,9 +528,8 @@ async function placeLogosOnCanvas(nbLogos) {
     }
 }
 
-
 /* ------------------------------------------
-   CONSTRUCTION DU VISUEL FINAL + APERÇU FLOU
+   CONSTRUCTION DU VISUEL FINAL + APERÇU
 -------------------------------------------*/
 async function drawFinalCanvas() {
     const nbLogos = document.querySelector("input[name='nbLogos']:checked").value;
@@ -551,7 +539,9 @@ async function drawFinalCanvas() {
     if (nbLogos === "2") await exportLogo2();
 
     if (!photoSource) {
-        alert("Merci d’importer et de recadrer ta photo avant de générer ton visuel.");
+        alert(
+            "Merci d’importer et de recadrer votre photo avant de générer votre visuel."
+        );
         return;
     }
 
@@ -577,17 +567,15 @@ async function drawFinalCanvas() {
         await placeLogosOnCanvas(nbLogos);
     }
 
-    // Aperçu flou basse qualité
-    const previewBase64 = finalCanvas.toDataURL("image/jpeg", 0.12);
+    // Aperçu réduit (net, mais petite taille)
+    const previewBase64 = finalCanvas.toDataURL("image/jpeg", 0.6);
     previewImg.src = previewBase64;
-    previewImg.style.filter = "blur(1.6px)";
-    previewImg.style.width = "350px";
+    previewImg.style.filter = "none";
     previewImg.style.pointerEvents = "none";
 
     hasPreview = true;
     updateButtons();
 }
-
 
 /* ------------------------------------------
    PREVIEW & ENVOI
@@ -602,14 +590,13 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
 
     const email = document.getElementById("email").value.trim();
     if (!email) {
-        alert("Merci de renseigner ton e-mail.");
+        alert("Merci de renseigner votre adresse e-mail.");
         return;
     }
 
     const fullname = document.getElementById("fullname").value.trim();
     const nbLogos = document.querySelector("input[name='nbLogos']:checked").value;
 
-    // Visuel HD pour Make (PNG plein format)
     const hdBase64 = finalCanvas.toDataURL("image/png");
 
     const payload = {
@@ -632,14 +619,13 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
         });
 
         alert(
-            "Ton visuel a été généré. Tu vas recevoir un e-mail avec la version HD et des suggestions de texte pour ton post."
+            "Votre visuel a été généré. Vous allez recevoir un e-mail avec la version HD et des suggestions de texte pour votre post."
         );
     } catch (err) {
         console.error(err);
         alert("Une erreur est survenue lors de l’envoi. Merci de réessayer plus tard.");
     }
 });
-
 
 /* ------------------------------------------
    UX DE BASE
