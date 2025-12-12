@@ -5,18 +5,56 @@
     <title>J’agis pour une industrie mixte et performante</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.css" />
+    <!-- CropperJS CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.css"
+    />
+
+    <!-- Styles -->
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-    <div class="header-logo">
-        <img src="/logos/Logo IMP.png" alt="Logo IMP" />
-    </div>
-
     <main class="page">
-        <!-- CONTENU INCHANGÉ -->
-        <!-- … -->
+        <!-- Logo haut -->
+        <img src="/logos/Logo IMP.png" alt="Logo IMP" class="top-logo" />
+
+        <header class="page-header">
+            <h1>J’agis pour une industrie mixte et performante</h1>
+            <p>
+                Personnalisez votre visuel en quelques étapes, puis recevez la version HD par e-mail,
+                prête à être publiée sur LinkedIn.
+            </p>
+        </header>
+
+        <section class="layout">
+            <!-- COLONNE GAUCHE -->
+            <section class="form-column">
+                <!-- (contenu inchangé) -->
+                <!-- … exactement votre HTML existant … -->
+            </section>
+
+            <!-- COLONNE DROITE -->
+            <section class="preview-column">
+                <section class="card preview-card">
+                    <h2>Aperçu de votre visuel</h2>
+                    <p class="help-text">
+                        Vous verrez ici un aperçu réduit. La version HD sera envoyée par e-mail.
+                    </p>
+
+                    <div class="preview-wrapper">
+                        <img id="previewImage" class="preview" alt="" />
+                    </div>
+
+                    <canvas
+                        id="finalCanvas"
+                        width="1080"
+                        height="1350"
+                        class="final-canvas"
+                    ></canvas>
+                </section>
+            </section>
+        </section>
     </main>
 
     <script src="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.js"></script>
