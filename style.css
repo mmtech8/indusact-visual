@@ -4,7 +4,12 @@
     box-sizing: border-box;
 }
 
-/* === FOND GLOBAL === */
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
 body {
     font-family: Trebuchet MS, sans-serif;
     margin: 0;
@@ -13,49 +18,89 @@ body {
     justify-content: center;
     background: linear-gradient(90deg, #0c0f2cff 0%, #4357a9ff 100%);
     min-height: 100vh;
+    box-sizing: border-box;
+    color: #1f2430;
 }
 
-/* === LOGO TOP === */
-.site-logo {
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    height: 42px;/* changer la taille */
-}
+/* LOGO HEADER */
 
-/* === PAGE === */
-.page {
-    width: 100%;
-    max-width: 1200px;
-    margin-top: 80px;
-}
-
-/* === CARDS === */
-.card {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 18px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+.header-logo {
+    text-align: center;
     margin-bottom: 16px;
 }
 
-/* === CROPPER === */
+.header-logo img {
+    max-width: 120px;
+}
+
+/* PAGE */
+
+.page {
+    max-width: 1200px;
+    width: 100%;
+}
+
+/* CARDS */
+
+.card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px 18px 18px;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+    margin-bottom: 16px;
+}
+
+/* LAYOUT */
+
+.layout {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.form-column {
+    flex: 2;
+}
+
+.preview-column {
+    flex: 1.3;
+}
+
+/* CROPPING */
+
 .crop-area {
     width: 300px;
     height: 300px;
     background: #f1f5f9;
+    border: 1px dashed #cbd5e1;
     border-radius: 12px;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* logos = rectangle horizontal */
+/* PHOTO → MASQUE CERCLE UI */
+
+#photoCropImage {
+    border-radius: 50%;
+}
+
+/* LOGO CROP */
+
 .logo-crop {
-    height: 180px;
+    height: 200px;
+    border-radius: 8px;
 }
 
-/* === PREVIEW === */
+/* PREVIEW */
+
 .preview-wrapper {
+    margin-top: 12px;
+    padding: 10px;
+    border-radius: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -63,30 +108,15 @@ body {
 }
 
 .preview {
-    max-width: 320px;
+    max-width: 220px;
     border-radius: 16px;
+    display: block;
     user-select: none;
-    pointer-events: auto;
+    pointer-events: none;
 }
 
-.hidden {
+/* Canvas HD caché */
+
+.final-canvas {
     display: none;
-}
-
-/* Empêche clic droit sur l’aperçu */
-.preview {
-    pointer-events: none;
-}
-.preview-wrapper {
-    pointer-events: auto;
-}
-.preview-wrapper img {
-    pointer-events: none;
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 900px) {
-    .layout {
-        flex-direction: column;
-    }
 }
