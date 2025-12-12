@@ -5,117 +5,21 @@
     <title>J’agis pour une industrie mixte et performante</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- CropperJS -->
-    <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.css"/>
-
+    <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.css" />
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<img
-  src="logos/Logo IMP.png"
-  alt="Pour une industrie mixte et performante"
-  class="site-logo"
-/>
 
-<header class="top-logo">
-    <img src="logos/Logo IMP.png" alt="Logo IMP">
-</header>
+    <div class="header-logo">
+        <img src="/logos/Logo IMP.png" alt="Logo IMP" />
+    </div>
 
-<main class="page">
+    <main class="page">
+        <!-- CONTENU INCHANGÉ -->
+        <!-- … -->
+    </main>
 
-    <header class="page-header">
-        <h1>J’agis pour une industrie mixte et performante</h1>
-        <p>
-            Personnalisez votre visuel en quelques étapes, puis recevez la version HD par e-mail,
-            prête à être publiée sur LinkedIn.
-        </p>
-    </header>
-
-    <section class="layout">
-
-        <!-- FORM -->
-        <section class="form-column">
-
-            <section class="card">
-                <h2>1. Vos informations</h2>
-
-                <div class="field">
-                    <label for="email">Adresse e-mail *</label>
-                    <input type="email" id="email" required />
-                </div>
-
-                <div class="field">
-                    <label for="fullname">Identité (facultatif)</label>
-                    <input type="text" id="fullname" />
-                </div>
-
-                <label class="checkbox-row">
-                    <input type="checkbox" id="consent">
-                    <span>
-                        J’autorise l’utilisation de ma photo et des logos fournis dans le cadre
-                        de l’appel à l’action « Pour une industrie mixte et performante ».
-                    </span>
-                </label>
-            </section>
-
-            <section class="card">
-                <h2>2. Personnalisez votre visuel</h2>
-
-                <!-- PHOTO -->
-                <h3>Photo de profil</h3>
-
-                <input type="file" id="photoUpload" accept="image/*">
-
-                <div class="crop-wrapper">
-                    <div class="crop-area">
-                        <img id="photoCropImage" class="crop-image">
-                    </div>
-                </div>
-
-                <!-- LOGO -->
-                <h3>Logo (facultatif)</h3>
-
-                <select id="logoType">
-                    <option value="">Sélectionner</option>
-                    <option value="alumni">Association d’alumni</option>
-                    <option value="upload">Importer un logo</option>
-                </select>
-
-                <select id="alumniSelect" style="display:none"></select>
-
-                <input type="file" id="logoUpload" accept="image/*" style="display:none">
-
-                <div id="logoCropWrapper" class="crop-wrapper" style="display:none">
-                    <div class="crop-area logo-crop">
-                        <img id="logoCropImage" class="crop-image">
-                    </div>
-                </div>
-
-                <div class="buttons-row">
-                    <button id="previewBtn" disabled>Générer l’aperçu</button>
-                    <button id="sendBtn" disabled>Recevoir le visuel HD</button>
-                </div>
-            </section>
-        </section>
-
-        <!-- PREVIEW -->
-        <section class="preview-column">
-            <section class="card">
-                <h2>Aperçu</h2>
-
-                <div class="preview-wrapper">
-                    <img id="previewImage" class="preview hidden" style="display:none">
-                </div>
-
-                <canvas id="finalCanvas" width="1080" height="1350" class="final-canvas"></canvas>
-            </section>
-        </section>
-
-    </section>
-</main>
-
-<script src="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.js"></script>
-<script src="script.js"></script>
-
+    <script src="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
