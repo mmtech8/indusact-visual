@@ -21,7 +21,7 @@ body {
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    height: 42px;
+    height: 42px;/* changer la taille */
 }
 
 /* === PAGE === */
