@@ -1,69 +1,357 @@
-body {
-  font-family: system-ui, sans-serif;
-  background: linear-gradient(90deg, #0c0f2c, #4357a9);
-  margin: 0;
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f4f6fb;
+    color: #1f2430;
+}
+
+/* PAGE GLOBALE */
 
 .page {
-  max-width: 1200px;
-  margin: 24px auto;
-  padding: 16px;
+    max-width: 1200px;
+    margin: 24px auto 40px;
+    padding: 0 16px;
 }
 
-.site-logo {
-  display: block;
-  margin: 0 auto 12px;
-  max-width: 140px;
+.page-header {
+    margin-bottom: 24px;
 }
+
+.page-header h1 {
+    font-size: 1.6rem;
+    margin: 0 0 8px;
+}
+
+.page-header p {
+    margin: 0;
+    color: #5a6475;
+    font-size: 0.95rem;
+}
+
+/* LAYOUT 2 COLONNES */
 
 .layout {
-  display: flex;
-  gap: 20px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
 }
 
+.form-column {
+    flex: 2;
+    min-width: 0;
+}
+
+.preview-column {
+    flex: 1.3;
+    min-width: 0;
+}
+
+/* CARDS */
+
 .card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 16px;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px 18px 18px;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+    margin-bottom: 16px;
+}
+
+.card h2 {
+    font-size: 1.1rem;
+    margin: 0 0 6px;
+}
+
+.card h3 {
+    font-size: 1rem;
+    margin: 14px 0 4px;
+}
+
+.card h4 {
+    font-size: 0.95rem;
+    margin: 10px 0 4px;
+}
+
+/* TEXTES SECONDAIRES */
+
+.help-text {
+    margin: 0 0 10px;
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.help-text.small {
+    font-size: 0.78rem;
+}
+
+/* FORM ELEMENTS */
+
+.field {
+    margin-bottom: 12px;
+}
+
+.field label {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+input[type="text"],
+input[type="email"],
+select {
+    width: 100%;
+    padding: 8px 9px;
+    border-radius: 8px;
+    border: 1px solid #d0d5dd;
+    font-size: 0.9rem;
+    outline: none;
+    background: #ffffff;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+select:focus {
+    border-color: #334155;
+    box-shadow: 0 0 0 1px rgba(51, 65, 85, 0.16);
+}
+
+input[type="file"] {
+    font-size: 0.85rem;
+}
+
+.checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: #4b5563;
+    margin-top: 6px;
+}
+
+.checkbox-row input[type="checkbox"] {
+    margin-top: 2px;
+}
+
+.radio-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    margin-top: 4px;
+    font-size: 0.85rem;
+}
+
+.radio-row label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* CROPPING ZONES */
+
+.crop-wrapper {
+    margin: 8px 0;
+    display: flex;
+    justify-content: center;
 }
 
 .crop-area {
-  width: 300px;
-  height: 300px;
-  background: #f1f5f9;
-  margin-top: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
+    width: 300px;
+    height: 300px;
+    background: #f1f5f9;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 
 .logo-crop {
-  height: 180px;
+    height: 200px;
 }
 
-.crop-area img {
-  max-width: 100%;
+/* SLIDERS */
+
+.slider-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.84rem;
+    margin: 6px 0 10px;
+}
+
+.slider-row label {
+    white-space: nowrap;
+}
+
+.slider-row input[type="range"] {
+    flex: 1;
+}
+
+/* LOGO PREVIEW */
+
+.logo-section {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.logo-preview,
+.alumni-preview {
+    margin-top: 8px;
+    width: 100%;
+    max-width: 230px;
+    height: 80px;
+    border-radius: 8px;
+    border: 1px dashed #cbd5e1;
+    background-color: #f8fafc;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* BOUTONS */
+
+.buttons-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+button {
+    border-radius: 999px;
+    border: none;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+#previewBtn {
+    background: #0f172a;
+    color: #ffffff;
+}
+
+#previewBtn:disabled {
+    background: #cbd5e1;
+    color: #64748b;
+    cursor: not-allowed;
+}
+
+#sendBtn {
+    background: #e5e7eb;
+    color: #111827;
+}
+
+#sendBtn:disabled {
+    background: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+button:not(:disabled):hover {
+    transform: translateY(-1px);
+}
+
+/* PREVIEW COLUMN */
+
+.preview-card {
+    height: 100%;
 }
 
 .preview-wrapper {
-  background: #f8fafc;
-  min-height: 260px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    margin-top: 12px;
+    padding: 10px;
+    border-radius: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 260px;
 }
 
 .preview {
-  width: 320px;
-  border-radius: 16px;
+    max-width: 100%;
+    border-radius: 16px;
+    display: block;
+    -webkit-touch-callout: none;
+    user-select: none;
 }
 
-.is-hidden {
-  display: none;
+/* Canvas HD caché */
+
+.final-canvas {
+    display: none;
 }
 
-canvas {
-  display: none;
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+    .layout {
+        flex-direction: column;
+    }
+
+    .preview-wrapper {
+        min-height: 220px;
+    }
+
+    .preview-column {
+        order: 2;
+    }
+
+    .form-column {
+        order: 1;
+    }
+
+    .page {
+        margin-top: 16px;
+    }
+}
+
+@media (max-width: 600px) {
+    .card {
+        padding: 14px 12px 16px;
+    }
+
+    .crop-area {
+        width: 100%;
+        max-width: 280px;
+        height: 280px;
+    }
+
+    .logo-preview,
+    .alumni-preview {
+        max-width: 100%;
+    }
+
+    .buttons-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    .preview-wrapper {
+        min-height: 200px;
+    }
 }
