@@ -49,6 +49,10 @@ previewImg.style.pointerEvents = "none";
 // État
 let hasPreview = false;
 
+// Progressive disclosure flags (IMPORTANT)
+let photoSectionShown = false;
+let logosSectionShown = false;
+let previewSectionShown = false;
 /* ------------------------------------------
    PROGRESSIVE DISCLOSURE
 -------------------------------------------*/
