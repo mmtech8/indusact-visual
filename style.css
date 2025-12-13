@@ -253,6 +253,20 @@ input[type="file"] {
     align-items: center;
     min-height: 260px;
 }
+/* === LOGOS : cropper visible et stable === */
+
+.crop-area.logo-crop {
+    width: 100%;
+    max-width: 420px;
+    height: 200px;              /* hauteur maîtrisée */
+    overflow: visible;          /* IMPORTANT */
+}
+
+/* image logo : ne pas la contraindre */
+.crop-area.logo-crop .crop-image {
+    max-width: none;
+    max-height: none;
+}
 
 /* Canvas HD caché */
 .final-canvas {
