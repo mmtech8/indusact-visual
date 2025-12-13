@@ -39,7 +39,6 @@ let logo2Source = null;
 let photoSectionShown = false;
 let logosSectionShown = false;
 let previewSectionShown = false;
-let logosConfirmed = false;
 
 // Canvas final (HD mais caché en UI)
 const finalCanvas = document.getElementById("finalCanvas");
@@ -221,7 +220,6 @@ function updateButtons() {
         email &&
         consent &&
         photoSource &&
-        logosConfirmed &&
         areLogosReady();
 
     previewBtn.disabled = !canPreview;
@@ -262,7 +260,8 @@ photoUploadInput.addEventListener("change", (e) => {
                 cropBoxMovable: true,
                 zoomOnWheel: true,
                 zoomOnTouch: true,
-                crop() {
+                ready() {
+                    this.cropper.center();
                     confirmPhotoBtn.disabled = false; // 👈 ICI
                 },
                 zoom(event) {
@@ -311,7 +310,6 @@ function exportPhoto() {
         scrollToSection("logosSection");
         logosSectionShown = true;
     }
-    logosConfirmed = false;
 
     return photoSource;
 
@@ -340,10 +338,8 @@ document.querySelectorAll("input[name='nbLogos']").forEach((radio) => {
 
               // ✅ CAS 0 LOGO = CONFIRMÉ IMMÉDIATEMENT
         if (value === "0") {
-            logosConfirmed = true;
             updateButtons();
         } else {
-            logosConfirmed = false; // on attend un vrai logo
             updateButtons();
         }
     });
@@ -402,7 +398,9 @@ logo1AlumniSelect.addEventListener("change", () => {
         logo1Source = null;
         logo1UploadZone.style.display = "none";
         document.getElementById("logoPreview1Alumni").style.backgroundImage = "";
+        
     }
+    updateButtons();
 });
 
 document.getElementById("logoUpload1").addEventListener("change", (e) => {
@@ -472,7 +470,6 @@ function exportLogo1() {
         });
         const output = canvas.toDataURL("image/png");
         logo1Source = output;
-        logosConfirmed = true;
         updateButtons();
         document.getElementById("logoPreview1").style.backgroundImage =
             `url(${output})`;
@@ -532,6 +529,7 @@ logo2AlumniSelect.addEventListener("change", () => {
         logo2UploadZone.style.display = "none";
         document.getElementById("logoPreview2Alumni").style.backgroundImage = "";
     }
+    updateButtons();
 });
 
 document.getElementById("logoUpload2").addEventListener("change", (e) => {
@@ -601,7 +599,6 @@ function exportLogo2() {
         });
         const output = canvas.toDataURL("image/png");
         logo2Source = output;
-        logosConfirmed = true;
         updateButtons();
         document.getElementById("logoPreview2").style.backgroundImage =
             `url(${output})`;
@@ -659,10 +656,18 @@ async function placeLogosOnCanvas(nbLogos) {
 }
 function areLogosReady() {
     const nbLogos = document.querySelector("input[name='nbLogos']:checked")?.value;
+    if (!nbLogos) return false;
+    if (nbLogos === "0") {
+        return true;
+    }
 
-    if (nbLogos === "0") return true;
-    if (nbLogos === "1") return !!logo1Source;
-    if (nbLogos === "2") return !!logo1Source && !!logo2Source;
+    if (nbLogos === "1") {
+        return Boolean(logo1Source);
+    }
+
+    if (nbLogos === "2") {
+        return Boolean(logo1Source && logo2Source);
+    }
 
     return false;
 }
