@@ -199,9 +199,7 @@ function updateButtons() {
     const sendBtn = document.getElementById("sendBtn");
     const firstname = document.getElementById("firstname").value.trim();
     const lastname = document.getElementById("lastname").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const consent = document.getElementById("consent").checked;
-
+    
     // Reveal PHOTO
     if (firstname && lastname && email && consent && !photoSectionShown) {
         showSection("photoSection");
@@ -217,9 +215,11 @@ function updateButtons() {
         email &&
         consent &&
         cropPhoto &&
+        logosSectionShown &&
         areLogosReady();
 
     previewBtn.disabled = !canPreview;
+    sendBtn.disabled = !hasPreview;
 
 }
 
@@ -626,6 +626,15 @@ async function placeLogosOnCanvas(nbLogos) {
         x += processed[0].w + spacing;
         ctx.drawImage(processed[1].img, x, y, processed[1].w, processed[1].h);
     }
+}
+function areLogosReady() {
+    const nbLogos = document.querySelector("input[name='nbLogos']:checked")?.value;
+
+    if (nbLogos === "0") return true;
+    if (nbLogos === "1") return !!logo1Source;
+    if (nbLogos === "2") return !!logo1Source && !!logo2Source;
+
+    return false;
 }
 
 /* ------------------------------------------
