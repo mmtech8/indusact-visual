@@ -248,6 +248,26 @@
                         </div>
                     </div>
 
+            <!-- APERÇU -->
+            <section id="previewSection" class="card section-hidden">
+
+                <h2>Aperçu de votre visuel</h2>
+                <p class="help-text">
+                    Vous verrez ici un aperçu réduit. La version HD sans limitation sera
+                    envoyée directement sur votre e-mail.
+                </p>
+
+                <div class="preview-wrapper">
+                    <img id="previewImage" class="preview" alt="Aperçu visuel" />
+                </div>
+
+                <canvas
+                    id="finalCanvas"
+                    width="1080"
+                    height="1350"
+                    class="final-canvas"
+                ></canvas>
+
                     <!-- BOUTONS -->
                     <div class="buttons-row">
                         <button id="previewBtn" type="button" disabled>
@@ -260,29 +280,6 @@
                 </section>
             </section>
 
-            <!-- COLONNE DROITE : APERÇU -->
-            <section class="preview-column">
-            <section id="previewSection" class="card preview-card section-hidden">
-
-                    <h2>Aperçu de votre visuel</h2>
-                    <p class="help-text">
-                        Vous verrez ici un aperçu réduit. La version HD sans limitation sera
-                        envoyée directement sur votre e-mail.
-                    </p>
-
-                    <div class="preview-wrapper">
-                        <img id="previewImage" class="preview" alt="Aperçu visuel" />
-                    </div>
-
-                    <!-- Canvas HD caché (utilisé pour générer le visuel et l’envoyer à Make) -->
-                    <canvas
-                        id="finalCanvas"
-                        width="1080"
-                        height="1350"
-                        class="final-canvas"
-                    ></canvas>
-                </section>
-            </section>
         </section>
     </main>
 
