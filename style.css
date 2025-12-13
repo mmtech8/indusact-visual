@@ -22,16 +22,25 @@ body {
 }
 
 /* CENTRAGE ABSOLU DU LOGO HAUT */
-.top-logo {
-    margin: 0 auto 20px;
-    max-height: 38px;
-    display: block;
+.topbar {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 12px 0 16px;
 }
 
+.top-logo {
+    display: block;
+    max-height: 38px;
+    height: auto;
+    width: auto;
+}
 
 /* PAGE GLOBALE */
 
 .page {
+    width: 100%;
     max-width: 1200px;
     margin: 24px auto 40px;
     padding: 0 16px;
