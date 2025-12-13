@@ -1,4 +1,4 @@
-/* ------------------------------------------
+previewImg.src/* ------------------------------------------
    CONFIG GLOBALE
 -------------------------------------------*/
 
@@ -42,6 +42,10 @@ const ctx = finalCanvas.getContext("2d");
 // Image d’aperçu
 const previewImg = document.getElementById("previewImage");
 
+// INIT APERÇU (IMPORTANT)
+previewImg.src = "";
+previewImg.style.display = "none";
+previewImg.style.pointerEvents = "none";
 // État
 let hasPreview = false;
 
@@ -173,7 +177,7 @@ function updateButtons() {
    PHOTO : UPLOAD + RECADRAGE (CropperJS)
 -------------------------------------------*/
 const photoUploadInput = document.getElementById("photoUpload");
-const photoZoomInput = document.getElementById("photoZoom");
+
 const photoCropImage = document.getElementById("photoCropImage");
 
 photoUploadInput.addEventListener("change", (e) => {
@@ -189,34 +193,39 @@ photoUploadInput.addEventListener("change", (e) => {
         }
         cropPhoto = new Cropper(photoCropImage, {
             aspectRatio: 1,
-            viewMode: 0,
+            viewMode: 1,               // IMPORTANT
             dragMode: "move",
-            autoCropArea: 0.6,
+            autoCropArea: 0.7,
             background: false,
             guides: false,
             center: true,
             highlight: false,
             cropBoxResizable: true,
             cropBoxMovable: true,
-            zoomOnWheel: true
+            zoomOnWheel: true,
+            zoomOnTouch: true,
+            ready() {
+                this.cropper.center();
+            },
+            zoom(event) {
+                // recentrage automatique après zoom
+                requestAnimationFrame(() => {
+                    this.cropper.center();
+                });
+            }
         });
 
 
-        photoZoomInput.value = 1;
+
         updateButtons();
     };
 
     reader.readAsDataURL(file);
-});
 
-photoZoomInput.addEventListener("input", (e) => {
-    if (!cropPhoto) return;
-    const zoom = parseFloat(e.target.value);
-    cropPhoto.zoomTo(zoom);
 });
 
 function exportPhoto() {
-    if (!cropPhoto) return Promise.resolve(null);
+    if (!cropPhoto) return null;
 
     const canvas = cropPhoto.getCroppedCanvas({
         width: PHOTO_SIZE,
@@ -224,8 +233,9 @@ function exportPhoto() {
     });
 
     photoSource = canvas.toDataURL("image/png");
-    return Promise.resolve(photoSource);
+    return photoSource;
 }
+
 
 /* ------------------------------------------
    NB DE LOGOS (0 / 1 / 2)
@@ -335,7 +345,6 @@ logo1ZoomInput.addEventListener("input", (e) => {
 function exportLogo1() {
     const type = logo1TypeSelect.value;
     if (logo1TypeSelect.value === "other" && !cropLogo1) {
-        alert("Merci de recadrer le logo avant de continuer.");
         return Promise.resolve(null);
     }
 
@@ -550,16 +559,21 @@ async function placeLogosOnCanvas(nbLogos) {
 async function drawFinalCanvas() {
     const nbLogos = document.querySelector("input[name='nbLogos']:checked").value;
 
-    await exportPhoto();
-    if (nbLogos !== "0") await exportLogo1();
-    if (nbLogos === "2") await exportLogo2();
+    // 1️⃣ On récupère la photo recadrée
+    exportPhoto();
 
+    // 2️⃣ Sécurité : si pas de photo, on stoppe
     if (!photoSource) {
         alert(
             "Merci d’importer et de recadrer votre photo avant de générer votre visuel."
         );
         return;
     }
+
+    // 3️⃣ Logos (si besoin)
+    if (nbLogos !== "0") exportLogo1();
+    if (nbLogos === "2") exportLogo2();
+
 
     ctx.clearRect(0, 0, finalCanvas.width, finalCanvas.height);
 
