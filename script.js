@@ -197,18 +197,30 @@ function updateButtons() {
 
     const previewBtn = document.getElementById("previewBtn");
     const sendBtn = document.getElementById("sendBtn");
+    const firstname = document.getElementById("firstname").value.trim();
+    const lastname = document.getElementById("lastname").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const consent = document.getElementById("consent").checked;
 
     // Reveal PHOTO
-    if (email && consent && !photoSectionShown) {
+    if (firstname && lastname && email && consent && !photoSectionShown) {
         showSection("photoSection");
         scrollToSection("photoSection");
         photoSectionShown = true;
     }
 
+
     // Activation preview
-    const canPreview = email && consent && cropPhoto;
+    const canPreview =
+        firstname &&
+        lastname &&
+        email &&
+        consent &&
+        cropPhoto &&
+        areLogosReady();
+
     previewBtn.disabled = !canPreview;
-    sendBtn.disabled = !hasPreview;
+
 }
 
 /* ------------------------------------------
@@ -698,7 +710,8 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
 
     const payload = {
         email,
-        fullname,
+        firstname,
+        lastname,
         nbLogos,
         logo1Type: logo1TypeSelect.value,
         logo2Type: logo2TypeSelect.value,
@@ -707,6 +720,7 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
         image: hdBase64,
         timestamp: new Date().toISOString()
     };
+
 
     try {
         await fetch(MAKE_WEBHOOK_URL, {
