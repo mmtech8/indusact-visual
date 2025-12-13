@@ -207,10 +207,24 @@ photoUploadInput.addEventListener("change", (e) => {
                 ready() {
                     this.cropper.center();
                 },
-                zoom() {
-                    requestAnimationFrame(() => {
-                        this.cropper.center();
-                    });
+                zoom(event) {
+                    const cropper = this.cropper;
+                    const imageData = cropper.getImageData();
+                    const cropBoxData = cropper.getCropBoxData();
+
+                    // Empêche l’image de devenir plus petite que le cercle
+                    if (
+                        imageData.width < cropBoxData.width ||
+                        imageData.height < cropBoxData.height
+                    ) {
+                        event.preventDefault();
+                        cropper.zoomTo(imageData.oldRatio || imageData.ratio);
+                    } else {
+                        imageData.oldRatio = imageData.ratio;
+                        requestAnimationFrame(() => {
+                            cropper.center();
+                        });
+                    }
                 }
             });
 
@@ -314,6 +328,8 @@ document.getElementById("logoUpload1").addEventListener("change", (e) => {
 
     const reader = new FileReader();
     reader.onload = (event) => {
+        // 1️⃣ On nettoie l'ancien handler (sécurité)
+        logoCropImage1.onload = null;
         logoCropImage1.onload = () => {
             if (cropLogo1) {
                 cropLogo1.destroy();
@@ -439,6 +455,8 @@ document.getElementById("logoUpload2").addEventListener("change", (e) => {
 
     const reader = new FileReader();
     reader.onload = (event) => {
+               // 1️⃣ On nettoie l'ancien handler (sécurité)
+        logoCropImage2.onload = null;
         logoCropImage2.onload = () => {
             if (cropLogo2) cropLogo2.destroy();
 
