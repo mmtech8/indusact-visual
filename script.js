@@ -187,18 +187,20 @@ photoUploadInput.addEventListener("change", (e) => {
         if (cropPhoto) {
             cropPhoto.destroy();
         }
-
         cropPhoto = new Cropper(photoCropImage, {
             aspectRatio: 1,
-            viewMode: 1,
+            viewMode: 0,
             dragMode: "move",
-            autoCropArea: 1,
+            autoCropArea: 0.6,
             background: false,
             guides: false,
             center: true,
             highlight: false,
-            cropBoxResizable: false
+            cropBoxResizable: true,
+            cropBoxMovable: true,
+            zoomOnWheel: true
         });
+
 
         photoZoomInput.value = 1;
         updateButtons();
