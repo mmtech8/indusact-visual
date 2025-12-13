@@ -1,4 +1,4 @@
-*,
+    A*,
 *::before,
 *::after {
     box-sizing: border-box;
@@ -23,10 +23,7 @@ body {
 
 /* CENTRAGE ABSOLU DU LOGO HAUT */
 .top-logo {
-    position: relative;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-bottom: 16px;
+    margin: 0 auto 20px;
     max-height: 38px;
     display: block;
 }
@@ -275,4 +272,37 @@ input[type="file"] {
 /* Canvas HD caché */
 .final-canvas {
     display: none;
+}
+
+@media (max-width: 768px) {
+    .top-logo {
+        margin-top: 12px;
+        margin-bottom: 12px;
+        max-height: 32px;
+    }
+
+    .page-header {
+        text-align: left;
+    }
+}
+/* Progressive disclosure – état caché */
+.section-hidden {
+    display: none;
+}
+
+/* Transition douce (optionnel mais premium) */
+.section-visible {
+    display: block;
+    animation: fadeInUp 0.25s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
