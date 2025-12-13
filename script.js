@@ -186,38 +186,38 @@ photoUploadInput.addEventListener("change", (e) => {
 
     const reader = new FileReader();
     reader.onload = (event) => {
-        photoCropImage.src = event.target.result;
-
-        if (cropPhoto) {
-            cropPhoto.destroy();
-        }
-        cropPhoto = new Cropper(photoCropImage, {
-            aspectRatio: 1,
-            viewMode: 1,               // IMPORTANT
-            dragMode: "move",
-            autoCropArea: 0.7,
-            background: false,
-            guides: false,
-            center: true,
-            highlight: false,
-            cropBoxResizable: true,
-            cropBoxMovable: true,
-            zoomOnWheel: true,
-            zoomOnTouch: true,
-            ready() {
-                this.cropper.center();
-            },
-            zoom(event) {
-                // recentrage automatique après zoom
-                requestAnimationFrame(() => {
-                    this.cropper.center();
-                });
+        photoCropImage.onload = () => {
+            if (cropPhoto) {
+                cropPhoto.destroy();
             }
-        });
 
+            cropPhoto = new Cropper(photoCropImage, {
+                aspectRatio: 1,
+                viewMode: 1,
+                dragMode: "move",
+                autoCropArea: 0.7,
+                background: false,
+                guides: false,
+                center: true,
+                highlight: false,
+                cropBoxResizable: true,
+                cropBoxMovable: true,
+                zoomOnWheel: true,
+                zoomOnTouch: true,
+                ready() {
+                    this.cropper.center();
+                },
+                zoom() {
+                    requestAnimationFrame(() => {
+                        this.cropper.center();
+                    });
+                }
+            });
 
+            updateButtons();
+        };
 
-        updateButtons();
+        photoCropImage.src = event.target.result;
     };
 
     reader.readAsDataURL(file);
@@ -314,25 +314,26 @@ document.getElementById("logoUpload1").addEventListener("change", (e) => {
 
     const reader = new FileReader();
     reader.onload = (event) => {
+        logoCropImage1.onload = () => {
+            if (cropLogo1) {
+                cropLogo1.destroy();
+            }
+
+            cropLogo1 = new Cropper(logoCropImage1, {
+                aspectRatio: 5 / 3,
+                viewMode: 1,
+                dragMode: "move",
+                autoCropArea: 1,
+                background: false,
+                guides: false,
+                movable: true,
+                zoomOnWheel: true
+            });
+        };
+
         logoCropImage1.src = event.target.result;
-
-        if (cropLogo1) {
-            cropLogo1.destroy();
-        }
-
-        cropLogo1 = new Cropper(logoCropImage1, {
-            aspectRatio: 5 / 3,
-            viewMode: 1,
-            dragMode: "move",
-            autoCropArea: 1,
-            background: false,
-            guides: false,
-            movable: true,
-            zoomOnWheel: true
-        });
-
-        logo1ZoomInput.value = 1;
     };
+
     reader.readAsDataURL(file);
 });
 
@@ -438,25 +439,24 @@ document.getElementById("logoUpload2").addEventListener("change", (e) => {
 
     const reader = new FileReader();
     reader.onload = (event) => {
+        logoCropImage2.onload = () => {
+            if (cropLogo2) cropLogo2.destroy();
+
+            cropLogo2 = new Cropper(logoCropImage2, {
+                aspectRatio: 5 / 3,
+                viewMode: 1,
+                dragMode: "move",
+                autoCropArea: 1,
+                background: false,
+                guides: false,
+                movable: true,
+                zoomOnWheel: true
+            });
+        };
+
         logoCropImage2.src = event.target.result;
-
-        if (cropLogo2) {
-            cropLogo2.destroy();
-        }
-
-        cropLogo2 = new Cropper(logoCropImage2, {
-            aspectRatio: 5 / 3,
-            viewMode: 1,
-            dragMode: "move",
-            autoCropArea: 1,
-            background: false,
-            guides: false,
-            movable: true,
-            zoomOnWheel: true
-        });
-
-        logo2ZoomInput.value = 1;
     };
+
     reader.readAsDataURL(file);
 });
 
