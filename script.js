@@ -195,8 +195,9 @@ photoUploadInput.addEventListener("change", (e) => {
             autoCropArea: 1,
             background: false,
             guides: false,
-            movable: true,
-            zoomOnWheel: true
+            center: true,
+            highlight: false,
+            cropBoxResizable: false
         });
 
         photoZoomInput.value = 1;
