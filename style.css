@@ -317,6 +317,8 @@ input[type="file"] {
 .section-visible {
     display: block;
     animation: fadeInUp 0.25s ease;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 @keyframes fadeInUp {
