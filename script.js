@@ -71,6 +71,15 @@ function showSection(id) {
         el.classList.add("section-visible");
     }
 }
+
+function hideSection(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    el.classList.remove("section-visible");
+    el.classList.add("section-hidden");
+}
+
 function scrollToSection(id) {
     const el = document.getElementById(id);
     if (!el) return;
@@ -204,21 +213,36 @@ function updateButtons() {
     const sendBtn = document.getElementById("sendBtn");
     const firstname = document.getElementById("firstname").value.trim();
     const lastname = document.getElementById("lastname").value.trim();
+
+    const canShowPhoto = firstname && lastname && email && consent;
+
     
-    // Reveal PHOTO
-    if (firstname && lastname && email && consent && !photoSectionShown) {
-        showSection("photoSection");
-        scrollToSection("photoSection");
-        photoSectionShown = true;
+    /* === PHOTO SECTION === */
+    if (canShowPhoto) {
+        if (!photoSectionShown) {
+            showSection("photoSection");
+            photoSectionShown = true;
+        }
+    } else {
+        // 🔥 RESET COMPLET si on décoche
+        hideSection("photoSection");
+        hideSection("logosSection");
+        hideSection("previewSection");
+
+        photoSectionShown = false;
+        logosSectionShown = false;
+        previewSectionShown = false;
+
+        photoSource = null;
+        logo1Source = null;
+        logo2Source = null;
+        hasPreview = false;
+
+        confirmPhotoBtn.disabled = true;
     }
-
-
     // Activation preview
     const canPreview =
-        firstname &&
-        lastname &&
-        email &&
-        consent &&
+        canShowPhoto &&
         photoSource &&
         areLogosReady();
 
@@ -261,7 +285,6 @@ photoUploadInput.addEventListener("change", (e) => {
                 zoomOnWheel: true,
                 zoomOnTouch: true,
                 ready() {
-                    this.cropper.center();
                     confirmPhotoBtn.disabled = false; // 👈 ICI
                 },
                 zoom(event) {
