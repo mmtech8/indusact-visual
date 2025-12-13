@@ -273,7 +273,38 @@ input[type="file"] {
 .final-canvas {
     display: none;
 }
+@media (max-width: 900px) {
+    .layout {
+        flex-direction: column;
+    }
 
+    .preview-column {
+        order: 2;
+    }
+
+    .form-column {
+        order: 1;
+    }
+
+    .buttons-row {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .buttons-row button {
+        width: 100%;
+        min-height: 48px;
+    }
+
+    .preview-wrapper {
+        min-height: 200px;
+    }
+
+    .preview {
+        max-width: 180px;
+    }
+}
 @media (max-width: 768px) {
     .top-logo {
         margin-top: 12px;
