@@ -107,7 +107,7 @@ function populateAlumniSelects() {
         const uploadOpt = document.createElement("option");
         uploadOpt.value = "__upload__";
         uploadOpt.textContent =
-            "Je n’ai pas trouvé mon association – j’importe mon logo";
+            "Je n’ai pas trouvé mon association –> j’importe mon logo";
         select.appendChild(uploadOpt);
 
         setupAlumniFilter(select);
