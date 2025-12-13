@@ -199,14 +199,15 @@ input[type="file"] {
 .crop-area:not(.logo-crop) .cropper-face {
     background-color: rgba(255, 255, 255, 0.05);
 }
-/* PHOTO – conteneur libre (pas de gabarit horizontal) */
+/* PHOTO – conteneur libre mais visible */
 .crop-area:not(.logo-crop) {
     width: 100%;
     max-width: 420px;
+    min-height: 320px;   /* OBLIGATOIRE */
     height: auto;
-    aspect-ratio: unset;
     background: #f1f5f9;
 }
+
 
 /* Logos toujours rectangulaires */
 .logo-crop .cropper-crop-box,
