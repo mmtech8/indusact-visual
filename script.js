@@ -58,6 +58,7 @@ const confirmPhotoBtn = document.getElementById("confirmPhotoBtn");
 
 confirmPhotoBtn.disabled = true;
 
+
 /* ------------------------------------------
    PROGRESSIVE DISCLOSURE
 -------------------------------------------*/
@@ -70,6 +71,9 @@ function showSection(id) {
         el.classList.remove("section-hidden");
         el.classList.add("section-visible");
     }
+}
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 function hideSection(id) {
@@ -207,6 +211,8 @@ function resetAlumniOptions(select) {
 
 function updateButtons() {
     const email = document.getElementById("email").value.trim();
+    const emailValid = isValidEmail(email);
+
     const consent = document.getElementById("consent").checked;
 
     const previewBtn = document.getElementById("previewBtn");
@@ -216,7 +222,12 @@ function updateButtons() {
 
     const canShowPhoto = firstname && lastname && email && consent;
 
-    
+    if (!consent) {
+    document.getElementById("photoSection").classList.add("section-hidden");
+    photoSectionShown = false;
+    return;
+}
+
     /* === PHOTO SECTION === */
     if (canShowPhoto) {
         if (!photoSectionShown) {
@@ -244,6 +255,7 @@ function updateButtons() {
     const canPreview =
         canShowPhoto &&
         photoSource &&
+        emailValid &&
         areLogosReady();
 
     previewBtn.disabled = !canPreview;
@@ -377,6 +389,8 @@ const logo1UploadZone = document.getElementById("logo1UploadZone");
 const logo1AlumniSelect = document.getElementById("logo1Alumni");
 const logo1ZoomInput = document.getElementById("logo1Zoom");
 const logoCropImage1 = document.getElementById("logoCropImage1");
+const confirmLogo1Btn = document.getElementById("confirmLogo1Btn");
+confirmLogo1Btn.disabled = true;
 
 logo1TypeSelect.addEventListener("change", () => {
     const type = logo1TypeSelect.value;
@@ -396,6 +410,8 @@ logo1TypeSelect.addEventListener("change", () => {
         logo1AlumniZone.style.display = "none";
         logo1UploadZone.style.display = "none";
     }
+    confirmLogo1Btn.disabled = true;
+
 });
 
 previewImg.addEventListener("contextmenu", (e) => {
@@ -426,17 +442,19 @@ logo1AlumniSelect.addEventListener("change", () => {
     updateButtons();
 });
 
+
 document.getElementById("logoUpload1").addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = (event) => {
-        // 1️⃣ On nettoie l'ancien handler (sécurité)
-        logoCropImage1.onload = null;
         logoCropImage1.onload = () => {
-            if (cropLogo1) {
-                cropLogo1.destroy();
+            if (cropLogo1) cropLogo1.destroy();
+
+            // On invalide la validation seulement si un upload est requis
+            if (logo1TypeSelect.value === "other" || logo1AlumniSelect.value === "__upload__") {
+                confirmLogo1Btn.disabled = true;
             }
 
             cropLogo1 = new Cropper(logoCropImage1, {
@@ -447,16 +465,32 @@ document.getElementById("logoUpload1").addEventListener("change", (e) => {
                 background: false,
                 guides: false,
                 movable: true,
-                zoomOnWheel: true
+                zoomOnWheel: true,
+                ready() {
+                    confirmLogo1Btn.disabled = false;
+                }
             });
         };
-
         logoCropImage1.src = event.target.result;
     };
-
     reader.readAsDataURL(file);
 });
 
+confirmLogo1Btn.addEventListener("click", () => {
+    if (!cropLogo1) return;
+
+    const canvas = cropLogo1.getCroppedCanvas({
+        width: 500,
+        height: 300
+    });
+
+    logo1Source = canvas.toDataURL("image/png");
+    document.getElementById("logoPreview1").style.backgroundImage =
+        `url(${logo1Source})`;
+
+    confirmLogo1Btn.disabled = true;
+    updateButtons();
+});
 logo1ZoomInput.addEventListener("input", (e) => {
     if (!cropLogo1) return;
     const zoom = parseFloat(e.target.value);
@@ -511,7 +545,8 @@ const logo2UploadZone = document.getElementById("logo2UploadZone");
 const logo2AlumniSelect = document.getElementById("logo2Alumni");
 const logo2ZoomInput = document.getElementById("logo2Zoom");
 const logoCropImage2 = document.getElementById("logoCropImage2");
-
+const confirmLogo2Btn = document.getElementById("confirmLogo2Btn");
+confirmLogo2Btn.disabled = true;
 logo2TypeSelect.addEventListener("change", () => {
     const type = logo2TypeSelect.value;
 
@@ -555,16 +590,18 @@ logo2AlumniSelect.addEventListener("change", () => {
     updateButtons();
 });
 
+
 document.getElementById("logoUpload2").addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = (event) => {
-               // 1️⃣ On nettoie l'ancien handler (sécurité)
-        logoCropImage2.onload = null;
         logoCropImage2.onload = () => {
             if (cropLogo2) cropLogo2.destroy();
+
+            logo2Source = null;
+            confirmLogo2Btn.disabled = true;
 
             cropLogo2 = new Cropper(logoCropImage2, {
                 aspectRatio: 5 / 3,
@@ -574,20 +611,36 @@ document.getElementById("logoUpload2").addEventListener("change", (e) => {
                 background: false,
                 guides: false,
                 movable: true,
-                zoomOnWheel: true
+                zoomOnWheel: true,
+                ready() {
+                    confirmLogo2Btn.disabled = false;
+                }
             });
         };
-
         logoCropImage2.src = event.target.result;
     };
-
     reader.readAsDataURL(file);
+});
+
+confirmLogo2Btn.addEventListener("click", () => {
+    if (!cropLogo2) return;
+
+    const canvas = cropLogo2.getCroppedCanvas({
+        width: 500,
+        height: 300
+    });
+
+    logo2Source = canvas.toDataURL("image/png");
+    document.getElementById("logoPreview2").style.backgroundImage =
+        `url(${logo2Source})`;
+
+    confirmLogo2Btn.disabled = true;
+    updateButtons();
 });
 
 logo2ZoomInput.addEventListener("input", (e) => {
     if (!cropLogo2) return;
-    const zoom = parseFloat(e.target.value);
-    cropLogo2.zoomTo(zoom);
+    cropLogo2.zoomTo(parseFloat(e.target.value));
 });
 
 function exportLogo2() {
@@ -710,8 +763,7 @@ async function drawFinalCanvas() {
     }
 
     // 3️⃣ Logos (si besoin)
-    if (nbLogos !== "0") exportLogo1();
-    if (nbLogos === "2") exportLogo2();
+
     if (!previewSectionShown) {
         showSection("previewSection");
         scrollToSection("previewSection");
