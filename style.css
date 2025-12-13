@@ -21,13 +21,16 @@ body {
     box-sizing: border-box;
 }
 
-/* LOGO HAUT */
+/* CENTRAGE ABSOLU DU LOGO HAUT */
 .top-logo {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 16px;
     max-height: 38px;
+    display: block;
 }
+
 
 /* PAGE GLOBALE */
 
