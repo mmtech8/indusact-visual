@@ -34,10 +34,13 @@ let cropLogo2 = null;
 let photoSource = null;
 let logo1Source = null;
 let logo2Source = null;
+
 // Progressive disclosure flags (IMPORTANT)
 let photoSectionShown = false;
 let logosSectionShown = false;
 let previewSectionShown = false;
+let logosConfirmed = false;
+
 // Canvas final (HD mais caché en UI)
 const finalCanvas = document.getElementById("finalCanvas");
 const ctx = finalCanvas.getContext("2d");
@@ -52,6 +55,9 @@ previewImg.style.pointerEvents = "none";
 // État
 let hasPreview = false;
 
+const confirmPhotoBtn = document.getElementById("confirmPhotoBtn");
+
+confirmPhotoBtn.disabled = true;
 
 /* ------------------------------------------
    PROGRESSIVE DISCLOSURE
@@ -214,8 +220,8 @@ function updateButtons() {
         lastname &&
         email &&
         consent &&
-        cropPhoto &&
-        logosSectionShown &&
+        photoSource &&
+        logosConfirmed &&
         areLogosReady();
 
     previewBtn.disabled = !canPreview;
@@ -256,6 +262,7 @@ photoUploadInput.addEventListener("change", (e) => {
                 zoomOnTouch: true,
                 ready() {
                     this.cropper.center();
+                    confirmPhotoBtn.disabled = false; // 👈 ICI
                 },
                 zoom(event) {
                     const cropper = this.cropper;
@@ -303,9 +310,17 @@ function exportPhoto() {
         scrollToSection("logosSection");
         logosSectionShown = true;
     }
+    logosConfirmed = false;
+
     return photoSource;
 
 }
+confirmPhotoBtn.addEventListener("click", () => {
+    if (!cropPhoto) return;
+
+    exportPhoto();          // 👈 validation explicite
+    confirmPhotoBtn.disabled = true;
+});
 
 
 /* ------------------------------------------
@@ -320,6 +335,15 @@ document.querySelectorAll("input[name='nbLogos']").forEach((radio) => {
 
         document.getElementById("logo2Section").style.display =
             value === "2" ? "block" : "none";
+
+              // ✅ CAS 0 LOGO = CONFIRMÉ IMMÉDIATEMENT
+        if (value === "0") {
+            logosConfirmed = true;
+            updateButtons();
+        } else {
+            logosConfirmed = false; // on attend un vrai logo
+            updateButtons();
+        }
     });
 });
 
@@ -446,6 +470,8 @@ function exportLogo1() {
         });
         const output = canvas.toDataURL("image/png");
         logo1Source = output;
+        logosConfirmed = true;
+        updateButtons();
         document.getElementById("logoPreview1").style.backgroundImage =
             `url(${output})`;
         return Promise.resolve(output);
@@ -573,6 +599,8 @@ function exportLogo2() {
         });
         const output = canvas.toDataURL("image/png");
         logo2Source = output;
+        logosConfirmed = true;
+        updateButtons();
         document.getElementById("logoPreview2").style.backgroundImage =
             `url(${output})`;
         return Promise.resolve(output);
@@ -712,10 +740,11 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
         return;
     }
 
-    const fullname = document.getElementById("fullname").value.trim();
     const nbLogos = document.querySelector("input[name='nbLogos']:checked").value;
 
     const hdBase64 = finalCanvas.toDataURL("image/png");
+    const firstname = document.getElementById("firstname").value.trim();
+    const lastname = document.getElementById("lastname").value.trim();
 
     const payload = {
         email,
