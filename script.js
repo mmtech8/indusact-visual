@@ -246,6 +246,8 @@ photoUploadInput.addEventListener("change", (e) => {
             if (cropPhoto) {
                 cropPhoto.destroy();
             }
+    confirmPhotoBtn.disabled = true;
+    photoSource = null;
 
             cropPhoto = new Cropper(photoCropImage, {
                 aspectRatio: 1,
@@ -260,8 +262,7 @@ photoUploadInput.addEventListener("change", (e) => {
                 cropBoxMovable: true,
                 zoomOnWheel: true,
                 zoomOnTouch: true,
-                ready() {
-                    this.cropper.center();
+                crop() {
                     confirmPhotoBtn.disabled = false; // 👈 ICI
                 },
                 zoom(event) {
@@ -320,6 +321,7 @@ confirmPhotoBtn.addEventListener("click", () => {
 
     exportPhoto();          // 👈 validation explicite
     confirmPhotoBtn.disabled = true;
+    updateButtons(); // 👈 MANQUAIT
 });
 
 
