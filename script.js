@@ -50,6 +50,32 @@ previewImg.style.pointerEvents = "none";
 let hasPreview = false;
 
 /* ------------------------------------------
+   PROGRESSIVE DISCLOSURE
+-------------------------------------------*/
+
+function showSection(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    if (el.classList.contains("section-hidden")) {
+        el.classList.remove("section-hidden");
+        el.classList.add("section-visible");
+    }
+}
+function scrollToSection(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    const yOffset = -12; // petit offset visuel (header breathing)
+    const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+    window.scrollTo({
+        top: y,
+        behavior: "smooth"
+    });
+}
+
+/* ------------------------------------------
    UTILITAIRE : CHARGER UNE IMAGE
 -------------------------------------------*/
 function loadImage(src) {
@@ -107,7 +133,7 @@ function populateAlumniSelects() {
         const uploadOpt = document.createElement("option");
         uploadOpt.value = "__upload__";
         uploadOpt.textContent =
-            "Je n’ai pas trouvé mon association –> j’importe mon logo";
+            "Je n’ai pas trouvé mon association – j’importe mon logo";
         select.appendChild(uploadOpt);
 
         setupAlumniFilter(select);
@@ -160,6 +186,8 @@ function resetAlumniOptions(select) {
 /* ------------------------------------------
    MISE À JOUR DES BOUTONS
 -------------------------------------------*/
+let photoSectionShown = false;
+
 function updateButtons() {
     const email = document.getElementById("email").value.trim();
     const consent = document.getElementById("consent").checked;
@@ -168,6 +196,12 @@ function updateButtons() {
     const sendBtn = document.getElementById("sendBtn");
 
     const canPreview = email !== "" && consent && cropPhoto !== null;
+
+if (email !== "" && consent && !photoSectionShown) {
+    showSection("photoSection");
+    scrollToSection("photoSection");
+    photoSectionShown = true;
+}
 
     previewBtn.disabled = !canPreview;
     sendBtn.disabled = !hasPreview;
@@ -248,6 +282,7 @@ function exportPhoto() {
 
     photoSource = canvas.toDataURL("image/png");
     return photoSource;
+
 }
 
 
@@ -577,9 +612,6 @@ async function placeLogosOnCanvas(nbLogos) {
 async function drawFinalCanvas() {
     const nbLogos = document.querySelector("input[name='nbLogos']:checked").value;
 
-    // 1️⃣ On récupère la photo recadrée
-    exportPhoto();
-
     // 2️⃣ Sécurité : si pas de photo, on stoppe
     if (!photoSource) {
         alert(
@@ -620,7 +652,8 @@ async function drawFinalCanvas() {
     previewImg.src = previewBase64;
     previewImg.style.display = "block";
     previewImg.style.pointerEvents = "none";
-
+    showSection("previewSection");
+    scrollToSection("previewSection");
 
     hasPreview = true;
     updateButtons();
@@ -681,6 +714,10 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
 -------------------------------------------*/
 document.getElementById("email").addEventListener("input", updateButtons);
 document.getElementById("consent").addEventListener("change", updateButtons);
+// Progressive disclosure – état initial
+document.getElementById("photoSection")?.classList.add("section-hidden");
+document.getElementById("logosSection")?.classList.add("section-hidden");
+document.getElementById("previewSection")?.classList.add("section-hidden");
 
 // Initialisation
 updateButtons();
