@@ -34,7 +34,10 @@ let cropLogo2 = null;
 let photoSource = null;
 let logo1Source = null;
 let logo2Source = null;
-
+// Progressive disclosure flags (IMPORTANT)
+let photoSectionShown = false;
+let logosSectionShown = false;
+let previewSectionShown = false;
 // Canvas final (HD mais caché en UI)
 const finalCanvas = document.getElementById("finalCanvas");
 const ctx = finalCanvas.getContext("2d");
@@ -49,10 +52,7 @@ previewImg.style.pointerEvents = "none";
 // État
 let hasPreview = false;
 
-// Progressive disclosure flags (IMPORTANT)
-let photoSectionShown = false;
-let logosSectionShown = false;
-let previewSectionShown = false;
+
 /* ------------------------------------------
    PROGRESSIVE DISCLOSURE
 -------------------------------------------*/
@@ -190,7 +190,6 @@ function resetAlumniOptions(select) {
 /* ------------------------------------------
    MISE À JOUR DES BOUTONS
 -------------------------------------------*/
-let photoSectionShown = false;
 
 function updateButtons() {
     const email = document.getElementById("email").value.trim();
@@ -199,14 +198,15 @@ function updateButtons() {
     const previewBtn = document.getElementById("previewBtn");
     const sendBtn = document.getElementById("sendBtn");
 
-    const canPreview = email !== "" && consent && cropPhoto !== null;
+    // Reveal PHOTO
+    if (email && consent && !photoSectionShown) {
+        showSection("photoSection");
+        scrollToSection("photoSection");
+        photoSectionShown = true;
+    }
 
-if (email !== "" && consent && !photoSectionShown) {
-    showSection("photoSection");
-    scrollToSection("photoSection");
-    photoSectionShown = true;
-}
-
+    // Activation preview
+    const canPreview = email && consent && cropPhoto;
     previewBtn.disabled = !canPreview;
     sendBtn.disabled = !hasPreview;
 }
@@ -285,6 +285,12 @@ function exportPhoto() {
     });
 
     photoSource = canvas.toDataURL("image/png");
+    
+    if (!logosSectionShown) {
+        showSection("logosSection");
+        scrollToSection("logosSection");
+        logosSectionShown = true;
+    }
     return photoSource;
 
 }
@@ -627,6 +633,11 @@ async function drawFinalCanvas() {
     // 3️⃣ Logos (si besoin)
     if (nbLogos !== "0") exportLogo1();
     if (nbLogos === "2") exportLogo2();
+    if (!previewSectionShown) {
+        showSection("previewSection");
+        scrollToSection("previewSection");
+        previewSectionShown = true;
+}
 
 
     ctx.clearRect(0, 0, finalCanvas.width, finalCanvas.height);
