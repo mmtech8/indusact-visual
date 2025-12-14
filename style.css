@@ -124,6 +124,11 @@ button:disabled {
 }
 
 /* TEXTES SECONDAIRES */
+.error-text {
+    color: #c0392b;
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
 
 .help-text {
     margin: 0 0 10px;
