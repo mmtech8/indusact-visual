@@ -3,7 +3,7 @@
 -------------------------------------------*/
 
 // Webhook Make — à personnaliser
-const MAKE_WEBHOOK_URL = "https://hook.integromat.com/XXX";
+const MAKE_WEBHOOK_URL = "https://hook.eu2.make.com/7rlulwhyngfc6aremee3pdgv3ah4ovvn";
 
 // Coordonnées de la bande blanche (px)
 const BAND_TOP = 1122;
