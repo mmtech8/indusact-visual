@@ -235,8 +235,6 @@ if (!consent) {
     hasPreview = false;
 
     confirmPhotoBtn.disabled = true;
-
-    updateButtons();
     return;
 }
 
@@ -452,13 +450,15 @@ logo1AlumniSelect.addEventListener("change", () => {
         logo1UploadZone.style.display = "none";
         document.getElementById("logoPreview1Alumni").style.backgroundImage =
             `url(${logo1Source})`;
+
+        updateButtons();
     } else {
         logo1Source = null;
         logo1UploadZone.style.display = "none";
         document.getElementById("logoPreview1Alumni").style.backgroundImage = "";
         
     }
-    updateButtons();
+  
 });
 
 
