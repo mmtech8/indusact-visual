@@ -275,10 +275,19 @@ if (!consent) {
         emailValid &&
         areLogosReady();
 
-    previewBtn.disabled = !canPreview;
+    previewBtn.disabled = !(
+        canShowPhoto &&
+        photoSource &&
+        areLogosReady()
+    );
     sendBtn.disabled = !hasPreview;
 const emailError = document.getElementById("emailError");
-
+const emailInput = document.getElementById("email");
+    if (email && !emailValid) {
+        emailInput.classList.add("invalid");
+    } else {
+        emailInput.classList.remove("invalid");
+    }
     if (email && !emailValid) {
         emailError.style.display = "block";
     } else {
