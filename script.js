@@ -220,7 +220,13 @@ function updateButtons() {
     const firstname = document.getElementById("firstname").value.trim();
     const lastname = document.getElementById("lastname").value.trim();
 
-    const canShowPhoto = firstname && lastname && email && consent;
+const canShowPhoto =
+    firstname &&
+    lastname &&
+    email &&
+    emailValid &&
+    consent;
+
 
 if (!consent) {
     hideSection("photoSection");
