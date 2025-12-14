@@ -465,7 +465,6 @@ logo1AlumniSelect.addEventListener("change", () => {
         logo1UploadZone.style.display = "none";
         document.getElementById("logoPreview1Alumni").style.backgroundImage =
             `url(${logo1Source})`;
-
         updateButtons();
     } else {
         logo1Source = null;
@@ -521,7 +520,6 @@ confirmLogo1Btn.addEventListener("click", () => {
     logo1Source = canvas.toDataURL("image/png");
     document.getElementById("logoPreview1").style.backgroundImage =
         `url(${logo1Source})`;
-
     confirmLogo1Btn.disabled = true;
     updateButtons();
 });
@@ -757,6 +755,7 @@ async function placeLogosOnCanvas(nbLogos) {
 function areLogosReady() {
     const nbLogos = document.querySelector("input[name='nbLogos']:checked")?.value;
     if (!nbLogos) return false;
+    
     if (nbLogos === "0") {
         return true;
     }
