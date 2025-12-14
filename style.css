@@ -123,6 +123,17 @@ button:disabled {
     margin: 10px 0 4px;
 }
 
+.card-soft {
+    margin-top: -12px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.buttons-row.center {
+    display: flex;
+    justify-content: center;
+}
+
 /* TEXTES SECONDAIRES */
 .error-text {
     color: #c0392b;
