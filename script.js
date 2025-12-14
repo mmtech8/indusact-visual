@@ -222,11 +222,24 @@ function updateButtons() {
 
     const canShowPhoto = firstname && lastname && email && consent;
 
-    if (!consent) {
-    document.getElementById("photoSection").classList.add("section-hidden");
+if (!consent) {
+    hideSection("photoSection");
+    hideSection("logosSection");
+    hideSection("previewSection");
+
     photoSectionShown = false;
+    logosSectionShown = false;
+    previewSectionShown = false;
+
+    photoSource = null;
+    hasPreview = false;
+
+    confirmPhotoBtn.disabled = true;
+
+    updateButtons();
     return;
 }
+
 
     /* === PHOTO SECTION === */
     if (canShowPhoto) {
@@ -260,6 +273,13 @@ function updateButtons() {
 
     previewBtn.disabled = !canPreview;
     sendBtn.disabled = !hasPreview;
+const emailError = document.getElementById("emailError");
+
+    if (email && !emailValid) {
+        emailError.style.display = "block";
+    } else {
+        emailError.style.display = "none";
+    }
 
 }
 
@@ -387,7 +407,6 @@ const logo1TypeSelect = document.getElementById("logo1Type");
 const logo1AlumniZone = document.getElementById("logo1AlumniZone");
 const logo1UploadZone = document.getElementById("logo1UploadZone");
 const logo1AlumniSelect = document.getElementById("logo1Alumni");
-const logo1ZoomInput = document.getElementById("logo1Zoom");
 const logoCropImage1 = document.getElementById("logoCropImage1");
 const confirmLogo1Btn = document.getElementById("confirmLogo1Btn");
 confirmLogo1Btn.disabled = true;
@@ -491,11 +510,7 @@ confirmLogo1Btn.addEventListener("click", () => {
     confirmLogo1Btn.disabled = true;
     updateButtons();
 });
-logo1ZoomInput.addEventListener("input", (e) => {
-    if (!cropLogo1) return;
-    const zoom = parseFloat(e.target.value);
-    cropLogo1.zoomTo(zoom);
-});
+
 
 function exportLogo1() {
     const type = logo1TypeSelect.value;
@@ -543,7 +558,6 @@ const logo2TypeSelect = document.getElementById("logo2Type");
 const logo2AlumniZone = document.getElementById("logo2AlumniZone");
 const logo2UploadZone = document.getElementById("logo2UploadZone");
 const logo2AlumniSelect = document.getElementById("logo2Alumni");
-const logo2ZoomInput = document.getElementById("logo2Zoom");
 const logoCropImage2 = document.getElementById("logoCropImage2");
 const confirmLogo2Btn = document.getElementById("confirmLogo2Btn");
 confirmLogo2Btn.disabled = true;
@@ -636,11 +650,6 @@ confirmLogo2Btn.addEventListener("click", () => {
 
     confirmLogo2Btn.disabled = true;
     updateButtons();
-});
-
-logo2ZoomInput.addEventListener("input", (e) => {
-    if (!cropLogo2) return;
-    cropLogo2.zoomTo(parseFloat(e.target.value));
 });
 
 function exportLogo2() {
