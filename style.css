@@ -83,19 +83,51 @@ input[type="email"].invalid {
     user-select: none;
 }
 
-button {
-    padding: 10px 14px;
-    border-radius: 8px;
+button,
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 12px 22px;
+    border-radius: 999px;
     border: none;
-    background: #4357a9;
-    color: #ffffff;
+    font-family: inherit;
     font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1;
     cursor: pointer;
+    transition: transform 0.15s ease, background-color 0.15s ease, opacity 0.15s ease;
 }
 
-button:disabled {
-    opacity: 0.4;
+button:hover:not(:disabled),
+.btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background: #ffad35;
+    color: #1f2933;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #f59e0b;
+}
+
+.btn-final {
+    background: #1f9d55;
+    color: #ffffff;
+}
+
+.btn-final:hover:not(:disabled) {
+    background: #168a48;
+}
+
+button:disabled,
+.btn:disabled {
+    opacity: 0.45;
     cursor: not-allowed;
+    transform: none;
 }
 
 /* CARDS */
@@ -129,11 +161,15 @@ button:disabled {
     border-top-right-radius: 0;
 }
 
-.buttons-row.center {
+.buttons-row {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
+    margin-top: 14px;
 }
 
+.buttons-row.center {
+    justify-content: center;
+}
 /* TEXTES SECONDAIRES */
 .error-text {
     color: #c0392b;
