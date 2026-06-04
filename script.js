@@ -114,7 +114,12 @@ function loadImage(src) {
 -------------------------------------------*/
 async function loadAlumniLogos() {
     try {
-        const response = await fetch("data/alumni.json");
+        const response = await fetch("data/alumni.json", { cache: "no-store" });
+
+        if (!response.ok) {
+            throw new Error(`Impossible de charger data/alumni.json - statut ${response.status}`);
+        }
+
         const data = await response.json();
         alumniList = data.alumni || [];
 
@@ -124,8 +129,20 @@ async function loadAlumniLogos() {
         }, {});
 
         populateAlumniSelects();
+        console.log(`${alumniList.length} associations d’alumni chargées.`);
     } catch (err) {
         console.error("Erreur lors du chargement de data/alumni.json :", err);
+
+        ["logo1Alumni", "logo2Alumni"].forEach((id) => {
+            const select = document.getElementById(id);
+            if (!select) return;
+
+            select.innerHTML = "";
+            const opt = document.createElement("option");
+            opt.value = "";
+            opt.textContent = "Liste indisponible — importez votre logo";
+            select.appendChild(opt);
+        });
     }
 }
 
@@ -320,7 +337,7 @@ photoUploadInput.addEventListener("change", (e) => {
                 aspectRatio: 1,
                 viewMode: 1,
                 dragMode: "move",
-                autoCropArea: 0.7,
+                autoCropArea: 0.75,
                 background: false,
                 guides: false,
                 center: true,
@@ -329,27 +346,9 @@ photoUploadInput.addEventListener("change", (e) => {
                 cropBoxMovable: true,
                 zoomOnWheel: true,
                 zoomOnTouch: true,
+                wheelZoomRatio: 0.08,
                 ready() {
-                    confirmPhotoBtn.disabled = false; // 👈 ICI
-                },
-                zoom(event) {
-                    const cropper = this.cropper;
-                    const imageData = cropper.getImageData();
-                    const cropBoxData = cropper.getCropBoxData();
-
-                    // Empêche l’image de devenir plus petite que le cercle
-                    if (
-                        imageData.width < cropBoxData.width ||
-                        imageData.height < cropBoxData.height
-                    ) {
-                        event.preventDefault();
-                        cropper.zoomTo(imageData.oldRatio || imageData.ratio);
-                    } else {
-                        imageData.oldRatio = imageData.ratio;
-                        requestAnimationFrame(() => {
-                            cropper.center();
-                        });
-                    }
+                    confirmPhotoBtn.disabled = false;
                 }
             });
 
@@ -441,6 +440,7 @@ logo1TypeSelect.addEventListener("change", () => {
         logo1UploadZone.style.display = "none";
     }
     confirmLogo1Btn.disabled = true;
+    updateButtons();
 
 });
 
@@ -455,6 +455,7 @@ logo1AlumniSelect.addEventListener("change", () => {
         logo1Source = null;
         document.getElementById("logoPreview1Alumni").style.backgroundImage = "";
         logo1UploadZone.style.display = "block";
+        updateButtons();
         return;
     }
 
@@ -590,6 +591,9 @@ logo2TypeSelect.addEventListener("change", () => {
         logo2AlumniZone.style.display = "none";
         logo2UploadZone.style.display = "none";
     }
+
+    confirmLogo2Btn.disabled = true;
+    updateButtons();
 });
 
 logo2AlumniSelect.addEventListener("change", () => {
@@ -599,6 +603,7 @@ logo2AlumniSelect.addEventListener("change", () => {
         logo2Source = null;
         document.getElementById("logoPreview2Alumni").style.backgroundImage = "";
         logo2UploadZone.style.display = "block";
+        updateButtons();
         return;
     }
 
@@ -883,6 +888,8 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
    UX DE BASE
 -------------------------------------------*/
 document.getElementById("email").addEventListener("input", updateButtons);
+document.getElementById("firstname").addEventListener("input", updateButtons);
+document.getElementById("lastname").addEventListener("input", updateButtons);
 document.getElementById("consent").addEventListener("change", updateButtons);
 // Progressive disclosure – état initial
 document.getElementById("photoSection")?.classList.add("section-hidden");
