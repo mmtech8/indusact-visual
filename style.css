@@ -283,12 +283,12 @@ input[type="file"] {
 .crop-area:not(.logo-crop) .cropper-face {
     background-color: rgba(255, 255, 255, 0.05);
 }
-/* PHOTO – conteneur stable pour CropperJS */
+/* PHOTO – conteneur libre mais visible */
 .crop-area:not(.logo-crop) {
     width: 100%;
     max-width: 420px;
-    height: 320px;
-    min-height: 320px;
+    min-height: 320px;   /* OBLIGATOIRE */
+    height: auto;
     background: #f1f5f9;
 }
 
