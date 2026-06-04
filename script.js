@@ -394,23 +394,21 @@ confirmPhotoBtn.addEventListener("click", () => {
 /* ------------------------------------------
    NB DE LOGOS (0 / 1 / 2)
 -------------------------------------------*/
+function syncLogoSections() {
+    const value =
+        document.querySelector("input[name='nbLogos']:checked")?.value || "1";
+
+    document.getElementById("logo1Section").style.display =
+        value === "1" || value === "2" ? "block" : "none";
+
+    document.getElementById("logo2Section").style.display =
+        value === "2" ? "block" : "none";
+
+    updateButtons();
+}
+
 document.querySelectorAll("input[name='nbLogos']").forEach((radio) => {
-    radio.addEventListener("change", () => {
-        const value = radio.value;
-
-        document.getElementById("logo1Section").style.display =
-            value === "1" || value === "2" ? "block" : "none";
-
-        document.getElementById("logo2Section").style.display =
-            value === "2" ? "block" : "none";
-
-              // ✅ CAS 0 LOGO = CONFIRMÉ IMMÉDIATEMENT
-        if (value === "0") {
-            updateButtons();
-        } else {
-            updateButtons();
-        }
-    });
+    radio.addEventListener("change", syncLogoSections);
 });
 
 /* ------------------------------------------
@@ -892,5 +890,5 @@ document.getElementById("logosSection")?.classList.add("section-hidden");
 document.getElementById("previewSection")?.classList.add("section-hidden");
 
 // Initialisation
-updateButtons();
+syncLogoSections();
 loadAlumniLogos();
