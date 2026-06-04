@@ -122,7 +122,15 @@ button:hover:not(:disabled),
 .btn-final:hover:not(:disabled) {
     background: #168a48;
 }
+.btn-logo {
+    background: #1C3C6F;
+    color: #ffffff;
+}
 
+.btn-logo:hover:not(:disabled) {
+    background: #17325d;
+    color: #ffffff;
+}
 button:disabled,
 .btn:disabled {
     opacity: 0.45;
