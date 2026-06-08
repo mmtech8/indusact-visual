@@ -223,7 +223,7 @@ button:disabled,
     display: flex;
     align-items: flex-start;
     gap: 8px;
-    font-size: 0.9rem;
+    font-size: 0.78rem;
     font-weight: 500;
     line-height: 1.4;
 }
