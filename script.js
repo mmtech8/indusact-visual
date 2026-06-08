@@ -40,7 +40,7 @@ let photoCropDirty = false;
 let logo1CropDirty = false;
 let logo2CropDirty = false;
 
-// Protection contre les événements crop automatiques juste après validation
+// Protection contre les événements automatiques juste après validation
 let suppressPhotoCropEvent = false;
 let suppressLogo1CropEvent = false;
 let suppressLogo2CropEvent = false;
@@ -182,8 +182,6 @@ function markPhotoCropAsModified() {
 }
 
 function markLogoCropAsModified(index) {
-    invalidateFinalPreview();
-
     if (index === 1) {
         if (suppressLogo1CropEvent) return;
         if (!logo1Source) return;
@@ -202,6 +200,7 @@ function markLogoCropAsModified(index) {
         setLogoPreview("logoPreview2", null);
     }
 
+    invalidateFinalPreview();
     updateButtons();
 }
 
@@ -454,7 +453,11 @@ photoUploadInput.addEventListener("change", (e) => {
                 highlight: false,
                 cropBoxResizable: true,
                 cropBoxMovable: true,
-                zoomOnWheel: true,
+
+                // Évite que le scroll de page modifie le cropper.
+                zoomOnWheel: false,
+
+                // Garde le zoom tactile.
                 zoomOnTouch: true,
                 wheelZoomRatio: 0.08,
 
@@ -462,7 +465,13 @@ photoUploadInput.addEventListener("change", (e) => {
                     confirmPhotoBtn.disabled = false;
                 },
 
-                crop() {
+                // Se déclenche à la fin d’une vraie interaction.
+                cropend() {
+                    markPhotoCropAsModified();
+                },
+
+                // Se déclenche si l’utilisateur zoome au tactile.
+                zoom() {
                     markPhotoCropAsModified();
                 }
             });
@@ -637,13 +646,19 @@ document.getElementById("logoUpload1").addEventListener("change", (e) => {
                 background: false,
                 guides: false,
                 movable: true,
-                zoomOnWheel: true,
+
+                // Évite que le scroll de page modifie le logo.
+                zoomOnWheel: false,
 
                 ready() {
                     confirmLogo1Btn.disabled = false;
                 },
 
-                crop() {
+                cropend() {
+                    markLogoCropAsModified(1);
+                },
+
+                zoom() {
                     markLogoCropAsModified(1);
                 }
             });
@@ -826,13 +841,19 @@ document.getElementById("logoUpload2").addEventListener("change", (e) => {
                 background: false,
                 guides: false,
                 movable: true,
-                zoomOnWheel: true,
+
+                // Évite que le scroll de page modifie le logo.
+                zoomOnWheel: false,
 
                 ready() {
                     confirmLogo2Btn.disabled = false;
                 },
 
-                crop() {
+                cropend() {
+                    markLogoCropAsModified(2);
+                },
+
+                zoom() {
                     markLogoCropAsModified(2);
                 }
             });
