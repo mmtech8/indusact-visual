@@ -55,6 +55,8 @@ body {
 
 
 
+/* LAYOUT */
+
 .layout {
     display: flex;
     gap: 20px;
@@ -67,15 +69,14 @@ body {
     width: 100%;
 }
 
-input[type="email"].invalid {
-    border-color: #dc2626;
-    box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.3);
-}
-
 .preview-column {
     width: 100%;
     max-width: 520px;
 }
+
+
+
+/* APERÇU FINAL */
 
 .preview {
     max-width: 220px;
@@ -84,6 +85,10 @@ input[type="email"].invalid {
     pointer-events: none;
     user-select: none;
 }
+
+
+
+/* BOUTONS */
 
 button,
 .btn {
@@ -175,6 +180,10 @@ button:disabled,
     border-top-right-radius: 0;
 }
 
+
+
+/* LIGNES DE BOUTONS */
+
 .buttons-row {
     display: flex;
     justify-content: flex-start;
@@ -219,18 +228,12 @@ button:disabled,
     margin-bottom: 4px;
     font-weight: 500;
 }
-.checkbox-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    font-size: 0.78rem;
-    font-weight: 500;
-    line-height: 1.4;
+
+input[type="email"].invalid {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.3);
 }
 
-.checkbox-row input {
-    margin-top: 2px;
-}
 input[type="text"],
 input[type="email"],
 select {
@@ -252,6 +255,28 @@ select:focus {
 
 input[type="file"] {
     font-size: 0.85rem;
+}
+
+
+
+/* CHECKBOX CONSENTEMENT - DESKTOP */
+
+.checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.checkbox-row span {
+    font-size: inherit;
+}
+
+.checkbox-row input {
+    margin-top: 2px;
+    flex-shrink: 0;
 }
 
 
@@ -295,7 +320,7 @@ input[type="file"] {
 
 
 
-/* === CROP CIRCULAIRE PHOTO (UI CROPPEUR) === */
+/* === CROP CIRCULAIRE PHOTO === */
 
 .crop-area:not(.logo-crop) .cropper-crop-box,
 .crop-area:not(.logo-crop) .cropper-view-box {
@@ -321,7 +346,8 @@ input[type="file"] {
 
 
 
-/* Logos toujours rectangulaires */
+/* LOGOS TOUJOURS RECTANGULAIRES */
+
 .logo-crop .cropper-crop-box,
 .logo-crop .cropper-view-box {
     border-radius: 0;
@@ -357,27 +383,17 @@ input[type="file"] {
     background-repeat: no-repeat;
 }
 
-/* 
-   Repère UX :
-   le cadre vide reste visible pour les logos importés.
-*/
+/* Le cadre vide reste visible pour les logos importés. */
 .logo-preview {
     display: block;
 }
 
-/* 
-   Aperçu alumni :
-   masqué par défaut pour éviter d’afficher un ancien logo
-   quand l’utilisateur choisit “j’importe mon logo”.
-*/
+/* L’aperçu alumni est masqué par défaut. */
 .alumni-preview {
     display: none;
 }
 
-/* 
-   À utiliser avec le JS corrigé :
-   l’aperçu alumni ne s’affiche que si une association existante est sélectionnée.
-*/
+/* L’aperçu alumni s’affiche seulement quand le JS ajoute .has-image. */
 .alumni-preview.has-image {
     display: block;
 }
@@ -400,7 +416,7 @@ input[type="file"] {
 
 
 
-/* === LOGOS : cropper visible et stable === */
+/* === LOGOS : CROPPER VISIBLE ET STABLE === */
 
 .crop-area.logo-crop {
     width: 100%;
@@ -415,7 +431,10 @@ input[type="file"] {
     max-height: none;
 }
 
-/* Canvas HD caché */
+
+
+/* CANVAS HD CACHÉ */
+
 .final-canvas {
     display: none;
 }
@@ -425,6 +444,14 @@ input[type="file"] {
 /* RESPONSIVE */
 
 @media (max-width: 900px) {
+    body {
+        padding: 14px;
+    }
+
+    .page {
+        padding: 18px 0 32px;
+    }
+
     .layout {
         flex-direction: column;
     }
@@ -435,6 +462,27 @@ input[type="file"] {
 
     .form-column {
         order: 1;
+    }
+
+    .page-header {
+        text-align: left;
+    }
+
+    .page-header h1 {
+        font-size: 1.35rem;
+    }
+
+    .page-header p {
+        font-size: 0.88rem;
+    }
+
+    .top-logo {
+        max-height: 76px;
+        margin: 8px 0 14px;
+    }
+
+    .card {
+        padding: 15px 15px 17px;
     }
 
     .buttons-row {
@@ -456,20 +504,19 @@ input[type="file"] {
         max-width: 180px;
     }
 
-    .page-header {
-        text-align: left;
+    .crop-area.logo-crop {
+        max-width: 100%;
+        height: 180px;
     }
 }
 
 
 
-/* Progressive disclosure – état caché */
+/* PROGRESSIVE DISCLOSURE */
 
 .section-hidden {
     display: none;
 }
-
-/* Transition douce */
 
 .section-visible {
     display: block;
@@ -487,5 +534,28 @@ input[type="file"] {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+
+
+/* CONSENTEMENT - MOBILE UNIQUEMENT */
+/* Placé tout en bas volontairement pour écraser les styles précédents. */
+
+@media (max-width: 900px) {
+    label.checkbox-row,
+    label.checkbox-row span {
+        font-size: 0.72rem !important;
+        font-weight: 400 !important;
+        line-height: 1.3 !important;
+    }
+
+    label.checkbox-row {
+        gap: 7px !important;
+    }
+
+    label.checkbox-row input {
+        margin-top: 1px !important;
+        flex-shrink: 0 !important;
     }
 }
