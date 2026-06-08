@@ -35,27 +35,24 @@ let photoSource = null;
 let logo1Source = null;
 let logo2Source = null;
 
-// Progressive disclosure flags (IMPORTANT)
+// Progressive disclosure flags
 let photoSectionShown = false;
 let logosSectionShown = false;
 let previewSectionShown = false;
 
-// Canvas final (HD mais caché en UI)
+// Canvas final
 const finalCanvas = document.getElementById("finalCanvas");
 const ctx = finalCanvas.getContext("2d");
 
 // Image d’aperçu
 const previewImg = document.getElementById("previewImage");
-
-// INIT APERÇU (IMPORTANT)
 previewImg.src = "";
 previewImg.style.display = "none";
 previewImg.style.pointerEvents = "none";
-// État
+
 let hasPreview = false;
 
 const confirmPhotoBtn = document.getElementById("confirmPhotoBtn");
-
 confirmPhotoBtn.disabled = true;
 
 
@@ -72,9 +69,6 @@ function showSection(id) {
         el.classList.add("section-visible");
     }
 }
-function isValidEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
 
 function hideSection(id) {
     const el = document.getElementById(id);
@@ -88,7 +82,7 @@ function scrollToSection(id) {
     const el = document.getElementById(id);
     if (!el) return;
 
-    const yOffset = -12; // petit offset visuel (header breathing)
+    const yOffset = -12;
     const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
 
     window.scrollTo({
@@ -97,9 +91,15 @@ function scrollToSection(id) {
     });
 }
 
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+
 /* ------------------------------------------
-   UTILITAIRE : CHARGER UNE IMAGE
+   UTILITAIRES
 -------------------------------------------*/
+
 function loadImage(src) {
     return new Promise((resolve, reject) => {
         const img = new Image();
@@ -109,9 +109,58 @@ function loadImage(src) {
     });
 }
 
+/*
+   Gère les aperçus logos.
+
+   - Pour les aperçus alumni :
+     le CSS doit masquer .alumni-preview par défaut
+     et afficher .alumni-preview.has-image.
+
+   - Pour les aperçus d’import :
+     le CSS garde .logo-preview visible par défaut,
+     même vide, pour montrer le format attendu.
+*/
+function setLogoPreview(previewId, src) {
+    const preview = document.getElementById(previewId);
+    if (!preview) return;
+
+    if (src) {
+        preview.style.backgroundImage = `url(${src})`;
+        preview.classList.add("has-image");
+    } else {
+        preview.style.backgroundImage = "";
+        preview.classList.remove("has-image");
+    }
+}
+
+function resetLogoUploadUI(index) {
+    const uploadInput = document.getElementById(`logoUpload${index}`);
+    const cropImage = document.getElementById(`logoCropImage${index}`);
+    const confirmBtn = document.getElementById(`confirmLogo${index}Btn`);
+
+    if (index === 1 && cropLogo1) {
+        cropLogo1.destroy();
+        cropLogo1 = null;
+    }
+
+    if (index === 2 && cropLogo2) {
+        cropLogo2.destroy();
+        cropLogo2 = null;
+    }
+
+    if (uploadInput) uploadInput.value = "";
+    if (cropImage) cropImage.removeAttribute("src");
+    if (confirmBtn) confirmBtn.disabled = true;
+
+    // On vide l’image du cadre importé, mais le cadre reste visible via CSS.
+    setLogoPreview(`logoPreview${index}`, null);
+}
+
+
 /* ------------------------------------------
    CHARGEMENT ALUMNI.JSON
 -------------------------------------------*/
+
 async function loadAlumniLogos() {
     try {
         const response = await fetch("data/alumni.json", { cache: "no-store" });
@@ -138,6 +187,7 @@ async function loadAlumniLogos() {
             if (!select) return;
 
             select.innerHTML = "";
+
             const opt = document.createElement("option");
             opt.value = "";
             opt.textContent = "Liste indisponible — importez votre logo";
@@ -171,8 +221,7 @@ function populateAlumniSelects() {
 
         const uploadOpt = document.createElement("option");
         uploadOpt.value = "__upload__";
-        uploadOpt.textContent =
-            "Je n’ai pas trouvé mon association – j’importe mon logo";
+        uploadOpt.textContent = "Je n’ai pas trouvé mon association – j’importe mon logo";
         select.appendChild(uploadOpt);
 
         setupAlumniFilter(select);
@@ -188,6 +237,7 @@ function setupAlumniFilter(select) {
         const key = e.key;
 
         if (timer) clearTimeout(timer);
+
         timer = setTimeout(() => {
             filter = "";
             resetAlumniOptions(select);
@@ -206,11 +256,13 @@ function setupAlumniFilter(select) {
         }
 
         const options = Array.from(select.options);
+
         options.forEach((opt, index) => {
             if (index === 0 || opt.value === "__upload__") {
                 opt.hidden = false;
                 return;
             }
+
             opt.hidden = !opt.text.toLowerCase().includes(filter);
         });
     });
@@ -222,6 +274,7 @@ function resetAlumniOptions(select) {
     });
 }
 
+
 /* ------------------------------------------
    MISE À JOUR DES BOUTONS
 -------------------------------------------*/
@@ -229,7 +282,6 @@ function resetAlumniOptions(select) {
 function updateButtons() {
     const email = document.getElementById("email").value.trim();
     const emailValid = isValidEmail(email);
-
     const consent = document.getElementById("consent").checked;
 
     const previewBtn = document.getElementById("previewBtn");
@@ -237,39 +289,51 @@ function updateButtons() {
     const firstname = document.getElementById("firstname").value.trim();
     const lastname = document.getElementById("lastname").value.trim();
 
-const canShowPhoto =
-    firstname &&
-    lastname &&
-    email &&
-    emailValid &&
-    consent;
+    const emailError = document.getElementById("emailError");
+    const emailInput = document.getElementById("email");
 
+    const canShowPhoto =
+        firstname &&
+        lastname &&
+        email &&
+        emailValid &&
+        consent;
 
-if (!consent) {
-    hideSection("photoSection");
-    hideSection("logosSection");
-    hideSection("previewSection");
+    if (email && !emailValid) {
+        emailInput.classList.add("invalid");
+        emailError.style.display = "block";
+    } else {
+        emailInput.classList.remove("invalid");
+        emailError.style.display = "none";
+    }
 
-    photoSectionShown = false;
-    logosSectionShown = false;
-    previewSectionShown = false;
+    if (!consent) {
+        hideSection("photoSection");
+        hideSection("logosSection");
+        hideSection("previewSection");
 
-    photoSource = null;
-    hasPreview = false;
+        photoSectionShown = false;
+        logosSectionShown = false;
+        previewSectionShown = false;
 
-    confirmPhotoBtn.disabled = true;
-    return;
-}
+        photoSource = null;
+        logo1Source = null;
+        logo2Source = null;
+        hasPreview = false;
 
+        confirmPhotoBtn.disabled = true;
+        previewBtn.disabled = true;
+        sendBtn.disabled = true;
 
-    /* === PHOTO SECTION === */
+        return;
+    }
+
     if (canShowPhoto) {
         if (!photoSectionShown) {
             showSection("photoSection");
             photoSectionShown = true;
         }
     } else {
-        // 🔥 RESET COMPLET si on décoche
         hideSection("photoSection");
         hideSection("logosSection");
         hideSection("previewSection");
@@ -285,39 +349,22 @@ if (!consent) {
 
         confirmPhotoBtn.disabled = true;
     }
-    // Activation preview
-    const canPreview =
-        canShowPhoto &&
-        photoSource &&
-        emailValid &&
-        areLogosReady();
 
     previewBtn.disabled = !(
         canShowPhoto &&
         photoSource &&
         areLogosReady()
     );
-    sendBtn.disabled = !hasPreview;
-const emailError = document.getElementById("emailError");
-const emailInput = document.getElementById("email");
-    if (email && !emailValid) {
-        emailInput.classList.add("invalid");
-    } else {
-        emailInput.classList.remove("invalid");
-    }
-    if (email && !emailValid) {
-        emailError.style.display = "block";
-    } else {
-        emailError.style.display = "none";
-    }
 
+    sendBtn.disabled = !hasPreview;
 }
 
-/* ------------------------------------------
-   PHOTO : UPLOAD + RECADRAGE (CropperJS)
--------------------------------------------*/
-const photoUploadInput = document.getElementById("photoUpload");
 
+/* ------------------------------------------
+   PHOTO : UPLOAD + RECADRAGE
+-------------------------------------------*/
+
+const photoUploadInput = document.getElementById("photoUpload");
 const photoCropImage = document.getElementById("photoCropImage");
 
 photoUploadInput.addEventListener("change", (e) => {
@@ -325,13 +372,16 @@ photoUploadInput.addEventListener("change", (e) => {
     if (!file) return;
 
     const reader = new FileReader();
+
     reader.onload = (event) => {
         photoCropImage.onload = () => {
             if (cropPhoto) {
                 cropPhoto.destroy();
             }
-    confirmPhotoBtn.disabled = true;
-    photoSource = null;
+
+            confirmPhotoBtn.disabled = true;
+            photoSource = null;
+            hasPreview = false;
 
             cropPhoto = new Cropper(photoCropImage, {
                 aspectRatio: 1,
@@ -359,7 +409,6 @@ photoUploadInput.addEventListener("change", (e) => {
     };
 
     reader.readAsDataURL(file);
-
 });
 
 function exportPhoto() {
@@ -371,7 +420,8 @@ function exportPhoto() {
     });
 
     photoSource = canvas.toDataURL("image/png");
-    
+    hasPreview = false;
+
     if (!logosSectionShown) {
         showSection("logosSection");
         scrollToSection("logosSection");
@@ -379,20 +429,21 @@ function exportPhoto() {
     }
 
     return photoSource;
-
 }
+
 confirmPhotoBtn.addEventListener("click", () => {
     if (!cropPhoto) return;
 
-    exportPhoto();          // 👈 validation explicite
+    exportPhoto();
     confirmPhotoBtn.disabled = true;
-    updateButtons(); // 👈 MANQUAIT
+    updateButtons();
 });
 
 
 /* ------------------------------------------
-   NB DE LOGOS (0 / 1 / 2)
+   NB DE LOGOS
 -------------------------------------------*/
+
 function syncLogoSections() {
     const value =
         document.querySelector("input[name='nbLogos']:checked")?.value || "1";
@@ -403,6 +454,7 @@ function syncLogoSections() {
     document.getElementById("logo2Section").style.display =
         value === "2" ? "block" : "none";
 
+    hasPreview = false;
     updateButtons();
 }
 
@@ -410,26 +462,33 @@ document.querySelectorAll("input[name='nbLogos']").forEach((radio) => {
     radio.addEventListener("change", syncLogoSections);
 });
 
+
 /* ------------------------------------------
    LOGO 1 : TYPE & ALUMNI
 -------------------------------------------*/
+
 const logo1TypeSelect = document.getElementById("logo1Type");
 const logo1AlumniZone = document.getElementById("logo1AlumniZone");
 const logo1UploadZone = document.getElementById("logo1UploadZone");
 const logo1AlumniSelect = document.getElementById("logo1Alumni");
 const logoCropImage1 = document.getElementById("logoCropImage1");
 const confirmLogo1Btn = document.getElementById("confirmLogo1Btn");
+
 confirmLogo1Btn.disabled = true;
 
 logo1TypeSelect.addEventListener("change", () => {
     const type = logo1TypeSelect.value;
 
     logo1Source = null;
-    document.getElementById("logoPreview1").style.backgroundImage = "";
-    document.getElementById("logoPreview1Alumni").style.backgroundImage = "";
+    hasPreview = false;
+
+    setLogoPreview("logoPreview1", null);
+    setLogoPreview("logoPreview1Alumni", null);
+    resetLogoUploadUI(1);
 
     if (type === "alumni") {
         logo1AlumniZone.style.display = "block";
+
         const val = logo1AlumniSelect.value;
         logo1UploadZone.style.display = val === "__upload__" ? "block" : "none";
     } else if (type === "other") {
@@ -439,9 +498,9 @@ logo1TypeSelect.addEventListener("change", () => {
         logo1AlumniZone.style.display = "none";
         logo1UploadZone.style.display = "none";
     }
+
     confirmLogo1Btn.disabled = true;
     updateButtons();
-
 });
 
 previewImg.addEventListener("contextmenu", (e) => {
@@ -451,9 +510,12 @@ previewImg.addEventListener("contextmenu", (e) => {
 logo1AlumniSelect.addEventListener("change", () => {
     const val = logo1AlumniSelect.value;
 
+    logo1Source = null;
+    hasPreview = false;
+
     if (val === "__upload__") {
-        logo1Source = null;
-        document.getElementById("logoPreview1Alumni").style.backgroundImage = "";
+        setLogoPreview("logoPreview1Alumni", null);
+        resetLogoUploadUI(1);
         logo1UploadZone.style.display = "block";
         updateButtons();
         return;
@@ -461,33 +523,39 @@ logo1AlumniSelect.addEventListener("change", () => {
 
     if (val && ALUMNI_LOGOS[val]) {
         logo1Source = ALUMNI_LOGOS[val];
-        logo1UploadZone.style.display = "none";
-        document.getElementById("logoPreview1Alumni").style.backgroundImage =
-            `url(${logo1Source})`;
-        updateButtons();
-    } else {
-        logo1Source = null;
-        logo1UploadZone.style.display = "none";
-        document.getElementById("logoPreview1Alumni").style.backgroundImage = "";
-        
-    }
-  
-});
 
+        resetLogoUploadUI(1);
+        logo1UploadZone.style.display = "none";
+        setLogoPreview("logoPreview1Alumni", logo1Source);
+
+        updateButtons();
+        return;
+    }
+
+    resetLogoUploadUI(1);
+    logo1UploadZone.style.display = "none";
+    setLogoPreview("logoPreview1Alumni", null);
+
+    updateButtons();
+});
 
 document.getElementById("logoUpload1").addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
+    logo1Source = null;
+    hasPreview = false;
+    setLogoPreview("logoPreview1", null);
+
     const reader = new FileReader();
+
     reader.onload = (event) => {
         logoCropImage1.onload = () => {
-            if (cropLogo1) cropLogo1.destroy();
-
-            // On invalide la validation seulement si un upload est requis
-            if (logo1TypeSelect.value === "other" || logo1AlumniSelect.value === "__upload__") {
-                confirmLogo1Btn.disabled = true;
+            if (cropLogo1) {
+                cropLogo1.destroy();
             }
+
+            confirmLogo1Btn.disabled = true;
 
             cropLogo1 = new Cropper(logoCropImage1, {
                 aspectRatio: 5 / 3,
@@ -503,8 +571,10 @@ document.getElementById("logoUpload1").addEventListener("change", (e) => {
                 }
             });
         };
+
         logoCropImage1.src = event.target.result;
     };
+
     reader.readAsDataURL(file);
 });
 
@@ -517,34 +587,38 @@ confirmLogo1Btn.addEventListener("click", () => {
     });
 
     logo1Source = canvas.toDataURL("image/png");
-    document.getElementById("logoPreview1").style.backgroundImage =
-        `url(${logo1Source})`;
+    hasPreview = false;
+
+    setLogoPreview("logoPreview1", logo1Source);
+
     confirmLogo1Btn.disabled = true;
     updateButtons();
 });
 
-
 function exportLogo1() {
     const type = logo1TypeSelect.value;
-    if (logo1TypeSelect.value === "other" && !cropLogo1) {
+
+    if (type === "other" && !cropLogo1) {
         return Promise.resolve(null);
     }
 
     if (type === "alumni") {
         const val = logo1AlumniSelect.value;
+
         if (val === "__upload__" && cropLogo1) {
             const canvas = cropLogo1.getCroppedCanvas({
                 width: 500,
                 height: 300
             });
+
             const output = canvas.toDataURL("image/png");
             logo1Source = output;
-            document.getElementById("logoPreview1").style.backgroundImage =
-                `url(${output})`;
+            setLogoPreview("logoPreview1", output);
+
             return Promise.resolve(output);
-        } else {
-            return Promise.resolve(logo1Source || null);
         }
+
+        return Promise.resolve(logo1Source || null);
     }
 
     if (type === "other" && cropLogo1) {
@@ -552,36 +626,45 @@ function exportLogo1() {
             width: 500,
             height: 300
         });
+
         const output = canvas.toDataURL("image/png");
         logo1Source = output;
+        setLogoPreview("logoPreview1", output);
         updateButtons();
-        document.getElementById("logoPreview1").style.backgroundImage =
-            `url(${output})`;
+
         return Promise.resolve(output);
     }
 
     return Promise.resolve(null);
 }
 
+
 /* ------------------------------------------
    LOGO 2 : TYPE & ALUMNI
 -------------------------------------------*/
+
 const logo2TypeSelect = document.getElementById("logo2Type");
 const logo2AlumniZone = document.getElementById("logo2AlumniZone");
 const logo2UploadZone = document.getElementById("logo2UploadZone");
 const logo2AlumniSelect = document.getElementById("logo2Alumni");
 const logoCropImage2 = document.getElementById("logoCropImage2");
 const confirmLogo2Btn = document.getElementById("confirmLogo2Btn");
+
 confirmLogo2Btn.disabled = true;
+
 logo2TypeSelect.addEventListener("change", () => {
     const type = logo2TypeSelect.value;
 
     logo2Source = null;
-    document.getElementById("logoPreview2").style.backgroundImage = "";
-    document.getElementById("logoPreview2Alumni").style.backgroundImage = "";
+    hasPreview = false;
+
+    setLogoPreview("logoPreview2", null);
+    setLogoPreview("logoPreview2Alumni", null);
+    resetLogoUploadUI(2);
 
     if (type === "alumni") {
         logo2AlumniZone.style.display = "block";
+
         const val = logo2AlumniSelect.value;
         logo2UploadZone.style.display = val === "__upload__" ? "block" : "none";
     } else if (type === "other") {
@@ -599,9 +682,12 @@ logo2TypeSelect.addEventListener("change", () => {
 logo2AlumniSelect.addEventListener("change", () => {
     const val = logo2AlumniSelect.value;
 
+    logo2Source = null;
+    hasPreview = false;
+
     if (val === "__upload__") {
-        logo2Source = null;
-        document.getElementById("logoPreview2Alumni").style.backgroundImage = "";
+        setLogoPreview("logoPreview2Alumni", null);
+        resetLogoUploadUI(2);
         logo2UploadZone.style.display = "block";
         updateButtons();
         return;
@@ -609,28 +695,38 @@ logo2AlumniSelect.addEventListener("change", () => {
 
     if (val && ALUMNI_LOGOS[val]) {
         logo2Source = ALUMNI_LOGOS[val];
+
+        resetLogoUploadUI(2);
         logo2UploadZone.style.display = "none";
-        document.getElementById("logoPreview2Alumni").style.backgroundImage =
-            `url(${logo2Source})`;
-    } else {
-        logo2Source = null;
-        logo2UploadZone.style.display = "none";
-        document.getElementById("logoPreview2Alumni").style.backgroundImage = "";
+        setLogoPreview("logoPreview2Alumni", logo2Source);
+
+        updateButtons();
+        return;
     }
+
+    resetLogoUploadUI(2);
+    logo2UploadZone.style.display = "none";
+    setLogoPreview("logoPreview2Alumni", null);
+
     updateButtons();
 });
-
 
 document.getElementById("logoUpload2").addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
+    logo2Source = null;
+    hasPreview = false;
+    setLogoPreview("logoPreview2", null);
+
     const reader = new FileReader();
+
     reader.onload = (event) => {
         logoCropImage2.onload = () => {
-            if (cropLogo2) cropLogo2.destroy();
+            if (cropLogo2) {
+                cropLogo2.destroy();
+            }
 
-            logo2Source = null;
             confirmLogo2Btn.disabled = true;
 
             cropLogo2 = new Cropper(logoCropImage2, {
@@ -647,8 +743,10 @@ document.getElementById("logoUpload2").addEventListener("change", (e) => {
                 }
             });
         };
+
         logoCropImage2.src = event.target.result;
     };
+
     reader.readAsDataURL(file);
 });
 
@@ -661,8 +759,9 @@ confirmLogo2Btn.addEventListener("click", () => {
     });
 
     logo2Source = canvas.toDataURL("image/png");
-    document.getElementById("logoPreview2").style.backgroundImage =
-        `url(${logo2Source})`;
+    hasPreview = false;
+
+    setLogoPreview("logoPreview2", logo2Source);
 
     confirmLogo2Btn.disabled = true;
     updateButtons();
@@ -670,27 +769,29 @@ confirmLogo2Btn.addEventListener("click", () => {
 
 function exportLogo2() {
     const type = logo2TypeSelect.value;
-    if (logo2TypeSelect.value === "other" && !cropLogo2) {
+
+    if (type === "other" && !cropLogo2) {
         alert("Merci de recadrer le logo avant de continuer.");
         return Promise.resolve(null);
     }
 
-
     if (type === "alumni") {
         const val = logo2AlumniSelect.value;
+
         if (val === "__upload__" && cropLogo2) {
             const canvas = cropLogo2.getCroppedCanvas({
                 width: 500,
                 height: 300
             });
+
             const output = canvas.toDataURL("image/png");
             logo2Source = output;
-            document.getElementById("logoPreview2").style.backgroundImage =
-                `url(${output})`;
+            setLogoPreview("logoPreview2", output);
+
             return Promise.resolve(output);
-        } else {
-            return Promise.resolve(logo2Source || null);
         }
+
+        return Promise.resolve(logo2Source || null);
     }
 
     if (type === "other" && cropLogo2) {
@@ -698,35 +799,46 @@ function exportLogo2() {
             width: 500,
             height: 300
         });
+
         const output = canvas.toDataURL("image/png");
         logo2Source = output;
+        setLogoPreview("logoPreview2", output);
         updateButtons();
-        document.getElementById("logoPreview2").style.backgroundImage =
-            `url(${output})`;
+
         return Promise.resolve(output);
     }
 
     return Promise.resolve(null);
 }
 
+
 /* ------------------------------------------
    CHOIX DU TEMPLATE
 -------------------------------------------*/
+
 function getTemplatePath(nbLogos) {
     if (nbLogos === "0") {
         return "templates/FR/template_FR_nologo.png";
     }
+
     return "templates/FR/template_FR_white.png";
 }
+
 
 /* ------------------------------------------
    POSITIONNEMENT DES LOGOS DANS LA BANDE
 -------------------------------------------*/
+
 async function placeLogosOnCanvas(nbLogos) {
     const logos = [];
 
-    if (logo1Source) logos.push(await loadImage(logo1Source));
-    if (nbLogos === "2" && logo2Source) logos.push(await loadImage(logo2Source));
+    if (logo1Source) {
+        logos.push(await loadImage(logo1Source));
+    }
+
+    if (nbLogos === "2" && logo2Source) {
+        logos.push(await loadImage(logo2Source));
+    }
 
     if (logos.length === 0) return;
 
@@ -734,6 +846,7 @@ async function placeLogosOnCanvas(nbLogos) {
         const ratio = img.width / img.height;
         const h = MAX_LOGO_HEIGHT;
         const w = ratio * h;
+
         return { img, w, h };
     });
 
@@ -741,6 +854,7 @@ async function placeLogosOnCanvas(nbLogos) {
         const { img, w, h } = processed[0];
         const x = (1080 - w) / 2;
         const y = BAND_TOP + (BAND_HEIGHT - h) / 2;
+
         ctx.drawImage(img, x, y, w, h);
     }
 
@@ -751,14 +865,19 @@ async function placeLogosOnCanvas(nbLogos) {
         const y = BAND_TOP + (BAND_HEIGHT - processed[0].h) / 2;
 
         ctx.drawImage(processed[0].img, x, y, processed[0].w, processed[0].h);
+
         x += processed[0].w + spacing;
+
         ctx.drawImage(processed[1].img, x, y, processed[1].w, processed[1].h);
     }
 }
+
 function areLogosReady() {
-    const nbLogos = document.querySelector("input[name='nbLogos']:checked")?.value;
+    const nbLogos =
+        document.querySelector("input[name='nbLogos']:checked")?.value;
+
     if (!nbLogos) return false;
-    
+
     if (nbLogos === "0") {
         return true;
     }
@@ -774,36 +893,38 @@ function areLogosReady() {
     return false;
 }
 
+
 /* ------------------------------------------
    CONSTRUCTION DU VISUEL FINAL + APERÇU
 -------------------------------------------*/
-async function drawFinalCanvas() {
-    const nbLogos = document.querySelector("input[name='nbLogos']:checked").value;
 
-    // 2️⃣ Sécurité : si pas de photo, on stoppe
+async function drawFinalCanvas() {
+    const nbLogos =
+        document.querySelector("input[name='nbLogos']:checked").value;
+
     if (!photoSource) {
-        alert(
-            "Merci d’importer et de recadrer votre photo avant de générer votre visuel."
-        );
+        alert("Merci d’importer et de recadrer votre photo avant de générer votre visuel.");
         return;
     }
 
-    // 3️⃣ Logos (si besoin)
+    if (!areLogosReady()) {
+        alert("Merci de sélectionner ou d’importer le logo demandé avant de générer votre visuel.");
+        return;
+    }
 
     if (!previewSectionShown) {
         showSection("previewSection");
         scrollToSection("previewSection");
         previewSectionShown = true;
-}
-
+    }
 
     ctx.clearRect(0, 0, finalCanvas.width, finalCanvas.height);
 
     const templatePath = getTemplatePath(nbLogos);
     const template = await loadImage(templatePath);
+
     ctx.drawImage(template, 0, 0, 1080, 1350);
 
-    // Photo
     const photoImg = await loadImage(photoSource);
 
     ctx.save();
@@ -814,16 +935,16 @@ async function drawFinalCanvas() {
     ctx.drawImage(photoImg, PHOTO_X, PHOTO_Y, PHOTO_SIZE, PHOTO_SIZE);
     ctx.restore();
 
-    // Logos
     if (nbLogos !== "0") {
         await placeLogosOnCanvas(nbLogos);
     }
 
-    // Aperçu réduit (net, mais petite taille)
     const previewBase64 = finalCanvas.toDataURL("image/jpeg", 0.6);
+
     previewImg.src = previewBase64;
     previewImg.style.display = "block";
     previewImg.style.pointerEvents = "none";
+
     showSection("previewSection");
     scrollToSection("previewSection");
 
@@ -831,9 +952,11 @@ async function drawFinalCanvas() {
     updateButtons();
 }
 
+
 /* ------------------------------------------
    PREVIEW & ENVOI
 -------------------------------------------*/
+
 document.getElementById("previewBtn").addEventListener("click", drawFinalCanvas);
 
 document.getElementById("sendBtn").addEventListener("click", async () => {
@@ -843,12 +966,14 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
     }
 
     const email = document.getElementById("email").value.trim();
+
     if (!email) {
         alert("Merci de renseigner votre adresse e-mail.");
         return;
     }
 
-    const nbLogos = document.querySelector("input[name='nbLogos']:checked").value;
+    const nbLogos =
+        document.querySelector("input[name='nbLogos']:checked").value;
 
     const hdBase64 = finalCanvas.toDataURL("image/png");
     const firstname = document.getElementById("firstname").value.trim();
@@ -867,7 +992,6 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
         timestamp: new Date().toISOString()
     };
 
-
     try {
         await fetch(MAKE_WEBHOOK_URL, {
             method: "POST",
@@ -884,14 +1008,16 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
     }
 });
 
+
 /* ------------------------------------------
    UX DE BASE
 -------------------------------------------*/
+
 document.getElementById("email").addEventListener("input", updateButtons);
 document.getElementById("firstname").addEventListener("input", updateButtons);
 document.getElementById("lastname").addEventListener("input", updateButtons);
 document.getElementById("consent").addEventListener("change", updateButtons);
-// Progressive disclosure – état initial
+
 document.getElementById("photoSection")?.classList.add("section-hidden");
 document.getElementById("logosSection")?.classList.add("section-hidden");
 document.getElementById("previewSection")?.classList.add("section-hidden");
