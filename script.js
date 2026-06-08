@@ -30,7 +30,7 @@ let cropPhoto = null;
 let cropLogo1 = null;
 let cropLogo2 = null;
 
-// Sources finales (base64)
+// Sources finales
 let photoSource = null;
 let logo1Source = null;
 let logo2Source = null;
@@ -44,7 +44,7 @@ let previewSectionShown = false;
 const finalCanvas = document.getElementById("finalCanvas");
 const ctx = finalCanvas.getContext("2d");
 
-// Image d’aperçu
+// Image d’aperçu final
 const previewImg = document.getElementById("previewImage");
 previewImg.src = "";
 previewImg.style.display = "none";
@@ -112,13 +112,9 @@ function loadImage(src) {
 /*
    Gère les aperçus logos.
 
-   - Pour les aperçus alumni :
-     le CSS doit masquer .alumni-preview par défaut
-     et afficher .alumni-preview.has-image.
-
-   - Pour les aperçus d’import :
-     le CSS garde .logo-preview visible par défaut,
-     même vide, pour montrer le format attendu.
+   - .logo-preview reste visible même vide via CSS.
+   - .alumni-preview est masqué par défaut via CSS.
+   - .alumni-preview.has-image devient visible.
 */
 function setLogoPreview(previewId, src) {
     const preview = document.getElementById(previewId);
@@ -154,6 +150,48 @@ function resetLogoUploadUI(index) {
 
     // On vide l’image du cadre importé, mais le cadre reste visible via CSS.
     setLogoPreview(`logoPreview${index}`, null);
+}
+
+function invalidateFinalPreview() {
+    hasPreview = false;
+
+    const sendBtn = document.getElementById("sendBtn");
+    if (sendBtn) sendBtn.disabled = true;
+
+    if (previewImg) {
+        previewImg.src = "";
+        previewImg.style.display = "none";
+    }
+
+    hideSection("previewSection");
+    previewSectionShown = false;
+}
+
+function markPhotoCropAsModified() {
+    if (!cropPhoto) return;
+
+    photoSource = null;
+    invalidateFinalPreview();
+    confirmPhotoBtn.disabled = false;
+    updateButtons();
+}
+
+function markLogoCropAsModified(index) {
+    invalidateFinalPreview();
+
+    if (index === 1) {
+        logo1Source = null;
+        confirmLogo1Btn.disabled = false;
+        setLogoPreview("logoPreview1", null);
+    }
+
+    if (index === 2) {
+        logo2Source = null;
+        confirmLogo2Btn.disabled = false;
+        setLogoPreview("logoPreview2", null);
+    }
+
+    updateButtons();
 }
 
 
@@ -381,7 +419,7 @@ photoUploadInput.addEventListener("change", (e) => {
 
             confirmPhotoBtn.disabled = true;
             photoSource = null;
-            hasPreview = false;
+            invalidateFinalPreview();
 
             cropPhoto = new Cropper(photoCropImage, {
                 aspectRatio: 1,
@@ -397,8 +435,15 @@ photoUploadInput.addEventListener("change", (e) => {
                 zoomOnWheel: true,
                 zoomOnTouch: true,
                 wheelZoomRatio: 0.08,
+
                 ready() {
                     confirmPhotoBtn.disabled = false;
+                },
+
+                crop() {
+                    if (photoSource) {
+                        markPhotoCropAsModified();
+                    }
                 }
             });
 
@@ -420,7 +465,7 @@ function exportPhoto() {
     });
 
     photoSource = canvas.toDataURL("image/png");
-    hasPreview = false;
+    invalidateFinalPreview();
 
     if (!logosSectionShown) {
         showSection("logosSection");
@@ -454,7 +499,7 @@ function syncLogoSections() {
     document.getElementById("logo2Section").style.display =
         value === "2" ? "block" : "none";
 
-    hasPreview = false;
+    invalidateFinalPreview();
     updateButtons();
 }
 
@@ -476,42 +521,11 @@ const confirmLogo1Btn = document.getElementById("confirmLogo1Btn");
 
 confirmLogo1Btn.disabled = true;
 
-logo1TypeSelect.addEventListener("change", () => {
-    const type = logo1TypeSelect.value;
-
-    logo1Source = null;
-    hasPreview = false;
-
-    setLogoPreview("logoPreview1", null);
-    setLogoPreview("logoPreview1Alumni", null);
-    resetLogoUploadUI(1);
-
-    if (type === "alumni") {
-        logo1AlumniZone.style.display = "block";
-
-        const val = logo1AlumniSelect.value;
-        logo1UploadZone.style.display = val === "__upload__" ? "block" : "none";
-    } else if (type === "other") {
-        logo1AlumniZone.style.display = "none";
-        logo1UploadZone.style.display = "block";
-    } else {
-        logo1AlumniZone.style.display = "none";
-        logo1UploadZone.style.display = "none";
-    }
-
-    confirmLogo1Btn.disabled = true;
-    updateButtons();
-});
-
-previewImg.addEventListener("contextmenu", (e) => {
-    e.preventDefault();
-});
-
-logo1AlumniSelect.addEventListener("change", () => {
+function handleLogo1AlumniChange() {
     const val = logo1AlumniSelect.value;
 
     logo1Source = null;
-    hasPreview = false;
+    invalidateFinalPreview();
 
     if (val === "__upload__") {
         setLogoPreview("logoPreview1Alumni", null);
@@ -537,14 +551,41 @@ logo1AlumniSelect.addEventListener("change", () => {
     setLogoPreview("logoPreview1Alumni", null);
 
     updateButtons();
+}
+
+logo1TypeSelect.addEventListener("change", () => {
+    const type = logo1TypeSelect.value;
+
+    logo1Source = null;
+    invalidateFinalPreview();
+
+    setLogoPreview("logoPreview1", null);
+    setLogoPreview("logoPreview1Alumni", null);
+    resetLogoUploadUI(1);
+
+    if (type === "alumni") {
+        logo1AlumniZone.style.display = "block";
+        handleLogo1AlumniChange();
+    } else if (type === "other") {
+        logo1AlumniZone.style.display = "none";
+        logo1UploadZone.style.display = "block";
+    } else {
+        logo1AlumniZone.style.display = "none";
+        logo1UploadZone.style.display = "none";
+    }
+
+    confirmLogo1Btn.disabled = true;
+    updateButtons();
 });
+
+logo1AlumniSelect.addEventListener("change", handleLogo1AlumniChange);
 
 document.getElementById("logoUpload1").addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     logo1Source = null;
-    hasPreview = false;
+    invalidateFinalPreview();
     setLogoPreview("logoPreview1", null);
 
     const reader = new FileReader();
@@ -566,8 +607,15 @@ document.getElementById("logoUpload1").addEventListener("change", (e) => {
                 guides: false,
                 movable: true,
                 zoomOnWheel: true,
+
                 ready() {
                     confirmLogo1Btn.disabled = false;
+                },
+
+                crop() {
+                    if (logo1Source) {
+                        markLogoCropAsModified(1);
+                    }
                 }
             });
         };
@@ -587,11 +635,11 @@ confirmLogo1Btn.addEventListener("click", () => {
     });
 
     logo1Source = canvas.toDataURL("image/png");
-    hasPreview = false;
 
     setLogoPreview("logoPreview1", logo1Source);
 
     confirmLogo1Btn.disabled = true;
+    invalidateFinalPreview();
     updateButtons();
 });
 
@@ -652,38 +700,11 @@ const confirmLogo2Btn = document.getElementById("confirmLogo2Btn");
 
 confirmLogo2Btn.disabled = true;
 
-logo2TypeSelect.addEventListener("change", () => {
-    const type = logo2TypeSelect.value;
-
-    logo2Source = null;
-    hasPreview = false;
-
-    setLogoPreview("logoPreview2", null);
-    setLogoPreview("logoPreview2Alumni", null);
-    resetLogoUploadUI(2);
-
-    if (type === "alumni") {
-        logo2AlumniZone.style.display = "block";
-
-        const val = logo2AlumniSelect.value;
-        logo2UploadZone.style.display = val === "__upload__" ? "block" : "none";
-    } else if (type === "other") {
-        logo2AlumniZone.style.display = "none";
-        logo2UploadZone.style.display = "block";
-    } else {
-        logo2AlumniZone.style.display = "none";
-        logo2UploadZone.style.display = "none";
-    }
-
-    confirmLogo2Btn.disabled = true;
-    updateButtons();
-});
-
-logo2AlumniSelect.addEventListener("change", () => {
+function handleLogo2AlumniChange() {
     const val = logo2AlumniSelect.value;
 
     logo2Source = null;
-    hasPreview = false;
+    invalidateFinalPreview();
 
     if (val === "__upload__") {
         setLogoPreview("logoPreview2Alumni", null);
@@ -709,14 +730,41 @@ logo2AlumniSelect.addEventListener("change", () => {
     setLogoPreview("logoPreview2Alumni", null);
 
     updateButtons();
+}
+
+logo2TypeSelect.addEventListener("change", () => {
+    const type = logo2TypeSelect.value;
+
+    logo2Source = null;
+    invalidateFinalPreview();
+
+    setLogoPreview("logoPreview2", null);
+    setLogoPreview("logoPreview2Alumni", null);
+    resetLogoUploadUI(2);
+
+    if (type === "alumni") {
+        logo2AlumniZone.style.display = "block";
+        handleLogo2AlumniChange();
+    } else if (type === "other") {
+        logo2AlumniZone.style.display = "none";
+        logo2UploadZone.style.display = "block";
+    } else {
+        logo2AlumniZone.style.display = "none";
+        logo2UploadZone.style.display = "none";
+    }
+
+    confirmLogo2Btn.disabled = true;
+    updateButtons();
 });
+
+logo2AlumniSelect.addEventListener("change", handleLogo2AlumniChange);
 
 document.getElementById("logoUpload2").addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     logo2Source = null;
-    hasPreview = false;
+    invalidateFinalPreview();
     setLogoPreview("logoPreview2", null);
 
     const reader = new FileReader();
@@ -738,8 +786,15 @@ document.getElementById("logoUpload2").addEventListener("change", (e) => {
                 guides: false,
                 movable: true,
                 zoomOnWheel: true,
+
                 ready() {
                     confirmLogo2Btn.disabled = false;
+                },
+
+                crop() {
+                    if (logo2Source) {
+                        markLogoCropAsModified(2);
+                    }
                 }
             });
         };
@@ -759,11 +814,11 @@ confirmLogo2Btn.addEventListener("click", () => {
     });
 
     logo2Source = canvas.toDataURL("image/png");
-    hasPreview = false;
 
     setLogoPreview("logoPreview2", logo2Source);
 
     confirmLogo2Btn.disabled = true;
+    invalidateFinalPreview();
     updateButtons();
 });
 
@@ -1012,6 +1067,10 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
 /* ------------------------------------------
    UX DE BASE
 -------------------------------------------*/
+
+previewImg.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+});
 
 document.getElementById("email").addEventListener("input", updateButtons);
 document.getElementById("firstname").addEventListener("input", updateButtons);
