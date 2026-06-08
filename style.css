@@ -219,7 +219,18 @@ button:disabled,
     margin-bottom: 4px;
     font-weight: 500;
 }
+.checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
 
+.checkbox-row input {
+    margin-top: 2px;
+}
 input[type="text"],
 input[type="email"],
 select {
