@@ -40,6 +40,7 @@ body {
     margin: 12px auto 16px;
     width: auto;
 }
+
 .page-header h1 {
     font-size: 1.6rem;
     color: #FFFFFF;
@@ -53,15 +54,16 @@ body {
 }
 
 
+
 .layout {
     display: flex;
     gap: 20px;
-    justify-content: center;   /* 👈 clé */
+    justify-content: center;
 }
 
 .form-column {
     flex: 1;
-    max-width: 620px;   /* 👈 valeur clé */
+    max-width: 620px;
     width: 100%;
 }
 
@@ -78,7 +80,7 @@ input[type="email"].invalid {
 .preview {
     max-width: 220px;
     border-radius: 16px;
-    display: none;          /* IMPORTANT */
+    display: none;
     pointer-events: none;
     user-select: none;
 }
@@ -122,6 +124,7 @@ button:hover:not(:disabled),
 .btn-final:hover:not(:disabled) {
     background: #168a48;
 }
+
 .btn-logo {
     background: #1C3C6F;
     color: #ffffff;
@@ -131,12 +134,15 @@ button:hover:not(:disabled),
     background: #17325d;
     color: #ffffff;
 }
+
 button:disabled,
 .btn:disabled {
     opacity: 0.45;
     cursor: not-allowed;
     transform: none;
 }
+
+
 
 /* CARDS */
 
@@ -178,7 +184,11 @@ button:disabled,
 .buttons-row.center {
     justify-content: center;
 }
+
+
+
 /* TEXTES SECONDAIRES */
+
 .error-text {
     color: #c0392b;
     font-size: 0.85rem;
@@ -194,6 +204,8 @@ button:disabled,
 .help-text.small {
     font-size: 0.78rem;
 }
+
+
 
 /* FORM ELEMENTS */
 
@@ -231,6 +243,8 @@ input[type="file"] {
     font-size: 0.85rem;
 }
 
+
+
 /* CROPPING ZONES */
 
 .crop-wrapper {
@@ -261,12 +275,13 @@ input[type="file"] {
 
 .logo-crop {
     width: 420px;
-    height: 168px;          /* ratio ~5:2. */
+    height: 168px;
     margin: 12px auto;
     border: 2px dashed #2d3a8c;
     background: #f4f6ff;
     position: relative;
 }
+
 
 
 /* === CROP CIRCULAIRE PHOTO (UI CROPPEUR) === */
@@ -283,14 +298,16 @@ input[type="file"] {
 .crop-area:not(.logo-crop) .cropper-face {
     background-color: rgba(255, 255, 255, 0.05);
 }
+
 /* PHOTO – conteneur libre mais visible */
 .crop-area:not(.logo-crop) {
     width: 100%;
     max-width: 420px;
-    min-height: 320px;   /* OBLIGATOIRE */
+    min-height: 320px;
     height: auto;
     background: #f1f5f9;
 }
+
 
 
 /* Logos toujours rectangulaires */
@@ -298,6 +315,8 @@ input[type="file"] {
 .logo-crop .cropper-view-box {
     border-radius: 0;
 }
+
+
 
 /* SLIDERS */
 
@@ -308,6 +327,8 @@ input[type="file"] {
     font-size: 0.84rem;
     margin: 6px 0 10px;
 }
+
+
 
 /* LOGO PREVIEW */
 
@@ -325,6 +346,33 @@ input[type="file"] {
     background-repeat: no-repeat;
 }
 
+/* 
+   Repère UX :
+   le cadre vide reste visible pour les logos importés.
+*/
+.logo-preview {
+    display: block;
+}
+
+/* 
+   Aperçu alumni :
+   masqué par défaut pour éviter d’afficher un ancien logo
+   quand l’utilisateur choisit “j’importe mon logo”.
+*/
+.alumni-preview {
+    display: none;
+}
+
+/* 
+   À utiliser avec le JS corrigé :
+   l’aperçu alumni ne s’affiche que si une association existante est sélectionnée.
+*/
+.alumni-preview.has-image {
+    display: block;
+}
+
+
+
 /* PREVIEW COLUMN */
 
 .preview-wrapper {
@@ -338,13 +386,16 @@ input[type="file"] {
     align-items: center;
     min-height: 260px;
 }
+
+
+
 /* === LOGOS : cropper visible et stable === */
 
 .crop-area.logo-crop {
     width: 100%;
     max-width: 420px;
-    height: 200px;              /* hauteur maîtrisée */
-    overflow: visible;          /* IMPORTANT */
+    height: 200px;
+    overflow: visible;
 }
 
 /* image logo : ne pas la contraindre */
@@ -357,6 +408,11 @@ input[type="file"] {
 .final-canvas {
     display: none;
 }
+
+
+
+/* RESPONSIVE */
+
 @media (max-width: 900px) {
     .layout {
         flex-direction: column;
@@ -376,7 +432,6 @@ input[type="file"] {
         margin-top: 16px;
     }
 
-
     .buttons-row button {
         width: 100%;
         min-height: 48px;
@@ -395,12 +450,16 @@ input[type="file"] {
     }
 }
 
+
+
 /* Progressive disclosure – état caché */
+
 .section-hidden {
     display: none;
 }
 
-/* Transition douce (optionnel mais premium) */
+/* Transition douce */
+
 .section-visible {
     display: block;
     animation: fadeInUp 0.25s ease;
@@ -413,6 +472,7 @@ input[type="file"] {
         opacity: 0;
         transform: translateY(6px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
